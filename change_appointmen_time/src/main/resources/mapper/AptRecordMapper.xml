@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="maventest.mapper.AptRecordMapper">
+
+    <select id="selectAptRecordList"
+            resultType="maventest.dto.AptRecordListResponse">
+        SELECT
+            tbca003.SNO          AS sno,
+            tbca003.LIST_NO      AS listNo,
+            tbca003.REC_NO       AS recNo,
+            tbca008.CUST_NAME    AS custName,
+            tbcb001.CAMP_NAME    AS campName,
+            tbca003.RECALL_TIME  AS recallTime,
+            tbca003.REC_TIME     AS recTime,
+            tbca001.LIST_LASTPHONE AS listLastphone,
+            tbcb001.CAMP_SERVICE_DT AS campServiceDt
+        FROM tbca003 
+        JOIN tbca001  ON tbca003.LIST_NO = tbca001.LIST_NO
+        JOIN tbca008  ON tbca001.CUST_NO = tbca008.CUST_NO
+        JOIN tbcb001  ON tbca003.LIST_CAMPCODE = tbcb001.CAMP_CODE
+        WHERE tbca003.RECALL_TIME
+              BETWEEN TIMESTAMP(#{request.startDate}, #{request.startTime})
+                  AND TIMESTAMP(#{request.endDate}, #{request.endTime})
+          AND tbca003.REC_TIME IS NULL
+        ORDER BY tbca003.RECALL_TIME
+    </select>
+
+</mapper>

@@ -1,0 +1,27 @@
+
+server:
+  port: 8085
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/world?useSSL=false&serverTimezone=Asia/Taipei&characterEncoding=utf8
+    username: root
+    password: 123456
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+app:
+  jwt:
+    # 請在正式環境替換為至少 256-bit 的隨機字串
+    secret: "ChangeMe!ThisMustBeAtLeast256BitsLongForHmacSHA256Security2024"
+    expiration: 86400   # 秒（24 小時）
