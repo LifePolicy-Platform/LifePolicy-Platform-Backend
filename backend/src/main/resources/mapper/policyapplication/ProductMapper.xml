@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="maventest.policyapplication.infrastructure.repository.mapper.ProductMapper">
+
+    <select id="findByCode"
+            parameterType="java.lang.String"
+            resultType="maventest.policyapplication.domain.entity.ProductEntity">
+        SELECT code,
+               name,
+               min_insured_age,
+               max_insured_age,
+               min_sum_insured,
+               max_sum_insured
+        FROM product
+        WHERE code = #{productCode}
+    </select>
+
+    <select id="findAll"
+            resultType="maventest.policyapplication.domain.entity.ProductEntity">
+        SELECT code,
+               name,
+               min_insured_age,
+               max_insured_age,
+               min_sum_insured,
+               max_sum_insured
+        FROM product
+        ORDER BY code
+    </select>
+
+</mapper>

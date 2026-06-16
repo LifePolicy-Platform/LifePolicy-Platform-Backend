@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="maventest.policyapplication.infrastructure.repository.mapper.InsuredPersonMapper">
+
+    <insert id="insertInsuredPerson"
+            parameterType="maventest.policyapplication.domain.entity.InsuredPersonEntity">
+        INSERT INTO insured_person (
+            insured_id,
+            application_id,
+            insured_id_no,
+            insured_name,
+            insured_gender,
+            insured_birthdate,
+            contact_phone
+        ) VALUES (
+            #{insuredId},
+            #{applicationId},
+            #{insuredIdNo},
+            #{insuredName},
+            #{insuredGender},
+            #{insuredBirthdate},
+            #{contactPhone}
+        )
+    </insert>
+
+    <select id="selectByApplicationId"
+            parameterType="java.lang.String"
+            resultType="maventest.policyapplication.domain.entity.InsuredPersonEntity">
+        SELECT insured_id,
+               application_id,
+               insured_id_no,
+               insured_name,
+               insured_gender,
+               insured_birthdate,
+               contact_phone
+        FROM insured_person
+        WHERE application_id = #{applicationId}
+    </select>
+
+    <update id="updateByApplicationId"
+            parameterType="maventest.policyapplication.domain.entity.InsuredPersonEntity">
+        UPDATE insured_person
+        SET insured_id_no = #{insuredIdNo},
+            insured_name = #{insuredName},
+            insured_gender = #{insuredGender},
+            insured_birthdate = #{insuredBirthdate},
+            contact_phone = #{contactPhone}
+        WHERE application_id = #{applicationId}
+    </update>
+
+</mapper>
