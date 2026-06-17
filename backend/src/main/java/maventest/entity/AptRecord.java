@@ -8,33 +8,38 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import lombok.Data;
 
-
+/**
+ * 約訪記錄檔（tb_call_appointment）
+ */
 @Data
-@TableName("tbca003")
+@TableName("tb_call_appointment")
 public class AptRecord {
 
     /** 流水號（PK，自動遞增） */
     @TableId(value = "SNO", type = IdType.AUTO)
-    private Long sno;
+    private Integer sno;
 
-    /** 約訪紀錄序號 */
+    /** 約訪記錄序號 */
     private String recNo;
 
-    /** 名單序號 */
+    /** 名單序號（FK: tb_call_list.LIST_NO） */
     private String listNo;
 
-    /** 專案代碼 */
-    private String listCampcode;
+    /** 專案代碼（FK: tb_camp_mst.CAMP_CODE） */
+    private String campCode;
 
-    /** 預定約訪時間（yyyy-MM-dd HH:mm:ss） */
+    /** 約訪日期時間 */
     private LocalDateTime recallTime;
 
-    /** 實際約訪時間（完成後才寫入，未完成為 null） */
+    /** 實際約訪時間（未完成為 null） */
     private LocalDateTime recTime;
+
+    /** 建立時間 */
+    private LocalDateTime createTime;
 
     /** 更新時間 */
     private LocalDateTime updateTime;
 
-    /** 更新使用者帳號 */
+    /** 更新使用者員編 */
     private String updateUser;
 }

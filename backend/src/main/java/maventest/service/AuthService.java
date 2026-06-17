@@ -71,14 +71,13 @@ public class AuthService {
 
         AppUserEntity newUser = AppUserEntity.builder()
                 .username(authRegisterReqDto.getUsername())
-                .passwordHash(passwordEncoder.encode(authRegisterReqDto.getPassword()))
+                .password(passwordEncoder.encode(authRegisterReqDto.getPassword()))
                 .displayName(authRegisterReqDto.getDisplayname())
-                .enabled(true)
+                .roleCode("APPLICANT")
+                .status("ACTIVE")
                 .build();
 
-        Long userId = appUserRepository.Save(newUser);
-
-        appUserRepository.Saverole(userId, "APPLICANT");
+        appUserRepository.Save(newUser);
 
         return AuthRegisterRespDto.builder()
                 .username(authRegisterReqDto.getUsername())
@@ -106,21 +105,19 @@ public class AuthService {
         
         AppUserEntity updateUser = AppUserEntity.builder()
             .username(username)
-            .passwordHash(reqDto.getPassword() != null && !reqDto.getPassword().isBlank()
-                ? passwordEncoder.encode(reqDto.getPassword())  // 有填才更新密碼
-                : existingUser.getPasswordHash())               // 沒填就保留原本
+            .password(reqDto.getPassword() != null && !reqDto.getPassword().isBlank()
+                ? passwordEncoder.encode(reqDto.getPassword())
+                : existingUser.getPassword())
             .displayName(reqDto.getDisplayname() != null && !reqDto.getDisplayname().isBlank()
-                ? reqDto.getDisplayname()         
-                : existingUser.getDisplayName())   
-            .enabled(reqDto.isEnable())
+                ? reqDto.getDisplayname()
+                : existingUser.getDisplayName())
+            .status(reqDto.isEnable() ? "ACTIVE" : "INACTIVE")
+            .roleCode(reqDto.getRole() != null && !reqDto.getRole().isBlank()
+                ? reqDto.getRole()
+                : existingUser.getRoleCode())
             .build();
 
         appUserRepository.updateByUserName(updateUser);
-
-        if (reqDto.getRole() != null && !reqDto.getRole().isBlank()) {
-            appUserRepository.delectUserRole(username);
-            appUserRepository.saveRoleByUserName(username, reqDto.getRole());
-        }
 
         System.out.println("updateUser called: " + username);
         System.out.println("enabled: " + reqDto.isEnable());
@@ -129,7 +126,6 @@ public class AuthService {
     }
 
     public void delectUser(String username){
-        appUserRepository.delectUserRole(username);
         appUserRepository.deleteUser(username);
     }
 }

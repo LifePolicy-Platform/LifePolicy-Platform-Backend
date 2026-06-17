@@ -9,25 +9,25 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
- * 客戶名單主檔（tbca001）
+ * 電話聯絡名單檔（tb_call_list）
  */
 @Data
-@TableName("tbca001")
+@TableName("tb_call_list")
 public class CustomerList {
 
     /** 名單序號（PK） */
     @TableId(value = "LIST_NO", type = IdType.INPUT)
     private String listNo;
 
-    /** 客戶編號（FK: tbca008.CUST_NO） */
-    private String custNo;
+    /** 客戶編號（FK: tb_cust_user.MEMBER_ID） */
+    private Long memberId;
 
-    /** 名單電話 */
-    private Integer listLastphone;
+    /** 撥出電話 */
+    private String listLastphone;
 
     /**
      * 名單狀態
-     * 0: 待處理、1: 已約訪、2: 已結案
+     * 0: 未處理、1: 已約訪、2: 已結案
      */
     private Integer listStatus;
 

@@ -27,7 +27,7 @@ public class AppUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return customer.getPasswordHash();
+        return customer.getPassword();
     }
 
     @Override
@@ -37,6 +37,6 @@ public class AppUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return Integer.valueOf(1).equals(customer.getStatus());
+        return "ACTIVE".equals(customer.getStatus());
     }
 }
