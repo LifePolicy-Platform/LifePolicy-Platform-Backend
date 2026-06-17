@@ -4,66 +4,48 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="maventest.mapper.AppUserMapper">
 
+    <resultMap id="AppUserResultMap" type="maventest.entity.AppUserEntity">
+        <id property="id" column="USER_ID"/>
+        <result property="username" column="USERNAME"/>
+        <result property="password" column="PASSWORD"/>
+        <result property="displayName" column="DISPLAY_NAME"/>
+        <result property="roleCode" column="ROLE_CODE"/>
+        <result property="status" column="STATUS"/>
+        <result property="lastLoginTime" column="LAST_LOGIN_TIME"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+    </resultMap>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="id"
         parameterType="maventest.entity.AppUserEntity">
-        INSERT INTO app_user (username, password_hash, display_name, enabled)
-        VALUES (#{username}, #{passwordHash}, #{displayName}, #{enabled})
+        INSERT INTO TB_USER (USERNAME, PASSWORD, DISPLAY_NAME, ROLE_CODE, STATUS)
+        VALUES (#{username}, #{password}, #{displayName}, #{roleCode}, #{status})
     </insert>
 
     <select id="existsByUserName" resultType="boolean">
         SELECT COUNT(*) > 0
-        FROM app_user
-        WHERE username = #{username}
+        FROM TB_USER
+        WHERE USERNAME = #{username}
     </select>
-
-    <insert id="insertRole">
-        INSERT INTO user_role (user_id, role_name)
-        VALUES (#{userId}, #{roleName})
-    </insert>
-
-    <resultMap id="AppUserResultMap" type="maventest.entity.AppUserEntity">
-        <id property="id" column="id"/>
-        <result property="username" column="username"/>
-        <result property="passwordHash" column="password_hash"/>
-        <result property="displayName" column="display_name"/>
-        <result property="enabled" column="enabled"/>
-        <collection property="roles" ofType="String">
-            <result column="role_name"/>
-        </collection>
-    </resultMap>
 
     <select id="findAllUser" resultMap="AppUserResultMap">
-        SELECT u.id,
-            u.username,
-            u.password_hash,
-            u.display_name,
-            u.enabled,
-            ur.role_name
-        FROM app_user u
-        LEFT JOIN user_role ur ON u.id = ur.user_id
-        ORDER BY u.id
+        SELECT USER_ID, USERNAME, PASSWORD, DISPLAY_NAME, ROLE_CODE, STATUS,
+               LAST_LOGIN_TIME, CREATE_TIME, UPDATE_TIME
+        FROM TB_USER
+        ORDER BY USER_ID
     </select>
 
-    <!-- 修改user資訊-->
     <update id="updateByUserName" parameterType="maventest.entity.AppUserEntity">
-        UPDATE app_user
-        SET display_name = #{displayName},
-            password_hash = #{passwordHash},
-            enabled = #{enabled}
-        WHERE username = #{username}
+        UPDATE TB_USER
+        SET DISPLAY_NAME = #{displayName},
+            PASSWORD     = #{password},
+            ROLE_CODE    = #{roleCode},
+            STATUS       = #{status}
+        WHERE USERNAME = #{username}
     </update>
 
-    <!-- 修改user role 先刪除-->
-    <delete id="delectUserRole" parameterType="String">
-        DELETE ur FROM user_role ur
-        INNER JOIN app_user u ON ur.user_id = u.id
-        WHERE u.username = #{username}
-    </delete>
-
-
-    <!-- 再刪使用者(主表) -->
     <delete id="deleteUserByUsername">
-        DELETE FROM app_user WHERE username = #{username}
+        DELETE FROM TB_USER WHERE USERNAME = #{username}
     </delete>
 
 </mapper>

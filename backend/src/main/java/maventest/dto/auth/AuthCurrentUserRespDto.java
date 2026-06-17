@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Getter
 @Builder
 @NoArgsConstructor
@@ -20,6 +18,6 @@ public class AuthCurrentUserRespDto {
     @JsonProperty("DISPLAY_NAME")
     private String displayName;
 
-    @JsonProperty("ROLES")
-    private List<String> roles;
+    @JsonProperty("ROLE_CODE")
+    private String roleCode;
 }

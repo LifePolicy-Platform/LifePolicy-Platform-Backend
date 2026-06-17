@@ -1,4 +1,4 @@
-package maventest.service;  
+package maventest.service;
 
 
 import java.util.List;
@@ -38,21 +38,21 @@ public class AuthService {
         AppUserEntity user = appUserRepository.findByUsername(reqDto.getUsername())
                 .orElseThrow(() -> new ApiException(ApiCode.INVALID_CREDENTIALS.getCode(), ApiCode.INVALID_CREDENTIALS.getMessage(), HttpStatus.UNAUTHORIZED));
 
-        if (!user.isEnabled()) {
+        if (!"ACTIVE".equals(user.getStatus())) {
             throw new ApiException(ApiCode.USER_DISABLED.getCode(), ApiCode.USER_DISABLED.getMessage(), HttpStatus.FORBIDDEN);
         }
-        if (!passwordEncoder.matches(reqDto.getPassword(), user.getPasswordHash())) {
+        if (!passwordEncoder.matches(reqDto.getPassword(), user.getPassword())) {
             throw new ApiException(ApiCode.INVALID_CREDENTIALS.getCode(), ApiCode.INVALID_CREDENTIALS.getMessage(), HttpStatus.UNAUTHORIZED);
         }
 
         System.out.println("login:" + reqDto.getUsername());
         return AuthLoginRespDto.builder()
-                .accessToken(jwtTokenProvider.generateToken(user.getUsername(), user.getDisplayName(), user.getRoles()))
+                .accessToken(jwtTokenProvider.generateToken(user.getUsername(), user.getDisplayName(), user.getRoleCode()))
                 .tokenType("Bearer")
                 .expiresIn(jwtTokenProvider.getExpirationSeconds())
                 .username(user.getUsername())
                 .displayName(user.getDisplayName())
-                .roles(user.getRoles())
+                .roleCode(user.getRoleCode())
                 .build();
     }
 
@@ -60,30 +60,29 @@ public class AuthService {
         return AuthCurrentUserRespDto.builder()
                 .username(principal.getUsername())
                 .displayName(principal.getDisplayName())
-                .roles(principal.getRoles())
+                .roleCode(principal.getRoleCode())
                 .build();
     }
 
-    public AuthRegisterRespDto register(AuthRegisterReqDto authRegisterReqDto){
-        if(appUserRepository.existsByUserName(authRegisterReqDto.getUsername())){
+    public AuthRegisterRespDto register(AuthRegisterReqDto authRegisterReqDto) {
+        if (appUserRepository.existsByUserName(authRegisterReqDto.getUsername())) {
             throw new ApiException(ApiCode.USERNAME_ALREADY_EXISTS.getCode(), ApiCode.USERNAME_ALREADY_EXISTS.getMessage(), HttpStatus.CONFLICT);
         }
 
         AppUserEntity newUser = AppUserEntity.builder()
                 .username(authRegisterReqDto.getUsername())
-                .passwordHash(passwordEncoder.encode(authRegisterReqDto.getPassword()))
+                .password(passwordEncoder.encode(authRegisterReqDto.getPassword()))
                 .displayName(authRegisterReqDto.getDisplayname())
-                .enabled(true)
+                .roleCode("APPLICANT")
+                .status("ACTIVE")
                 .build();
 
-        Long userId = appUserRepository.Save(newUser);
-
-        appUserRepository.Saverole(userId, "APPLICANT");
+        appUserRepository.Save(newUser);
 
         return AuthRegisterRespDto.builder()
                 .username(authRegisterReqDto.getUsername())
                 .displayName(authRegisterReqDto.getDisplayname())
-                .roles("APPLICANT")
+                .roleCode("APPLICANT")
                 .build();
     }
 
@@ -93,43 +92,41 @@ public class AuthService {
             .map(user -> AuthUserRespDto.builder()
                     .username(user.getUsername())
                     .displayName(user.getDisplayName())
-                    .roles(user.getRoles())
-                    .enabled(user.isEnabled())
+                    .roleCode(user.getRoleCode())
+                    .status(user.getStatus())
                     .build())
             .toList();
     }
 
-    public void updateUser(String username, AuthUpdateReqDto reqDto){
-         AppUserEntity existingUser = appUserRepository.findByUsername(username)
+    public void updateUser(String username, AuthUpdateReqDto reqDto) {
+        AppUserEntity existingUser = appUserRepository.findByUsername(username)
             .orElseThrow(() -> new ApiException(ApiCode.APPLICATION_NOT_FOUND.getCode(),
                     ApiCode.APPLICATION_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND));
-        
+
         AppUserEntity updateUser = AppUserEntity.builder()
             .username(username)
-            .passwordHash(reqDto.getPassword() != null && !reqDto.getPassword().isBlank()
-                ? passwordEncoder.encode(reqDto.getPassword())  // 有填才更新密碼
-                : existingUser.getPasswordHash())               // 沒填就保留原本
+            .password(reqDto.getPassword() != null && !reqDto.getPassword().isBlank()
+                ? passwordEncoder.encode(reqDto.getPassword())
+                : existingUser.getPassword())
             .displayName(reqDto.getDisplayname() != null && !reqDto.getDisplayname().isBlank()
-                ? reqDto.getDisplayname()         
-                : existingUser.getDisplayName())   
-            .enabled(reqDto.isEnable())
+                ? reqDto.getDisplayname()
+                : existingUser.getDisplayName())
+            .status(reqDto.getStatus() != null && !reqDto.getStatus().isBlank()
+                ? reqDto.getStatus()
+                : existingUser.getStatus())
+            .roleCode(reqDto.getRole() != null && !reqDto.getRole().isBlank()
+                ? reqDto.getRole()
+                : existingUser.getRoleCode())
             .build();
 
         appUserRepository.updateByUserName(updateUser);
 
-        if (reqDto.getRole() != null && !reqDto.getRole().isBlank()) {
-            appUserRepository.delectUserRole(username);
-            appUserRepository.saveRoleByUserName(username, reqDto.getRole());
-        }
-
         System.out.println("updateUser called: " + username);
-        System.out.println("enabled: " + reqDto.isEnable());
+        System.out.println("status: " + reqDto.getStatus());
         System.out.println("role: " + reqDto.getRole());
-            
     }
 
-    public void delectUser(String username){
-        appUserRepository.delectUserRole(username);
+    public void delectUser(String username) {
         appUserRepository.deleteUser(username);
     }
 }

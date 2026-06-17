@@ -32,13 +32,13 @@ public class JwtTokenProvider {
         this.expirationSeconds = expirationSeconds;
     }
 
-    public String generateToken(String username, String displayName, List<String> roles) {
+    public String generateToken(String username, String displayName, String roleCode) {
         Instant now = Instant.now();
         Instant expiry = now.plusSeconds(expirationSeconds);
         return Jwts.builder()
                 .subject(username)
                 .claim("displayName", displayName)
-                .claim("roles", roles)
+                .claim("roleCode", roleCode)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expiry))
                 .signWith(secretKey)
@@ -57,14 +57,11 @@ public class JwtTokenProvider {
         Claims claims = parseClaims(token);
         String username = claims.getSubject();
         String displayName = claims.get("displayName", String.class);
-        List<?> rolesClaim = claims.get("roles", List.class);
-        List<String> roles = rolesClaim == null
-            ? List.of()
-            : rolesClaim.stream().map(String::valueOf).toList();
-        AppUserPrincipal principal = new AppUserPrincipal(username, displayName, roles);
-        Collection<SimpleGrantedAuthority> authorities = roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                .toList();
+        String roleCode = claims.get("roleCode", String.class);
+        AppUserPrincipal principal = new AppUserPrincipal(username, displayName, roleCode);
+        Collection<SimpleGrantedAuthority> authorities = roleCode != null
+                ? List.of(new SimpleGrantedAuthority("ROLE_" + roleCode))
+                : List.of();
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
