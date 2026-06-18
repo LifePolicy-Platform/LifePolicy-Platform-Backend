@@ -4,29 +4,34 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="maventest.policyapplication.infrastructure.repository.mapper.ProductMapper">
 
-    <select id="findByCode"
-            parameterType="java.lang.String"
-            resultType="maventest.policyapplication.domain.entity.ProductEntity">
-        SELECT code,
-               name,
-               min_insured_age,
-               max_insured_age,
-               min_sum_insured,
-               max_sum_insured
-        FROM product
-        WHERE code = #{productCode}
+    <resultMap id="ProductResultMap" type="maventest.policyapplication.domain.entity.ProductEntity">
+        <id  property="code"          column="PRODUCT_CODE"/>
+        <result property="name"          column="PRODUCT_NAME"/>
+        <result property="productType"   column="PRODUCT_TYPE"/>
+        <result property="basePremium"   column="BASE_PREMIUM"/>
+        <result property="minSumInsured" column="MIN_AMOUNT"/>
+        <result property="maxSumInsured" column="MAX_AMOUNT"/>
+        <result property="minInsuredAge" column="MIN_AGE"/>
+        <result property="maxInsuredAge" column="MAX_AGE"/>
+        <result property="status"        column="STATUS"/>
+        <result property="remark"        column="REMARK"/>
+        <result property="createTime"    column="CREATE_TIME"/>
+    </resultMap>
+
+    <select id="findByCode" parameterType="java.lang.String" resultMap="ProductResultMap">
+        SELECT PRODUCT_CODE, PRODUCT_NAME, PRODUCT_TYPE, BASE_PREMIUM,
+               MIN_AMOUNT, MAX_AMOUNT, MIN_AGE, MAX_AGE,
+               STATUS, REMARK, CREATE_TIME
+        FROM tb_product
+        WHERE PRODUCT_CODE = #{productCode}
     </select>
 
-    <select id="findAll"
-            resultType="maventest.policyapplication.domain.entity.ProductEntity">
-        SELECT code,
-               name,
-               min_insured_age,
-               max_insured_age,
-               min_sum_insured,
-               max_sum_insured
-        FROM product
-        ORDER BY code
+    <select id="findAll" resultMap="ProductResultMap">
+        SELECT PRODUCT_CODE, PRODUCT_NAME, PRODUCT_TYPE, BASE_PREMIUM,
+               MIN_AMOUNT, MAX_AMOUNT, MIN_AGE, MAX_AGE,
+               STATUS, REMARK, CREATE_TIME
+        FROM tb_product
+        ORDER BY PRODUCT_CODE
     </select>
 
 </mapper>

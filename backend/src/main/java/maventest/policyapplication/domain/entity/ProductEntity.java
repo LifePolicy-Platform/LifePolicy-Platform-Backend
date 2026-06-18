@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -15,8 +16,13 @@ public class ProductEntity {
 
     private String code;
     private String name;
-    private Integer minInsuredAge;
-    private Integer maxInsuredAge;
+    private String productType;
+    private BigDecimal basePremium;
     private BigDecimal minSumInsured;
     private BigDecimal maxSumInsured;
+    private Integer minInsuredAge;
+    private Integer maxInsuredAge;
+    private String status;
+    private String remark;
+    private LocalDateTime createTime;
 }
