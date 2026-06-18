@@ -4,20 +4,8 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="maventest.mapper.AppUserMapper">
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="userId"
-        parameterType="maventest.entity.AppUserEntity">
-        INSERT INTO tb_user (USERNAME, PASSWORD, DISPLAY_NAME, ROLE_CODE, STATUS)
-        VALUES (#{username}, #{password}, #{displayName}, #{roleCode}, #{status})
-    </insert>
-
-    <select id="existsByUserName" resultType="boolean">
-        SELECT COUNT(*) > 0
-        FROM tb_user
-        WHERE USERNAME = #{username}
-    </select>
-
     <resultMap id="AppUserResultMap" type="maventest.entity.AppUserEntity">
-        <id property="userId" column="USER_ID"/>
+        <id property="id" column="USER_ID"/>
         <result property="username" column="USERNAME"/>
         <result property="password" column="PASSWORD"/>
         <result property="displayName" column="DISPLAY_NAME"/>
@@ -28,31 +16,36 @@
         <result property="updateTime" column="UPDATE_TIME"/>
     </resultMap>
 
-    <select id="findByUsername" resultMap="AppUserResultMap">
-        SELECT USER_ID, USERNAME, PASSWORD, DISPLAY_NAME, ROLE_CODE, STATUS,
-               LAST_LOGIN_TIME, CREATE_TIME, UPDATE_TIME
-        FROM tb_user
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+        parameterType="maventest.entity.AppUserEntity">
+        INSERT INTO TB_USER (USERNAME, PASSWORD, DISPLAY_NAME, ROLE_CODE, STATUS)
+        VALUES (#{username}, #{password}, #{displayName}, #{roleCode}, #{status})
+    </insert>
+
+    <select id="existsByUserName" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM TB_USER
         WHERE USERNAME = #{username}
     </select>
 
     <select id="findAllUser" resultMap="AppUserResultMap">
         SELECT USER_ID, USERNAME, PASSWORD, DISPLAY_NAME, ROLE_CODE, STATUS,
                LAST_LOGIN_TIME, CREATE_TIME, UPDATE_TIME
-        FROM tb_user
+        FROM TB_USER
         ORDER BY USER_ID
     </select>
 
     <update id="updateByUserName" parameterType="maventest.entity.AppUserEntity">
-        UPDATE tb_user
+        UPDATE TB_USER
         SET DISPLAY_NAME = #{displayName},
-            PASSWORD = #{password},
-            STATUS = #{status},
-            ROLE_CODE = #{roleCode}
+            PASSWORD     = #{password},
+            ROLE_CODE    = #{roleCode},
+            STATUS       = #{status}
         WHERE USERNAME = #{username}
     </update>
 
     <delete id="deleteUserByUsername">
-        DELETE FROM tb_user WHERE USERNAME = #{username}
+        DELETE FROM TB_USER WHERE USERNAME = #{username}
     </delete>
 
 </mapper>

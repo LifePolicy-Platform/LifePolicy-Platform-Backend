@@ -13,9 +13,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/**
- * 系統使用者 — 後台人員（tb_user）
- */
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @NoArgsConstructor

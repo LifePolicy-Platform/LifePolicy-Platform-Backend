@@ -11,12 +11,11 @@ public interface AppUserMapper {
     Long insert(AppUserEntity user);
 
     boolean existsByUserName(@Param("username") String username);
-
-    AppUserEntity findByUsername(@Param("username") String username);
-
+    Long insert(AppUserEntity user);
     List<AppUserEntity> findAllUser();
 
     void updateByUserName(AppUserEntity user);
-
     void deleteUserByUsername(@Param("username") String username);
+}
+
 }

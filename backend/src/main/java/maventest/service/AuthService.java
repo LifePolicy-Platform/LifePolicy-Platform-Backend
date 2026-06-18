@@ -1,4 +1,4 @@
-package maventest.service;  
+package maventest.service;
 
 
 import java.util.List;
@@ -100,29 +100,33 @@ public class AuthService {
         return AuthCurrentUserRespDto.builder()
                 .username(principal.getUsername())
                 .displayName(principal.getDisplayName())
-                .roles(principal.getRoles())
+                .roleCode(principal.getRoleCode())
                 .build();
     }
 
-    public AuthRegisterRespDto register(AuthRegisterReqDto authRegisterReqDto){
-        if(appUserRepository.existsByUserName(authRegisterReqDto.getUsername())){
+    public AuthRegisterRespDto register(AuthRegisterReqDto authRegisterReqDto) {
+        if (appUserRepository.existsByUserName(authRegisterReqDto.getUsername())) {
             throw new ApiException(ApiCode.USERNAME_ALREADY_EXISTS.getCode(), ApiCode.USERNAME_ALREADY_EXISTS.getMessage(), HttpStatus.CONFLICT);
         }
 
         AppUserEntity newUser = AppUserEntity.builder()
                 .username(authRegisterReqDto.getUsername())
                 .password(passwordEncoder.encode(authRegisterReqDto.getPassword()))
+                .password(passwordEncoder.encode(authRegisterReqDto.getPassword()))
                 .displayName(authRegisterReqDto.getDisplayname())
+                .roleCode("APPLICANT")
+                .status("ACTIVE")
                 .roleCode("APPLICANT")
                 .status("ACTIVE")
                 .build();
 
         appUserRepository.Save(newUser);
+        appUserRepository.Save(newUser);
 
         return AuthRegisterRespDto.builder()
                 .username(authRegisterReqDto.getUsername())
                 .displayName(authRegisterReqDto.getDisplayname())
-                .roles("APPLICANT")
+                .roleCode("APPLICANT")
                 .build();
     }
 
@@ -132,26 +136,31 @@ public class AuthService {
             .map(user -> AuthUserRespDto.builder()
                     .username(user.getUsername())
                     .displayName(user.getDisplayName())
-                    .roles(user.getRoles())
-                    .enabled(user.isEnabled())
+                    .roleCode(user.getRoleCode())
+                    .status(user.getStatus())
                     .build())
             .toList();
     }
 
-    public void updateUser(String username, AuthUpdateReqDto reqDto){
-         AppUserEntity existingUser = appUserRepository.findByUsername(username)
+    public void updateUser(String username, AuthUpdateReqDto reqDto) {
+        AppUserEntity existingUser = appUserRepository.findByUsername(username)
             .orElseThrow(() -> new ApiException(ApiCode.APPLICATION_NOT_FOUND.getCode(),
                     ApiCode.APPLICATION_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND));
-        
+
         AppUserEntity updateUser = AppUserEntity.builder()
             .username(username)
+            .password(reqDto.getPassword() != null && !reqDto.getPassword().isBlank()
+                ? passwordEncoder.encode(reqDto.getPassword())
+                : existingUser.getPassword())
             .password(reqDto.getPassword() != null && !reqDto.getPassword().isBlank()
                 ? passwordEncoder.encode(reqDto.getPassword())
                 : existingUser.getPassword())
             .displayName(reqDto.getDisplayname() != null && !reqDto.getDisplayname().isBlank()
                 ? reqDto.getDisplayname()
                 : existingUser.getDisplayName())
-            .status(reqDto.isEnable() ? "ACTIVE" : "INACTIVE")
+            .status(reqDto.getStatus() != null && !reqDto.getStatus().isBlank()
+                ? reqDto.getStatus()
+                : existingUser.getStatus())
             .roleCode(reqDto.getRole() != null && !reqDto.getRole().isBlank()
                 ? reqDto.getRole()
                 : existingUser.getRoleCode())
@@ -160,12 +169,11 @@ public class AuthService {
         appUserRepository.updateByUserName(updateUser);
 
         System.out.println("updateUser called: " + username);
-        System.out.println("enabled: " + reqDto.isEnable());
+        System.out.println("status: " + reqDto.getStatus());
         System.out.println("role: " + reqDto.getRole());
-            
     }
 
-    public void delectUser(String username){
+    public void delectUser(String username) {
         appUserRepository.deleteUser(username);
     }
 
