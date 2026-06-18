@@ -72,11 +72,15 @@ public class AuthService {
         AppUserEntity newUser = AppUserEntity.builder()
                 .username(authRegisterReqDto.getUsername())
                 .password(passwordEncoder.encode(authRegisterReqDto.getPassword()))
+                .password(passwordEncoder.encode(authRegisterReqDto.getPassword()))
                 .displayName(authRegisterReqDto.getDisplayname())
+                .roleCode("APPLICANT")
+                .status("ACTIVE")
                 .roleCode("APPLICANT")
                 .status("ACTIVE")
                 .build();
 
+        appUserRepository.Save(newUser);
         appUserRepository.Save(newUser);
 
         return AuthRegisterRespDto.builder()
@@ -105,6 +109,9 @@ public class AuthService {
 
         AppUserEntity updateUser = AppUserEntity.builder()
             .username(username)
+            .password(reqDto.getPassword() != null && !reqDto.getPassword().isBlank()
+                ? passwordEncoder.encode(reqDto.getPassword())
+                : existingUser.getPassword())
             .password(reqDto.getPassword() != null && !reqDto.getPassword().isBlank()
                 ? passwordEncoder.encode(reqDto.getPassword())
                 : existingUser.getPassword())

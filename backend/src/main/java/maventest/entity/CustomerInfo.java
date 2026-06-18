@@ -1,5 +1,6 @@
 package maventest.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -9,36 +10,49 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
- * 客戶資料管理（customer_info）
+ * 保戶帳號 — 前台（tb_cust_user）
  */
 @Data
-@TableName("customer_info")
+@TableName("tb_cust_user")
 public class CustomerInfo {
 
-    @TableId(value = "id", type = IdType.ASSIGN_UUID)
-    private String id;
+    /** 前台會員流水號 ID（PK） */
+    @TableId(value = "MEMBER_ID", type = IdType.AUTO)
+    private Long memberId;
 
-    /** 客戶姓名（顯示名稱） */
-    private String name;
+    /** 使用者帳號 */
+    private String username;
+
+    /** BCrypt 加密密碼 */
+    private String password;
+
+    /** 主要保單號碼 */
+    private String policyNo;
 
     /** 身分證字號 */
-    private String identityNo;
+    private String identityCard;
 
-    /** 出生日期 */
-    private LocalDateTime birthDate;
+    /** 性別（MALE/FEMALE） */
+    private String gender;
 
     /** 電子信箱 */
-    private String mail;
+    private String email;
 
-    /** 狀態：1=啟用，0=停用 */
-    private Integer status;
+    /** 手機號碼 */
+    private String mobile;
+
+    /** 生日 */
+    private LocalDate birthday;
+
+    /** 帳號狀態（ACTIVE/INACTIVE 等） */
+    private String status;
+
+    /** 最後登入時間 */
+    private LocalDateTime lastLoginTime;
 
     /** 建立時間 */
     private LocalDateTime createTime;
 
-    /** 登入帳號 */
-    private String username;
-
-    /** BCrypt 密碼雜湊 */
-    private String passwordHash;
+    /** 更新時間 */
+    private LocalDateTime updateTime;
 }

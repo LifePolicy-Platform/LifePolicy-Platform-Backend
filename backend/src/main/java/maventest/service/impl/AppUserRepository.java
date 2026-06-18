@@ -17,7 +17,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AppUserRepository {
 
-    private final JdbcTemplate jdbcTemplate;
     private final AppUserMapper appUserMapper;
 
     public Optional<AppUserEntity> findByUsername(String username) {
@@ -49,14 +48,17 @@ public class AppUserRepository {
     }
 
     public Long Save(AppUserEntity user) {
+    public Long Save(AppUserEntity user) {
         appUserMapper.insert(user);
         return user.getId();
     }
 
     public boolean existsByUserName(String username) {
+    public boolean existsByUserName(String username) {
         return appUserMapper.existsByUserName(username);
     }
 
+    public List<AppUserEntity> findAll() {
     public List<AppUserEntity> findAll() {
         return appUserMapper.findAllUser();
     }
@@ -69,3 +71,4 @@ public class AppUserRepository {
         appUserMapper.deleteUserByUsername(username);
     }
 }
+
