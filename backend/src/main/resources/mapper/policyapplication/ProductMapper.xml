@@ -34,4 +34,41 @@
         ORDER BY PRODUCT_CODE
     </select>
 
+    <insert id="insert">
+        INSERT INTO tb_product (
+            PRODUCT_CODE, PRODUCT_NAME, PRODUCT_TYPE, BASE_PREMIUM,
+            MIN_AMOUNT, MAX_AMOUNT, MIN_AGE, MAX_AGE,
+            STATUS, REMARK, UPDATE_USER
+        ) VALUES (
+            #{dto.productCode}, #{dto.productName}, #{dto.productType}, #{dto.basePremium},
+            #{dto.minAmount}, #{dto.maxAmount}, #{dto.minAge}, #{dto.maxAge},
+            'ACTIVE', #{dto.remark}, #{createUser}
+        )
+    </insert>
+
+    <update id="updateByCode">
+        UPDATE tb_product
+        SET PRODUCT_NAME = #{dto.productName},
+            PRODUCT_TYPE = #{dto.productType},
+            BASE_PREMIUM = #{dto.basePremium},
+            MIN_AMOUNT   = #{dto.minAmount},
+            MAX_AMOUNT   = #{dto.maxAmount},
+            MIN_AGE      = #{dto.minAge},
+            MAX_AGE      = #{dto.maxAge},
+            STATUS       = #{dto.status},
+            REMARK       = #{dto.remark},
+            UPDATE_TIME  = CURRENT_TIMESTAMP,
+            UPDATE_USER  = #{updateUser}
+        WHERE PRODUCT_CODE = #{code}
+    </update>
+
+
+    <update id="updateStatus">
+        UPDATE tb_product
+        SET STATUS      = #{status},
+            UPDATE_TIME = CURRENT_TIMESTAMP,
+            UPDATE_USER = #{updateUser}
+        WHERE PRODUCT_CODE = #{code}
+    </update>
+
 </mapper>
