@@ -69,3 +69,4 @@ public class AppUserRepository {
         appUserMapper.deleteUserByUsername(username);
     }
 }
+
