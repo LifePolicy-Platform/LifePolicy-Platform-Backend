@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import maventest.code.ApiCode;
 import maventest.common.exception.ApiException;
 import maventest.common.security.JwtTokenProvider;
@@ -19,40 +20,79 @@ import maventest.dto.auth.AuthUpdateReqDto;
 import maventest.dto.auth.AuthUserRespDto;
 import maventest.entity.AppUserEntity;
 import maventest.entity.AppUserPrincipal;
+import maventest.entity.CustomerInfo;
+import maventest.mapper.CustomerInfoMapper;
 import maventest.service.impl.AppUserRepository;
 
 @Service
 public class AuthService {
 
     private final AppUserRepository appUserRepository;
+    private final CustomerInfoMapper customerInfoMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthService(AppUserRepository appUserRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
+    public AuthService(
+            AppUserRepository appUserRepository,
+            CustomerInfoMapper customerInfoMapper,
+            PasswordEncoder passwordEncoder,
+            JwtTokenProvider jwtTokenProvider) {
         this.appUserRepository = appUserRepository;
+        this.customerInfoMapper = customerInfoMapper;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public AuthLoginRespDto login(AuthLoginReqDto reqDto) {
-        AppUserEntity user = appUserRepository.findByUsername(reqDto.getUsername())
-                .orElseThrow(() -> new ApiException(ApiCode.INVALID_CREDENTIALS.getCode(), ApiCode.INVALID_CREDENTIALS.getMessage(), HttpStatus.UNAUTHORIZED));
+        return appUserRepository.findByUsername(reqDto.getUsername())
+                .filter(AppUserEntity::isEnabled)
+                .map(user -> loginAppUser(user, reqDto.getPassword()))
+                .orElseGet(() -> loginCustomerUser(reqDto));
+    }
 
+    private AuthLoginRespDto loginAppUser(AppUserEntity user, String rawPassword) {
         if (!user.isEnabled()) {
-            throw new ApiException(ApiCode.USER_DISABLED.getCode(), ApiCode.USER_DISABLED.getMessage(), HttpStatus.FORBIDDEN);
+            throw new ApiException(
+                    ApiCode.USER_DISABLED.getCode(),
+                    ApiCode.USER_DISABLED.getMessage() + " (STATUS=" + user.getStatus() + ")",
+                    HttpStatus.FORBIDDEN);
         }
-        if (!passwordEncoder.matches(reqDto.getPassword(), user.getPasswordHash())) {
+        if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
             throw new ApiException(ApiCode.INVALID_CREDENTIALS.getCode(), ApiCode.INVALID_CREDENTIALS.getMessage(), HttpStatus.UNAUTHORIZED);
         }
 
-        System.out.println("login:" + reqDto.getUsername());
+        return buildLoginResponse(user.getUsername(), user.getDisplayName(), user.getRoles());
+    }
+
+    private AuthLoginRespDto loginCustomerUser(AuthLoginReqDto reqDto) {
+        CustomerInfo customer = customerInfoMapper.selectOne(
+                new LambdaQueryWrapper<CustomerInfo>()
+                        .eq(CustomerInfo::getUsername, reqDto.getUsername()));
+
+        if (customer == null) {
+            throw new ApiException(ApiCode.INVALID_CREDENTIALS.getCode(), ApiCode.INVALID_CREDENTIALS.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
+        if (!customer.isEnabled()) {
+            throw new ApiException(
+                    ApiCode.USER_DISABLED.getCode(),
+                    ApiCode.USER_DISABLED.getMessage() + " (STATUS=" + customer.getStatus() + ")",
+                    HttpStatus.FORBIDDEN);
+        }
+        if (!passwordEncoder.matches(reqDto.getPassword(), customer.getPassword())) {
+            throw new ApiException(ApiCode.INVALID_CREDENTIALS.getCode(), ApiCode.INVALID_CREDENTIALS.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
+
+        return buildLoginResponse(customer.getUsername(), customer.getUsername(), List.of("USER"));
+    }
+
+    private AuthLoginRespDto buildLoginResponse(String username, String displayName, List<String> roles) {
         return AuthLoginRespDto.builder()
-                .accessToken(jwtTokenProvider.generateToken(user.getUsername(), user.getDisplayName(), user.getRoles()))
+                .accessToken(jwtTokenProvider.generateToken(username, displayName, roles))
                 .tokenType("Bearer")
                 .expiresIn(jwtTokenProvider.getExpirationSeconds())
-                .username(user.getUsername())
-                .displayName(user.getDisplayName())
-                .roles(user.getRoles())
+                .username(username)
+                .displayName(displayName)
+                .roles(roles)
                 .build();
     }
 
@@ -128,4 +168,6 @@ public class AuthService {
     public void delectUser(String username){
         appUserRepository.deleteUser(username);
     }
+
+    
 }

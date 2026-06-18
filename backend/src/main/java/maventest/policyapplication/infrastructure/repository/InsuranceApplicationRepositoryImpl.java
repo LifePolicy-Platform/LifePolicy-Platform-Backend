@@ -1,12 +1,14 @@
 package maventest.policyapplication.infrastructure.repository;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import maventest.entity.Product;
+import maventest.mapper.ProductMapper;
 import maventest.policyapplication.domain.entity.InsuredPersonEntity;
 import maventest.policyapplication.domain.entity.PolicyApplicationEntity;
 import maventest.policyapplication.domain.entity.ProductEntity;
 import maventest.policyapplication.infrastructure.repository.mapper.InsuredPersonMapper;
 import maventest.policyapplication.infrastructure.repository.mapper.PolicyApplicationMapper;
-import maventest.policyapplication.infrastructure.repository.mapper.ProductMapper;
 
 import org.springframework.stereotype.Repository;
 
@@ -26,12 +28,31 @@ public class InsuranceApplicationRepositoryImpl implements InsuranceApplicationR
 
     @Override
     public Optional<ProductEntity> findProductByCode(String productCode) {
-        return Optional.ofNullable(productMapper.findByCode(productCode));
+        Product product = productMapper.selectOne(
+                Wrappers.<Product>lambdaQuery().eq(Product::getProductCode, productCode));
+        return Optional.ofNullable(product).map(this::toProductEntity);
     }
 
     @Override
     public List<ProductEntity> findAllProducts() {
-        return productMapper.findAll();
+        return productMapper.selectList(
+                Wrappers.<Product>lambdaQuery()
+                        .eq(Product::getStatus, "ACTIVE")
+                        .orderByAsc(Product::getProductCode))
+                .stream()
+                .map(this::toProductEntity)
+                .toList();
+    }
+
+    private ProductEntity toProductEntity(Product product) {
+        return ProductEntity.builder()
+                .code(product.getProductCode())
+                .name(product.getProductName())
+                .minInsuredAge(product.getMinAge())
+                .maxInsuredAge(product.getMaxAge())
+                .minSumInsured(product.getMinAmount())
+                .maxSumInsured(product.getMaxAmount())
+                .build();
     }
 
     @Override

@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "AppTest",
+      "request": "launch",
+      "mainClass": "maventest.AppTest",
+      "projectName": "backend"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot (Application)",
+      "request": "launch",
+      "mainClass": "maventest.Application",
+      "projectName": "backend",
+      "cwd": "${workspaceFolder}/backend"
+    }
+  ]
+}

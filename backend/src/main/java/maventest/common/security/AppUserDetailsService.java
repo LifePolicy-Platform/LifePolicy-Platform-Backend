@@ -22,9 +22,8 @@ public class AppUserDetailsService implements UserDetailsService {
         CustomerInfo customer = customerInfoMapper.selectOne(
                 new LambdaQueryWrapper<CustomerInfo>()
                         .eq(CustomerInfo::getUsername, username)
-                        .eq(CustomerInfo::getStatus, "ACTIVE")
         );
-        if (customer == null) {
+        if (customer == null || !customer.isEnabled()) {
             throw new UsernameNotFoundException("帳號不存在或已停用：" + username);
         }
         return new AppUserDetails(customer);

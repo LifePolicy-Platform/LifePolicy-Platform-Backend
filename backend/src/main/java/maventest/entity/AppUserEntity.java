@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -27,27 +28,35 @@ public class AppUserEntity {
     private Long userId;
 
     /** 登入帳號 */
+    @TableField("USERNAME")
     private String username;
 
     /** BCrypt 加密密碼 */
+    @TableField("PASSWORD")
     private String password;
 
     /** 顯示姓名 */
+    @TableField("DISPLAY_NAME")
     private String displayName;
 
     /** 角色代碼（ADMIN/SALES/UNDERWRITER 等） */
+    @TableField("ROLE_CODE")
     private String roleCode;
 
-    /** 帳號狀態（ACTIVE/INACTIVE 等） */
+    /** 帳號狀態（ACTIVE/INACTIVE 或 1/0） */
+    @TableField("STATUS")
     private String status;
 
     /** 最後登入時間 */
+    @TableField("LAST_LOGIN_TIME")
     private LocalDateTime lastLoginTime;
 
     /** 建立時間 */
+    @TableField("CREATE_TIME")
     private LocalDateTime createTime;
 
     /** 更新時間 */
+    @TableField("UPDATE_TIME")
     private LocalDateTime updateTime;
 
     public Long getId() {
@@ -59,7 +68,23 @@ public class AppUserEntity {
     }
 
     public boolean isEnabled() {
-        return "ACTIVE".equalsIgnoreCase(status);
+        if (status == null || status.isBlank()) {
+            // 換 DB 後常見 STATUS 未回填，避免全部被判定為停用
+            return true;
+        }
+        String normalized = status.trim();
+        if ("INACTIVE".equalsIgnoreCase(normalized)
+                || "DISABLED".equalsIgnoreCase(normalized)
+                || "0".equals(normalized)
+                || "N".equalsIgnoreCase(normalized)
+                || "FALSE".equalsIgnoreCase(normalized)) {
+            return false;
+        }
+        return "ACTIVE".equalsIgnoreCase(normalized)
+                || "1".equals(normalized)
+                || "Y".equalsIgnoreCase(normalized)
+                || "TRUE".equalsIgnoreCase(normalized)
+                || "ENABLED".equalsIgnoreCase(normalized);
     }
 
     public List<String> getRoles() {

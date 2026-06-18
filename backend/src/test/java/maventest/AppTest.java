@@ -1,16 +1,11 @@
 package maventest;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-/**
-//  * Unit test for simple App.
-//  */
-// public class AppTest {
+public class AppTest {
 
-//     /**
-//      * Rigorous Test :-)
-//      */
-//     @Test
-//     public void shouldAnswerWithTrue() {
-//         assertTrue(true);
-//     }
-// }
+    public static void main(String[] args) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        System.out.println(encoder.encode("123456"));
+    }
+}

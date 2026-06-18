@@ -1,0 +1,7 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.import.maven.enabled": true,
+  "maven.executable.preferMavenWrapper": false,
+  "java.project.importOnFirstTimeStartup": "automatic",
+  "maven.view": "hierarchical"
+}

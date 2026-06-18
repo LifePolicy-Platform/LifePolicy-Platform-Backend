@@ -37,6 +37,6 @@ public class AppUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return "ACTIVE".equals(customer.getStatus());
+        return customer.isEnabled();
     }
 }
