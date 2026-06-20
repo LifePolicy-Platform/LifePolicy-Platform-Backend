@@ -28,6 +28,6 @@ public class QryPolicyLogController {
     public ResponseEntity<ReturnMsg<List<PolicyAprvLogList>>> findByPolicyNo(
             @PathVariable String policyNo) {
         List<PolicyAprvLogList> logs = policyAprvLogService.findByPolicyNo(policyNo);
-        return ResponseEntity.ok(ReturnMsg.success("查詢成功", logs));
+        return ResponseEntity.ok(ReturnMsg.success(logs));
     }
 }

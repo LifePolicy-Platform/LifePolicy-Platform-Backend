@@ -21,5 +21,5 @@ public interface PolicyApplicationMapper {
 
     List<Map<String, Object>> selectApplications(Map<String, Object> paramMap);
 
-    String findMaxPolicyNoByPrefix(String prefix);
+    List<Map<String, Object>> selectIncompleteApplications(Map<String, Object> paramMap);
 }

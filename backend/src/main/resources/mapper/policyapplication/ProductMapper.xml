@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="maventest.policyapplication.infrastructure.repository.mapper.ProductMapper">
+
+    <resultMap id="ProductResultMap" type="maventest.policyapplication.domain.entity.ProductEntity">
+        <id  property="code"          column="PRODUCT_CODE"/>
+        <result property="name"          column="PRODUCT_NAME"/>
+        <result property="productType"   column="PRODUCT_TYPE"/>
+        <result property="basePremium"   column="BASE_PREMIUM"/>
+        <result property="minSumInsured" column="MIN_AMOUNT"/>
+        <result property="maxSumInsured" column="MAX_AMOUNT"/>
+        <result property="minInsuredAge" column="MIN_AGE"/>
+        <result property="maxInsuredAge" column="MAX_AGE"/>
+        <result property="status"        column="STATUS"/>
+        <result property="remark"        column="REMARK"/>
+        <result property="createTime"    column="CREATE_TIME"/>
+    </resultMap>
+
+    <select id="findByCode" parameterType="java.lang.String" resultMap="ProductResultMap">
+        SELECT PRODUCT_CODE, PRODUCT_NAME, PRODUCT_TYPE, BASE_PREMIUM,
+               MIN_AMOUNT, MAX_AMOUNT, MIN_AGE, MAX_AGE,
+               STATUS, REMARK, CREATE_TIME
+        FROM tb_product
+        WHERE PRODUCT_CODE = #{productCode}
+    </select>
+
+    <select id="findAll" resultMap="ProductResultMap">
+        SELECT PRODUCT_CODE, PRODUCT_NAME, PRODUCT_TYPE, BASE_PREMIUM,
+               MIN_AMOUNT, MAX_AMOUNT, MIN_AGE, MAX_AGE,
+               STATUS, REMARK, CREATE_TIME
+        FROM tb_product
+        ORDER BY PRODUCT_CODE
+    </select>
+
+    <insert id="insert">
+        INSERT INTO tb_product (
+            PRODUCT_CODE, PRODUCT_NAME, PRODUCT_TYPE, BASE_PREMIUM,
+            MIN_AMOUNT, MAX_AMOUNT, MIN_AGE, MAX_AGE,
+            STATUS, REMARK, UPDATE_USER
+        ) VALUES (
+            #{dto.productCode}, #{dto.productName}, #{dto.productType}, #{dto.basePremium},
+            #{dto.minAmount}, #{dto.maxAmount}, #{dto.minAge}, #{dto.maxAge},
+            'ACTIVE', #{dto.remark}, #{createUser}
+        )
+    </insert>
+
+    <update id="updateByCode">
+        UPDATE tb_product
+        SET PRODUCT_NAME = #{dto.productName},
+            PRODUCT_TYPE = #{dto.productType},
+            BASE_PREMIUM = #{dto.basePremium},
+            MIN_AMOUNT   = #{dto.minAmount},
+            MAX_AMOUNT   = #{dto.maxAmount},
+            MIN_AGE      = #{dto.minAge},
+            MAX_AGE      = #{dto.maxAge},
+            STATUS       = #{dto.status},
+            REMARK       = #{dto.remark},
+            UPDATE_TIME  = CURRENT_TIMESTAMP,
+            UPDATE_USER  = #{updateUser}
+        WHERE PRODUCT_CODE = #{code}
+    </update>
+
+
+    <update id="updateStatus">
+        UPDATE tb_product
+        SET STATUS      = #{status},
+            UPDATE_TIME = CURRENT_TIMESTAMP,
+            UPDATE_USER = #{updateUser}
+        WHERE PRODUCT_CODE = #{code}
+    </update>
+
+</mapper>
