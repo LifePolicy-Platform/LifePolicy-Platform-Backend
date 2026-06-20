@@ -130,30 +130,30 @@
     </select>
 
     <select id="selectApplications" parameterType="map" resultType="map">
-        SELECT pa.application_id AS applicationId,
-               pa.applicant_id_no AS applicantIdNo,
-               pa.applicant_name AS applicantName,
-             pa.applicant_gender AS applicantGender,
-             pa.applicant_birthdate AS applicantBirthdate,
-               pa.insured_id_no AS insuredIdNo,
-               ip.insured_name AS insuredName,
-             ip.insured_gender AS insuredGender,
-             ip.insured_birthdate AS insuredBirthdate,
-             ip.contact_phone AS contactPhone,
-               pa.product_code AS productCode,
-               p.name AS productName,
+        SELECT pa.application_id      AS applicationId,
+               pa.applicant_id_no    AS applicantIdNo,
+               pa.applicant_name     AS applicantName,
+               pa.applicant_gender   AS applicantGender,
+               pa.applicant_birthdate AS applicantBirthdate,
+               pa.insured_id_no      AS insuredIdNo,
+               ip.insured_name       AS insuredName,
+               ip.insured_gender     AS insuredGender,
+               ip.insured_birthdate  AS insuredBirthdate,
+               ip.contact_phone      AS contactPhone,
+               pa.product_code       AS productCode,
+               p.PRODUCT_NAME        AS productName,
                pa.application_status AS applicationStatus,
                pa.relationship_to_insured AS relationshipToInsured,
-               pa.sum_insured AS sumInsured,
-               pa.annual_premium AS annualPremium,
-               pa.submission_time AS submissionTime,
-             pa.review_time AS reviewTime,
-             pa.reviewed_by AS reviewedBy,
-             pa.rejection_reason AS rejectionReason,
-                             pa.created_by AS createdBy
+               pa.sum_insured        AS sumInsured,
+               pa.annual_premium     AS annualPremium,
+               pa.submission_time    AS submissionTime,
+               pa.review_time        AS reviewTime,
+               pa.reviewed_by        AS reviewedBy,
+               pa.rejection_reason   AS rejectionReason,
+               pa.created_by         AS createdBy
         FROM policy_application pa
                  INNER JOIN insured_person ip ON pa.application_id = ip.application_id
-                 INNER JOIN product p ON pa.product_code = p.code
+                 INNER JOIN tb_product p ON pa.product_code = p.PRODUCT_CODE
         <where>
             <if test="applicationId != null and applicationId != ''">
                 AND pa.application_id = #{applicationId}
@@ -179,14 +179,42 @@
         </where>
         ORDER BY pa.submission_time
         <choose>
-            <when test="sortDirection == 'ASC'">
-                ASC
-            </when>
-            <otherwise>
-                DESC
-            </otherwise>
+            <when test="sortDirection == 'ASC'">ASC</when>
+            <otherwise>DESC</otherwise>
         </choose>
         LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="selectIncompleteApplications" parameterType="map" resultType="map">
+        SELECT pa.application_id      AS applicationId,
+               pa.applicant_id_no    AS applicantIdNo,
+               pa.applicant_name     AS applicantName,
+               pa.applicant_gender   AS applicantGender,
+               pa.applicant_birthdate AS applicantBirthdate,
+               pa.insured_id_no      AS insuredIdNo,
+               ip.insured_name       AS insuredName,
+               ip.insured_gender     AS insuredGender,
+               ip.insured_birthdate  AS insuredBirthdate,
+               ip.contact_phone      AS contactPhone,
+               pa.product_code       AS productCode,
+               p.PRODUCT_NAME        AS productName,
+               pa.application_status AS applicationStatus,
+               pa.relationship_to_insured AS relationshipToInsured,
+               pa.sum_insured        AS sumInsured,
+               pa.annual_premium     AS annualPremium,
+               pa.submission_time    AS submissionTime,
+               pa.review_time        AS reviewTime,
+               pa.reviewed_by        AS reviewedBy,
+               pa.rejection_reason   AS rejectionReason,
+               pa.created_by         AS createdBy
+        FROM policy_application pa
+                 INNER JOIN insured_person ip ON pa.application_id = ip.application_id
+                 INNER JOIN tb_product p ON pa.product_code = p.PRODUCT_CODE
+        WHERE pa.application_status IN
+        <foreach item="status" collection="statusList" open="(" separator="," close=")">
+            #{status}
+        </foreach>
+        ORDER BY pa.submission_time DESC
     </select>
 
 </mapper>

@@ -63,4 +63,6 @@ public interface InsuranceApplicationRepository {
             Integer pageSize,
             String sortDirection
     );
+
+    List<Map<String, Object>> findIncompleteApplications(List<String> statusList);
 }

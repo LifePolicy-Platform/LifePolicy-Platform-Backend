@@ -138,6 +138,13 @@ public class InsuranceApplicationRepositoryImpl implements InsuranceApplicationR
         return policyApplicationMapper.selectApplications(paramMap);
     }
 
+    @Override
+    public List<Map<String, Object>> findIncompleteApplications(List<String> statusList) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("statusList", statusList);
+        return policyApplicationMapper.selectIncompleteApplications(paramMap);
+    }
+
     private Map<String, Object> buildQueryParamMap(
             String applicationId,
             String applicantIdNo,
