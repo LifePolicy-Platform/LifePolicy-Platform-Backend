@@ -30,4 +30,14 @@ public class ClaimEntity {
     private String file01Path;
     private String file02Name;
     private String file02Path;
+
+    // 請確保 ClaimEntity 內有這四個欄位
+    @com.baomidou.mybatisplus.annotation.TableField(exist = false)
+    private String agentName;    // 經辦人姓名 (對應 DISPLAY_NAME)
+    @com.baomidou.mybatisplus.annotation.TableField(exist = false)
+    private String memberName;   // 客戶姓名 (對應新欄位 NAME)
+    @com.baomidou.mybatisplus.annotation.TableField(exist = false)
+    private String productCode;  // 商品代碼
+    @com.baomidou.mybatisplus.annotation.TableField(exist = false)
+    private String productName;  // 商品名稱
 }
