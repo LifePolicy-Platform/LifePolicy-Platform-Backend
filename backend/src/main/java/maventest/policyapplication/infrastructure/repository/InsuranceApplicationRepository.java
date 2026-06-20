@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import maventest.policyapplication.domain.entity.CallListEntity;
 import maventest.policyapplication.domain.entity.InsuredPersonEntity;
 import maventest.policyapplication.domain.entity.PolicyApplicationEntity;
 import maventest.policyapplication.domain.entity.ProductEntity;
@@ -23,7 +24,15 @@ public interface InsuranceApplicationRepository {
         return existsPendingApplication(applicantIdNo, insuredIdNo, productCode);
     }
 
-    void save(PolicyApplicationEntity policyApplicationEntity, InsuredPersonEntity insuredPersonEntity);
+    Optional<Long> findMemberIdByIdentityCard(String identityCard);
+
+    String findMaxPolicyNoByPrefix(String prefix);
+
+    String findMaxListNoByPrefix(String prefix);
+
+    void insertCallList(CallListEntity callListEntity);
+
+    void save(PolicyApplicationEntity policyApplicationEntity);
 
     default Optional<InsuredPersonEntity> findInsuredPersonByApplicationId(String applicationId) {
         return Optional.empty();

@@ -5,6 +5,7 @@ public enum ApiCode {
     INPUT_INVALID("INS-COM-4000", "Input validation failed"),
     QUERY_CONDITION_REQUIRED("INS-POL-4001", "At least one query condition is required"),
     PRODUCT_NOT_FOUND("INS-POL-4002", "Product does not exist"),
+    MEMBER_NOT_FOUND("INS-POL-4006", "Member does not exist for the given identity card"),
     APPLICATION_NOT_FOUND("INS-POL-4003", "Application does not exist"),
     SORT_DIRECTION_INVALID("INS-POL-4004", "Sort direction must be ASC or DESC"),
     PRODUCT_LIST_EMPTY("INS-POL-4005", "No available product configuration found"),

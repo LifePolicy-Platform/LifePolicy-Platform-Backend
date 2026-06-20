@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="maventest.policyapplication.infrastructure.repository.mapper.CustUserMapper">
+
+    <select id="findMemberIdByIdentityCard" parameterType="java.lang.String" resultType="java.lang.Long">
+        SELECT MEMBER_ID
+        FROM tb_cust_user
+        WHERE IDENTITY_CARD = #{identityCard}
+        LIMIT 1
+    </select>
+
+</mapper>

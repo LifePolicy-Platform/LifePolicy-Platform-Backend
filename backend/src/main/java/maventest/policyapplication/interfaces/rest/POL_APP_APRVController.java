@@ -35,7 +35,7 @@ public class POL_APP_APRVController {
     @PostMapping("/review")
         @Operation(
             summary = "Review life insurance policy application",
-            description = "Requires REVIEWER role. reviewedBy is derived from the current Bearer token instead of client input.",
+            description = "Requires REVIEWER role. reviewedBy prefers JWT username; falls back to REVIEWED_BY from request.",
             security = {@SecurityRequirement(name = "bearerAuth")}
         )
     public ResponseEntity<ReturnMsg<InsuranceApplicationReviewCommandRespDto>> reviewApplication(
@@ -56,6 +56,13 @@ public class POL_APP_APRVController {
 
     private String resolveActor(String fallbackActor) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication == null ? fallbackActor : authentication.getName();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return fallbackActor;
+        }
+        String name = authentication.getName();
+        if (name == null || name.isBlank() || "anonymousUser".equals(name)) {
+            return fallbackActor;
+        }
+        return name;
     }
 }

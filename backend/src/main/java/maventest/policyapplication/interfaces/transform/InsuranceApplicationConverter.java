@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 
 import maventest.policyapplication.domain.entity.InsuredPersonEntity;
 import maventest.policyapplication.domain.entity.PolicyApplicationEntity;
-import maventest.policyapplication.domain.enums.ApplicationStatus;
 import maventest.policyapplication.domain.enums.RelationshipToInsured;
 import maventest.policyapplication.domain.enums.UnderwritingRiskLevel;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationCommandReqDto;
@@ -29,32 +28,40 @@ public class InsuranceApplicationConverter {
     public PolicyApplicationEntity toPolicyApplicationEntity(
             InsuranceApplicationCommandReqDto reqDto,
             String applicationId,
+            Long memberId,
+            String listNo,
             LocalDateTime submissionTime,
-            String createdBy
+            String createdBy,
+            Long agentId
     ) {
         return PolicyApplicationEntity.builder()
-                .applicationId(applicationId)
-                .applicantIdNo(reqDto.getApplicantIdNo())
-                .applicantName(reqDto.getApplicantName())
-                .applicantGender(reqDto.getApplicantGender())
-                .applicantBirthdate(reqDto.getApplicantBirthdate())
-                .relationshipToInsured(reqDto.getRelationshipToInsured())
-                .insuredIdNo(reqDto.getInsuredIdNo())
+                .policyNo(applicationId)
+                .memberId(memberId)
+                .listNo(listNo)
                 .productCode(reqDto.getProductCode())
-                .sumInsured(reqDto.getSumInsured())
-                .annualPremium(reqDto.getAnnualPremium())
-                .applicationStatus(ApplicationStatus.PENDING)
-                .submissionTime(submissionTime)
-                .createdBy(createdBy)
+                .policyStatus("PENDING")
+                .insuredName(reqDto.getInsuredName())
+                .insuredIdentityCard(reqDto.getInsuredIdNo())
+                .insuredGender(reqDto.getInsuredGender() != null ? reqDto.getInsuredGender().name() : null)
+                .insuredBirthday(reqDto.getInsuredBirthdate())
+                .insuredAmount(reqDto.getSumInsured())
+                .policyMobile(reqDto.getContactPhone())
+                .premiumAmount(reqDto.getAnnualPremium())
+                .agentId(agentId)
+                .riskLevel(reqDto.getRiskLevel())
+                .applyTime(submissionTime)
+                .updateUser(createdBy)
                 .build();
     }
 
         public PolicyApplicationEntity toPolicyApplicationEntity(
                         InsuranceApplicationCommandReqDto reqDto,
                         String applicationId,
+                        Long memberId,
+                        String listNo,
                         LocalDateTime submissionTime
         ) {
-                return toPolicyApplicationEntity(reqDto, applicationId, submissionTime, reqDto.getCreatedBy());
+                return toPolicyApplicationEntity(reqDto, applicationId, memberId, listNo, submissionTime, reqDto.getCreatedBy(), null);
         }
 
     public InsuredPersonEntity toInsuredPersonEntity(
@@ -78,25 +85,27 @@ public class InsuranceApplicationConverter {
             LocalDate insuredBirthdate
     ) {
         BigDecimal premiumRatio = calculatePremiumRatio(
-                policyApplicationEntity.getAnnualPremium(),
-                policyApplicationEntity.getSumInsured()
+                policyApplicationEntity.getPremiumAmount(),
+                policyApplicationEntity.getInsuredAmount()
         );
-        UnderwritingRiskLevel riskLevel = evaluateRiskLevel(
-                insuredBirthdate,
-                policyApplicationEntity.getRelationshipToInsured(),
-                policyApplicationEntity.getSumInsured(),
-                policyApplicationEntity.getAnnualPremium()
-        );
+        UnderwritingRiskLevel riskLevel = policyApplicationEntity.getRiskLevel() != null
+                ? UnderwritingRiskLevel.valueOf(policyApplicationEntity.getRiskLevel())
+                : evaluateRiskLevel(
+                        insuredBirthdate,
+                        null,
+                        policyApplicationEntity.getInsuredAmount(),
+                        policyApplicationEntity.getPremiumAmount()
+                );
 
         return InsuranceApplicationCommandRespDto.builder()
-                .applicationId(policyApplicationEntity.getApplicationId())
-                .applicationStatus(policyApplicationEntity.getApplicationStatus().name())
-                .submissionTime(policyApplicationEntity.getSubmissionTime())
-                .applicantIdNo(policyApplicationEntity.getApplicantIdNo())
-                .insuredIdNo(policyApplicationEntity.getInsuredIdNo())
+                .applicationId(policyApplicationEntity.getPolicyNo())
+                .applicationStatus(policyApplicationEntity.getPolicyStatus())
+                .submissionTime(policyApplicationEntity.getApplyTime())
+                .applicantIdNo(null)
+                .insuredIdNo(policyApplicationEntity.getInsuredIdentityCard())
                 .productCode(policyApplicationEntity.getProductCode())
-                .sumInsured(policyApplicationEntity.getSumInsured())
-                .annualPremium(policyApplicationEntity.getAnnualPremium())
+                .sumInsured(policyApplicationEntity.getInsuredAmount())
+                .annualPremium(policyApplicationEntity.getPremiumAmount())
                 .premiumRatio(premiumRatio)
                 .riskLevel(riskLevel.name())
                 .build();
@@ -111,22 +120,25 @@ public class InsuranceApplicationConverter {
             InsuranceApplicationUpdateReqDto reqDto
     ) {
         return PolicyApplicationEntity.builder()
-                .applicationId(existingApplication.getApplicationId())
-                .applicantIdNo(reqDto.getApplicantIdNo())
-                .applicantName(reqDto.getApplicantName())
-                .applicantGender(reqDto.getApplicantGender())
-                .applicantBirthdate(reqDto.getApplicantBirthdate())
-                .relationshipToInsured(reqDto.getRelationshipToInsured())
-                .insuredIdNo(reqDto.getInsuredIdNo())
+                .policyNo(existingApplication.getPolicyNo())
+                .memberId(existingApplication.getMemberId())
+                .listNo(existingApplication.getListNo())
                 .productCode(reqDto.getProductCode())
-                .sumInsured(reqDto.getSumInsured())
-                .annualPremium(reqDto.getAnnualPremium())
-                .applicationStatus(existingApplication.getApplicationStatus())
-                .submissionTime(existingApplication.getSubmissionTime())
-                .reviewTime(existingApplication.getReviewTime())
-                .reviewedBy(existingApplication.getReviewedBy())
-                .rejectionReason(existingApplication.getRejectionReason())
-                .createdBy(existingApplication.getCreatedBy())
+                .policyStatus(existingApplication.getPolicyStatus())
+                .insuredName(reqDto.getInsuredName())
+                .insuredIdentityCard(reqDto.getInsuredIdNo())
+                .insuredGender(reqDto.getInsuredGender() != null ? reqDto.getInsuredGender().name() : null)
+                .insuredBirthday(reqDto.getInsuredBirthdate())
+                .insuredAmount(reqDto.getSumInsured())
+                .policyMobile(reqDto.getContactPhone())
+                .premiumAmount(reqDto.getAnnualPremium())
+                .agentId(existingApplication.getAgentId())
+                .riskLevel(existingApplication.getRiskLevel())
+                .effectDate(existingApplication.getEffectDate())
+                .expireDate(existingApplication.getExpireDate())
+                .applyTime(existingApplication.getApplyTime())
+                .createTime(existingApplication.getCreateTime())
+                .updateUser(existingApplication.getUpdateUser())
                 .build();
     }
 
@@ -151,13 +163,13 @@ public class InsuranceApplicationConverter {
             LocalDateTime updatedTime
     ) {
         return InsuranceApplicationUpdateRespDto.builder()
-                .applicationId(updatedApplication.getApplicationId())
-                .applicationStatus(updatedApplication.getApplicationStatus().name())
+                .applicationId(updatedApplication.getPolicyNo())
+                .applicationStatus(updatedApplication.getPolicyStatus())
                 .updatedTime(updatedTime)
                 .productCode(updatedApplication.getProductCode())
-                .sumInsured(updatedApplication.getSumInsured())
-                .annualPremium(updatedApplication.getAnnualPremium())
-                .premiumRatio(calculatePremiumRatio(updatedApplication.getAnnualPremium(), updatedApplication.getSumInsured()))
+                .sumInsured(updatedApplication.getInsuredAmount())
+                .annualPremium(updatedApplication.getPremiumAmount())
+                .premiumRatio(calculatePremiumRatio(updatedApplication.getPremiumAmount(), updatedApplication.getInsuredAmount()))
                 .riskLevel(evaluateRiskLevel(
                         reqDto.getInsuredBirthdate(),
                         reqDto.getRelationshipToInsured(),
@@ -174,11 +186,25 @@ public class InsuranceApplicationConverter {
             String reviewedBy
     ) {
         return PolicyApplicationEntity.builder()
-                .applicationId(existingApplication.getApplicationId())
-                .applicationStatus(reqDto.getTargetStatus())
-                .reviewTime(reviewTime)
-                .reviewedBy(reviewedBy)
-                .rejectionReason(reqDto.getTargetStatus() == ApplicationStatus.REJECTED ? reqDto.getRejectionReason() : null)
+                .policyNo(existingApplication.getPolicyNo())
+                .memberId(existingApplication.getMemberId())
+                .listNo(existingApplication.getListNo())
+                .productCode(existingApplication.getProductCode())
+                .policyStatus(reqDto.getTargetStatus() != null ? reqDto.getTargetStatus().name() : null)
+                .insuredName(existingApplication.getInsuredName())
+                .insuredIdentityCard(existingApplication.getInsuredIdentityCard())
+                .insuredGender(existingApplication.getInsuredGender())
+                .insuredBirthday(existingApplication.getInsuredBirthday())
+                .insuredAmount(existingApplication.getInsuredAmount())
+                .policyMobile(existingApplication.getPolicyMobile())
+                .premiumAmount(existingApplication.getPremiumAmount())
+                .agentId(existingApplication.getAgentId())
+                .riskLevel(existingApplication.getRiskLevel())
+                .effectDate(existingApplication.getEffectDate())
+                .expireDate(existingApplication.getExpireDate())
+                .applyTime(existingApplication.getApplyTime())
+                .createTime(existingApplication.getCreateTime())
+                .updateUser(reviewedBy)
                 .build();
     }
 
@@ -196,12 +222,12 @@ public class InsuranceApplicationConverter {
             Boolean documentsConfirmed
     ) {
         return InsuranceApplicationReviewCommandRespDto.builder()
-                .applicationId(after.getApplicationId())
-                .previousStatus(before.getApplicationStatus().name())
-                .currentStatus(after.getApplicationStatus().name())
-                .reviewedBy(after.getReviewedBy())
-                .rejectionReason(after.getRejectionReason())
-                .reviewTime(after.getReviewTime())
+                .applicationId(after.getPolicyNo())
+                .previousStatus(before.getPolicyStatus())
+                .currentStatus(after.getPolicyStatus())
+                .reviewedBy(after.getUpdateUser())
+                .rejectionReason(null)
+                .reviewTime(after.getUpdateTime())
                 .documentsConfirmed(documentsConfirmed)
                 .build();
     }
@@ -239,12 +265,14 @@ public class InsuranceApplicationConverter {
                                                 (BigDecimal) row.get("annualPremium"),
                                                 (BigDecimal) row.get("sumInsured")
                                 ))
-                                .riskLevel(evaluateRiskLevel(
-                                                toLocalDate(row.get("insuredBirthdate")),
-                                                toRelationshipToInsured(row.get("relationshipToInsured")),
-                                                (BigDecimal) row.get("sumInsured"),
-                                                (BigDecimal) row.get("annualPremium")
-                                ).name())
+                                .riskLevel(row.get("riskLevel") != null
+                                                ? asString(row.get("riskLevel"))
+                                                : evaluateRiskLevel(
+                                                        toLocalDate(row.get("insuredBirthdate")),
+                                                        toRelationshipToInsured(row.get("relationshipToInsured")),
+                                                        (BigDecimal) row.get("sumInsured"),
+                                                        (BigDecimal) row.get("annualPremium")
+                                                ).name())
                                 .build();
         }
 

@@ -20,4 +20,6 @@ public interface PolicyApplicationMapper {
     long countApplications(Map<String, Object> paramMap);
 
     List<Map<String, Object>> selectApplications(Map<String, Object> paramMap);
+
+    String findMaxPolicyNoByPrefix(String prefix);
 }

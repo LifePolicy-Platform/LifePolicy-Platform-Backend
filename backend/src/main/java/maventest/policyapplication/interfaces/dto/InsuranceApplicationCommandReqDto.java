@@ -77,6 +77,10 @@ public class InsuranceApplicationCommandReqDto {
     @NotBlank(message = "contactPhone is required")
     private String contactPhone;
 
+    @JsonProperty("RISK_LEVEL")
+    @NotBlank(message = "riskLevel is required")
+    private String riskLevel;
+
     @JsonProperty("CREATED_BY")
     private String createdBy;
 }

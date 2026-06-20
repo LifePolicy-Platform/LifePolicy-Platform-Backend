@@ -67,7 +67,7 @@ public class POL_APP_APRVCommandService {
     }
 
     private void validateReviewable(PolicyApplicationEntity existingApplication) {
-        if (existingApplication.getApplicationStatus() != ApplicationStatus.PENDING) {
+        if (!"PENDING".equals(existingApplication.getPolicyStatus())) {
             throw new BusinessRuleException(ApiCode.APPLICATION_REVIEWED.getCode(), ApiCode.APPLICATION_REVIEWED.getMessage());
         }
     }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="maventest.policyapplication.infrastructure.repository.mapper.CallListMapper">
+
+    <insert id="insertCallList"
+            parameterType="maventest.policyapplication.domain.entity.CallListEntity">
+        INSERT INTO tb_call_list (
+            LIST_NO,
+            MEMBER_ID,
+            LIST_LASTPHONE,
+            LIST_STATUS
+        ) VALUES (
+            #{listNo},
+            #{memberId},
+            #{listLastPhone},
+            #{listStatus}
+        )
+    </insert>
+
+    <select id="findMaxListNoByPrefix" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT MAX(LIST_NO)
+        FROM tb_call_list
+        WHERE LIST_NO LIKE CONCAT(#{prefix}, '%')
+    </select>
+
+</mapper>
