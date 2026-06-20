@@ -17,6 +17,8 @@ public interface PolicyApplicationMapper {
 
     int updateApplicationReview(PolicyApplicationEntity policyApplicationEntity);
 
+    String findMaxPolicyNoByPrefix(String prefix);
+
     long countApplications(Map<String, Object> paramMap);
 
     List<Map<String, Object>> selectApplications(Map<String, Object> paramMap);

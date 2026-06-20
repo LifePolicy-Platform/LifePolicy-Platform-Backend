@@ -8,6 +8,9 @@ import maventest.policyapplication.interfaces.dto.ProductUpdateReqDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
 @Mapper
 public interface ProductMapper extends BaseMapper<ProductEntity> {
 
