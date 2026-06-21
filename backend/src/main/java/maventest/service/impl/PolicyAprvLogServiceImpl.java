@@ -19,4 +19,6 @@ public class PolicyAprvLogServiceImpl implements PolicyAprvLogService {
     public List<PolicyAprvLogList> findByPolicyNo(String policyNo) {
         return policyAprvLogMapper.selectByPolicyNo(policyNo);
     }
+
+    
 }

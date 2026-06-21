@@ -9,7 +9,7 @@
         FROM tb_policy
         WHERE INSURED_IDENTITY_CARD = #{insuredIdNo}
           AND PRODUCT_CODE = #{productCode}
-          AND POLICY_STATUS = 'PENDING'
+          AND POLICY_STATUS IN ('SUBMIT', 'PENDING', 'RETURN')
           <if test="applicationId != null and applicationId != ''">
               AND POLICY_NO != #{applicationId}
           </if>
@@ -102,19 +102,20 @@
             INSURED_AMOUNT        = #{insuredAmount},
             POLICY_MOBILE         = #{policyMobile},
             PREMIUM_AMOUNT        = #{premiumAmount},
-            UPDATE_TIME           = CURRENT_TIMESTAMP
+            POLICY_STATUS         = #{policyStatus},
+            UPDATE_TIME           = CURRENT_TIMESTAMP,
+            UPDATE_USER           = #{updateUser}
         WHERE POLICY_NO = #{policyNo}
-          AND POLICY_STATUS = 'PENDING'
+          AND POLICY_STATUS = 'RETURN'
     </update>
 
-    <update id="updateApplicationReview"
-            parameterType="maventest.policyapplication.domain.entity.PolicyApplicationEntity">
+    <update id="updateApplicationReview">
         UPDATE tb_policy
-        SET POLICY_STATUS = #{policyStatus},
+        SET POLICY_STATUS = #{entity.policyStatus},
             UPDATE_TIME   = CURRENT_TIMESTAMP,
-            UPDATE_USER   = #{updateUser}
-        WHERE POLICY_NO = #{policyNo}
-          AND POLICY_STATUS = 'PENDING'
+            UPDATE_USER   = #{entity.updateUser}
+        WHERE POLICY_NO = #{entity.policyNo}
+          AND POLICY_STATUS = #{previousStatus}
     </update>
 
     <select id="countApplications" parameterType="map" resultType="long">
@@ -149,10 +150,13 @@
     <select id="selectApplications" parameterType="map" resultType="map">
         SELECT pa.POLICY_NO              AS applicationId,
                cu.IDENTITY_CARD          AS applicantIdNo,
-               CASE
-                   WHEN cu.IDENTITY_CARD = pa.INSURED_IDENTITY_CARD THEN pa.INSURED_NAME
-                   ELSE NULL
-               END                       AS applicantName,
+               COALESCE(
+                   cu.NAME,
+                   CASE
+                       WHEN cu.IDENTITY_CARD = pa.INSURED_IDENTITY_CARD THEN pa.INSURED_NAME
+                       ELSE NULL
+                   END
+               )                         AS applicantName,
                cu.GENDER                 AS applicantGender,
                cu.BIRTHDAY               AS applicantBirthdate,
                pa.INSURED_IDENTITY_CARD  AS insuredIdNo,

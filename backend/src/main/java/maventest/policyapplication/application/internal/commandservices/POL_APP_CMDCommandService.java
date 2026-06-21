@@ -18,6 +18,7 @@ import maventest.policyapplication.infrastructure.repository.InsuranceApplicatio
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationCommandReqDto;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationCommandRespDto;
 import maventest.policyapplication.interfaces.transform.InsuranceApplicationConverter;
+import maventest.service.PolicyAprvLogAppender;
 import maventest.service.impl.AppUserRepository;
 
 @Service
@@ -31,6 +32,7 @@ public class POL_APP_CMDCommandService {
     private final PolicyApplicationRuleService policyApplicationRuleService;
     private final PolicyNumberGenerator policyNumberGenerator;
     private final AppUserRepository appUserRepository;
+    private final PolicyAprvLogAppender policyAprvLogAppender;
 
     @Transactional
     public InsuranceApplicationCommandRespDto createApplication(InsuranceApplicationCommandReqDto reqDto, String createdBy) {
@@ -64,6 +66,13 @@ public class POL_APP_CMDCommandService {
                 .toPolicyApplicationEntity(reqDto, applicationId, memberId, listNo, submissionTime, createdBy, agentId);
 
         insuranceApplicationRepository.save(policyApplicationEntity);
+
+        policyAprvLogAppender.append(
+                applicationId,
+                "SUBMIT",
+                createdBy,
+                "業務送件"
+        );
 
         return insuranceApplicationConverter.toCommandRespDto(policyApplicationEntity, reqDto.getInsuredBirthdate());
     }

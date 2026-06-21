@@ -4,7 +4,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -15,9 +17,11 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private final JwtUtil jwtUtil;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, JwtTokenProvider jwtTokenProvider) {
+        this.jwtUtil = jwtUtil;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -27,15 +31,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String token = extractToken(request);
         if (StringUtils.hasText(token)) {
-            try {
-                jwtTokenProvider.validateToken(token);
-                Authentication auth = jwtTokenProvider.getAuthentication(token);
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            } catch (Exception ignored) {
-                // token 無效，不設定 authentication，由後續 filter 決定是否 401
+            Authentication authentication = SecurityContextRoleResolver.tryAuthenticateWithAuthJwt(token, jwtTokenProvider);
+            if (authentication == null) {
+                authentication = tryAuthenticateWithLegacyJwt(token);
+            }
+            if (authentication != null) {
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    private Authentication tryAuthenticateWithLegacyJwt(String token) {
+        try {
+            Claims claims = jwtUtil.parseToken(token);
+            String username = jwtUtil.getUsername(claims);
+            List<String> roles = jwtUtil.getRoles(claims);
+
+            List<SimpleGrantedAuthority> authorities = roles == null
+                    ? List.of(new SimpleGrantedAuthority("ROLE_USER"))
+                    : roles.stream()
+                    .map(role -> new SimpleGrantedAuthority(
+                            role.startsWith("ROLE_") ? role : "ROLE_" + role))
+                    .collect(Collectors.toList());
+
+            return new UsernamePasswordAuthenticationToken(username, null, authorities);
+        } catch (JwtException | IllegalArgumentException ignored) {
+            return null;
+        }
     }
 
     private String extractToken(HttpServletRequest request) {

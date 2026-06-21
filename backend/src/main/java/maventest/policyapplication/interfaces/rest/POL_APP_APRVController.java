@@ -10,6 +10,7 @@ import maventest.code.ApiCode;
 import maventest.common.EntityUtil;
 import maventest.common.ReturnMsg;
 import maventest.common.exception.ApiException;
+import maventest.common.security.SecurityContextRoleResolver;
 import maventest.policyapplication.application.internal.commandservices.POL_APP_APRVCommandService;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationReviewCommandReqDto;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationReviewCommandRespDto;
@@ -27,7 +28,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/insurance/policy-applications")
-@Tag(name = "Insurance Policy Application Review", description = "REVIEWER operations for approving or rejecting pending applications")
+@Tag(
+        name = "Insurance Policy Application Review",
+        description = "APPLICANT reviews SUBMIT stage; REVIEWER reviews PENDING stage"
+)
 public class POL_APP_APRVController {
 
     private final POL_APP_APRVCommandService polAppAprvCommandService;
@@ -35,7 +39,7 @@ public class POL_APP_APRVController {
     @PostMapping("/review")
         @Operation(
             summary = "Review life insurance policy application",
-            description = "Requires REVIEWER role. reviewedBy prefers JWT username; falls back to REVIEWED_BY from request.",
+            description = "APPLICANT may review SUBMIT applications. REVIEWER may review PENDING applications.",
             security = {@SecurityRequirement(name = "bearerAuth")}
         )
     public ResponseEntity<ReturnMsg<InsuranceApplicationReviewCommandRespDto>> reviewApplication(
@@ -45,7 +49,9 @@ public class POL_APP_APRVController {
         try {
             EntityUtil.validDto(bindingResult);
             String actor = resolveActor(reqDto.getReviewedBy());
-            InsuranceApplicationReviewCommandRespDto responseDto = polAppAprvCommandService.reviewApplication(reqDto, actor);
+            String roleCode = SecurityContextRoleResolver.resolveRoleCode();
+            InsuranceApplicationReviewCommandRespDto responseDto =
+                    polAppAprvCommandService.reviewApplication(reqDto, actor, roleCode);
             return ResponseEntity.ok(ReturnMsg.success(responseDto));
         } catch (ApiException apiException) {
             throw apiException;

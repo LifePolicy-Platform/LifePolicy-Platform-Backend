@@ -48,7 +48,7 @@ public interface InsuranceApplicationRepository {
 
     Optional<PolicyApplicationEntity> findApplicationById(String applicationId);
 
-    int updateApplicationReview(PolicyApplicationEntity policyApplicationEntity);
+    int updateApplicationReview(PolicyApplicationEntity policyApplicationEntity, String previousStatus);
 
         long countApplications(
             String applicationId,
