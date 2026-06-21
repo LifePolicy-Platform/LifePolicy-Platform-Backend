@@ -1,49 +1,41 @@
 package maventest.common;
 
+import com.fasterxml.jackson.annotation.JsonProperty; // 🌟 記得加這行 import
 import lombok.Data;
 
-/**
- * 統一 API 回應格式。
- * <p>
- * 所有 Controller 一律回傳這個結構，前端只要看 code 就知道結果。
- * </p>
- *
- * @param <T> 實際資料型別
- */
 @Data
 public class ApiResponse<T> {
 
-    /** 結果代碼：0 = 成功，其餘為錯誤 */
-    private int code;
-    /** 訊息（給人看的） */
+    @JsonProperty("CODE")
+    private String code; 
+
+    @JsonProperty("MESSAGE")
     private String message;
-    /** 實際資料 */
+
+    @JsonProperty("DATA")
     private T data;
+
+    @JsonProperty("SUCCESS")
+    private boolean success;
 
     public ApiResponse() {
     }
 
-    public ApiResponse(int code, String message, T data) {
+    public ApiResponse(String code, String message, boolean success, T data) {
         this.code = code;
         this.message = message;
+        this.success = success;
         this.data = data;
     }
 
-    /**
-     * 包裝成功回應的便捷方法。
-     */
+    /** 包裝成功回應 */
     public static <T> ApiResponse<T> ok(T data) {
-        // 直接使用 ResultCode.SUCCESS 的代碼與訊息
-        return new ApiResponse<>(ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), data);
+        // 假設 ResultCode 拿出來的是字串，若原本是 int，可以用 String.valueOf() 轉一下
+        return new ApiResponse<>("200", "SUCCESS", true, data);
     }
 
-    /**
-     * 包裝失敗回應的便捷方法。
-     *
-     * @param code    錯誤代碼
-     * @param message 錯誤訊息
-     */
+    /** 包裝失敗回應 */
     public static <T> ApiResponse<T> fail(int code, String message) {
-        return new ApiResponse<>(code, message, null);
+        return new ApiResponse<>(String.valueOf(code), message, false, null);
     }
 }
