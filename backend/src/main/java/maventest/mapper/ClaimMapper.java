@@ -35,4 +35,6 @@ public interface ClaimMapper {
 
     // 查詢某個案件的歷史審核歷程
     List<ClaimAprvLogEntity> selectAprvLogHistory(@Param("claimNo") String claimNo);
+
+    List<Map<String, Object>> selectAllAgentOptions();
 }

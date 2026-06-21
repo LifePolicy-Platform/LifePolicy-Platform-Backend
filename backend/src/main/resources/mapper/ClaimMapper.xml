@@ -4,25 +4,34 @@
 
     <select id="selectClaimList" resultType="maventest.entity.ClaimEntity">
         SELECT 
-            CLAIM_NO as claimNo, MEMBER_ID as memberId, POLICY_NO as policyNo, 
-            CLAIM_AMOUNT as claimAmount, APPROVE_AMOUNT as approveAmount, CLAIM_STATUS as claimStatus, 
-            AGENT_ID as agentId, APPLY_TIME as applyTime, EXPIRY_TIME as expiryTime, 
-            SETTLE_TIME as settleTime, REMARK as remark, UPDATE_USER as updateUser,
-            FILE_01_NAME as file01Name, FILE_01_PATH as file01Path, 
-            FILE_02_NAME as file02Name, FILE_02_PATH as file02Path
-        FROM tb_claim
-        <where>
+            c.CLAIM_NO as claimNo, 
+            c.MEMBER_ID as memberId, 
+            m.NAME as memberName,                c.POLICY_NO as policyNo, 
+            c.CLAIM_AMOUNT as claimAmount, 
+            c.APPROVE_AMOUNT as approveAmount, 
+            c.CLAIM_STATUS as claimStatus, 
+            c.AGENT_ID as agentId, 
+            c.APPLY_TIME as applyTime,           c.EXPIRY_TIME as expiryTime, 
+            c.SETTLE_TIME as settleTime, 
+            c.REMARK as remark, 
+            c.UPDATE_USER as updateUser,
+            c.FILE_01_NAME as file01Name, 
+            c.FILE_01_PATH as file01Path, 
+            c.FILE_02_NAME as file02Name, 
+            c.FILE_02_PATH as file02Path
+        FROM tb_claim c
+        LEFT JOIN tb_cust_user m ON c.MEMBER_ID = m.MEMBER_ID  <where>
             <if test="status != null and status != ''">
-                AND CLAIM_STATUS = #{status}
+                AND c.CLAIM_STATUS = #{status}
             </if>
             <if test="policyNo != null and policyNo != ''">
-                AND POLICY_NO LIKE CONCAT('%', #{policyNo}, '%')
+                AND c.POLICY_NO LIKE CONCAT('%', #{policyNo}, '%')
             </if>
             <if test="applyDate != null and applyDate != ''">
-                AND DATE(APPLY_TIME) = #{applyDate}
+                AND DATE(c.APPLY_TIME) = #{applyDate}
             </if>
         </where>
-        ORDER BY APPLY_TIME DESC
+        ORDER BY c.APPLY_TIME DESC
     </select>
 
     <select id="selectByClaimNo" resultType="maventest.entity.ClaimEntity">
@@ -71,6 +80,12 @@
         ORDER BY p.POLICY_NO ASC
     </select>
 
+    <select id="selectAllAgentOptions" resultType="map">
+        SELECT USER_ID as agentId, DISPLAY_NAME as agentName
+        FROM tb_user
+        ORDER BY USER_ID ASC
+    </select>
+
     <insert id="insertClaim">
         INSERT INTO tb_claim (
             CLAIM_NO, MEMBER_ID, POLICY_NO, CLAIM_AMOUNT, APPROVE_AMOUNT, 
@@ -100,28 +115,44 @@
         WHERE CLAIM_NO = #{claimNo}
     </update>
 
-    <delete id="deleteClaim">
+    <update id="deleteClaim">
         DELETE FROM tb_claim WHERE CLAIM_NO = #{claimNo} AND CLAIM_STATUS = 'PENDING'
-    </delete>
+    </update>
 
     <select id="selectClaimAuditList" resultType="maventest.entity.ClaimEntity">
-        SELECT * FROM tb_claim
-        <where>
-            <choose>
-                <when test="status != null and status != ''">
-                    AND CLAIM_STATUS = #{status}
-                </when>
-                <otherwise>
-                    AND CLAIM_STATUS IN ('SUBMIT', 'PENDING', 'RETURN')
-                </otherwise>
-            </choose>
-            
-            <if test="policyNo != null and policyNo != ''">
-                AND POLICY_NO LIKE CONCAT('%', #{policyNo}, '%')
-            </if>
-        </where>
-        ORDER BY APPLY_TIME DESC
-    </select>
+    SELECT 
+        c.CLAIM_NO as claimNo, 
+        c.POLICY_NO as policyNo, 
+        c.CLAIM_AMOUNT as claimAmount, 
+        c.APPROVE_AMOUNT as approveAmount,  
+        c.CLAIM_STATUS as claimStatus,
+        c.MEMBER_ID as memberId,
+        c.REMARK as remark,
+        c.FILE_01_NAME as file01Name,
+        c.FILE_01_PATH as file01Path,
+        c.FILE_02_NAME as file02Name,
+        c.FILE_02_PATH as file02Path,
+        m.NAME as memberName,
+        prod.PRODUCT_NAME as productName
+    FROM tb_claim c
+    LEFT JOIN tb_cust_user m ON c.MEMBER_ID = m.MEMBER_ID
+    LEFT JOIN tb_policy p ON c.POLICY_NO = p.POLICY_NO
+    LEFT JOIN tb_product prod ON p.PRODUCT_CODE = prod.PRODUCT_CODE
+    <where>
+        <choose>
+            <when test="status != null and status != ''">
+                AND c.CLAIM_STATUS = #{status}
+            </when>
+            <otherwise>
+                AND c.CLAIM_STATUS IN ('SUBMIT', 'PENDING', 'RETURN')
+            </otherwise>
+        </choose>
+        <if test="policyNo != null and policyNo != ''">
+            AND c.POLICY_NO LIKE CONCAT('%', #{policyNo}, '%')
+        </if>
+    </where>
+    ORDER BY c.APPLY_TIME DESC
+</select>
 
     <insert id="insertAprvLog">
         INSERT INTO tb_claim_aprv_log (
