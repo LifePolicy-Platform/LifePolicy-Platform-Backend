@@ -186,35 +186,36 @@
     </select>
 
     <select id="selectIncompleteApplications" parameterType="map" resultType="map">
-        SELECT pa.application_id      AS applicationId,
-               pa.applicant_id_no    AS applicantIdNo,
-               pa.applicant_name     AS applicantName,
-               pa.applicant_gender   AS applicantGender,
-               pa.applicant_birthdate AS applicantBirthdate,
-               pa.insured_id_no      AS insuredIdNo,
-               ip.insured_name       AS insuredName,
-               ip.insured_gender     AS insuredGender,
-               ip.insured_birthdate  AS insuredBirthdate,
-               ip.contact_phone      AS contactPhone,
-               pa.product_code       AS productCode,
-               p.PRODUCT_NAME        AS productName,
-               pa.application_status AS applicationStatus,
-               pa.relationship_to_insured AS relationshipToInsured,
-               pa.sum_insured        AS sumInsured,
-               pa.annual_premium     AS annualPremium,
-               pa.submission_time    AS submissionTime,
-               pa.review_time        AS reviewTime,
-               pa.reviewed_by        AS reviewedBy,
-               pa.rejection_reason   AS rejectionReason,
-               pa.created_by         AS createdBy
-        FROM policy_application pa
-                 INNER JOIN insured_person ip ON pa.application_id = ip.application_id
-                 INNER JOIN tb_product p ON pa.product_code = p.PRODUCT_CODE
-        WHERE pa.application_status IN
+        SELECT pa.POLICY_NO             AS applicationId,
+               cu.IDENTITY_CARD         AS applicantIdNo,
+               cu.USERNAME              AS applicantName,
+               cu.GENDER                AS applicantGender,
+               cu.BIRTHDAY              AS applicantBirthdate,
+               pa.INSURED_IDENTITY_CARD AS insuredIdNo,
+               pa.INSURED_NAME          AS insuredName,
+               pa.INSURED_GENDER        AS insuredGender,
+               pa.INSURED_BIRTHDAY      AS insuredBirthdate,
+               NULL                     AS contactPhone,
+               pa.PRODUCT_CODE          AS productCode,
+               p.PRODUCT_NAME           AS productName,
+               pa.POLICY_STATUS         AS applicationStatus,
+               NULL                     AS relationshipToInsured,
+               pa.INSURED_AMOUNT        AS sumInsured,
+               pa.PREMIUM_AMOUNT        AS annualPremium,
+               pa.RISK_LEVEL            AS riskLevel,
+               pa.APPLY_TIME            AS submissionTime,
+               pa.UPDATE_TIME           AS reviewTime,
+               pa.UPDATE_USER           AS reviewedBy,
+               NULL                     AS rejectionReason,
+               pa.UPDATE_USER           AS createdBy
+        FROM tb_policy pa
+                 LEFT JOIN tb_product p  ON pa.PRODUCT_CODE = p.PRODUCT_CODE
+                 LEFT JOIN tb_cust_user cu ON pa.MEMBER_ID = cu.MEMBER_ID
+        WHERE pa.POLICY_STATUS IN
         <foreach item="status" collection="statusList" open="(" separator="," close=")">
             #{status}
         </foreach>
-        ORDER BY pa.submission_time DESC
+        ORDER BY pa.APPLY_TIME DESC
     </select>
 
 </mapper>
