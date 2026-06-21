@@ -199,7 +199,7 @@ public class DashboardQueryServiceImpl implements DashboardQueryService {
         Trend trend = calculateTrend(thisYearPremium, lastYearPremium);
         return DashboardYearlyPerformanceDto.builder()
                 .amount(thisYearPremium)
-                .subtitle("今年 EFFECT_DATE 核准保費合計")
+                .subtitle("今年核准保費合計")
                 .trend(trend.direction())
                 .trendLabel(trend.label())
                 .build();
