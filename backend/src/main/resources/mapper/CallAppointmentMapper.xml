@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="maventest.mapper.CallAppointmentMapper">
+
+    <select id="selectAppointmentContextByPolicyNo"
+            resultType="maventest.dto.PolicyAppointmentContextDto">
+        SELECT pa.POLICY_NO      AS policyNo,
+               pa.LIST_NO        AS listNo,
+               pa.MEMBER_ID      AS memberId,
+               cu.NAME           AS custName,
+               cl.LIST_LASTPHONE AS listLastPhone,
+               cl.LIST_STATUS    AS listStatus,
+               (SELECT a.SNO
+                FROM tb_call_appointment a
+                WHERE a.LIST_NO = cl.LIST_NO
+                  AND a.RECALL_RESULT = 0
+                ORDER BY a.RECALL_TIME DESC
+                LIMIT 1)         AS pendingAppointmentSno,
+               (SELECT a.UPDATE_USER
+                FROM tb_call_appointment a
+                WHERE a.LIST_NO = cl.LIST_NO
+                  AND a.RECALL_RESULT = 0
+                ORDER BY a.RECALL_TIME DESC
+                LIMIT 1)         AS pendingAppointmentUser
+        FROM tb_policy pa
+                 JOIN tb_call_list cl ON pa.LIST_NO = cl.LIST_NO
+                 JOIN tb_cust_user cu ON pa.MEMBER_ID = cu.MEMBER_ID
+        WHERE pa.POLICY_NO = #{policyNo}
+        LIMIT 1
+    </select>
+
+    <select id="selectByListNo" resultType="maventest.dto.CallAppointmentItemDto">
+        SELECT a.SNO            AS sno,
+               a.REC_NO         AS recNo,
+               a.LIST_NO        AS listNo,
+               a.CAMP_CODE      AS projectCode,
+               p.CAMP_NAME      AS projectName,
+               a.RECALL_TIME    AS recallTime,
+               a.REC_TIME       AS recTime,
+               a.RECALL_RESULT  AS recallResult
+        FROM tb_call_appointment a
+                 LEFT JOIN tb_camp_mst p ON a.CAMP_CODE = p.CAMP_CODE
+        WHERE a.LIST_NO = #{listNo}
+        ORDER BY a.RECALL_TIME DESC
+    </select>
+
+    <select id="selectPendingByListNo" resultType="maventest.entity.CallAppointmentEntity">
+        SELECT SNO           AS sno,
+               REC_NO        AS recNo,
+               LIST_NO       AS listNo,
+               CAMP_CODE     AS campCode,
+               RECALL_TIME   AS recallTime,
+               REC_TIME      AS recTime,
+               RECALL_RESULT AS recallResult,
+               CREATE_TIME   AS createTime,
+               UPDATE_TIME   AS updateTime,
+               UPDATE_USER   AS updateUser
+        FROM tb_call_appointment
+        WHERE LIST_NO = #{listNo}
+          AND RECALL_RESULT = 0
+        ORDER BY RECALL_TIME DESC
+        LIMIT 1
+    </select>
+
+    <select id="findMaxRecNoByPrefix" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT MAX(REC_NO)
+        FROM tb_call_appointment
+        WHERE REC_NO LIKE CONCAT(#{prefix}, '%')
+    </select>
+
+    <insert id="insertCallAppointment"
+            parameterType="maventest.entity.CallAppointmentEntity"
+            useGeneratedKeys="true"
+            keyProperty="sno">
+        INSERT INTO tb_call_appointment (
+            REC_NO,
+            LIST_NO,
+            CAMP_CODE,
+            RECALL_TIME,
+            CREATE_TIME,
+            UPDATE_USER
+        ) VALUES (
+            #{recNo},
+            #{listNo},
+            #{campCode},
+            #{recallTime},
+            #{createTime},
+            #{updateUser}
+        )
+    </insert>
+
+    <update id="confirmAppointmentResult">
+        UPDATE tb_call_appointment
+        SET RECALL_RESULT = #{recallResult},
+            REC_TIME      = #{recTime},
+            UPDATE_TIME   = #{recTime},
+            UPDATE_USER   = #{updateUser}
+        WHERE SNO = #{sno}
+          AND RECALL_RESULT = 0
+    </update>
+
+</mapper>

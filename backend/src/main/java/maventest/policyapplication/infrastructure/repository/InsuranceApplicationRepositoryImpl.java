@@ -92,8 +92,8 @@ public class InsuranceApplicationRepositoryImpl implements InsuranceApplicationR
     }
 
     @Override
-    public int updateApplicationReview(PolicyApplicationEntity policyApplicationEntity) {
-        return policyApplicationMapper.updateApplicationReview(policyApplicationEntity);
+    public int updateApplicationReview(PolicyApplicationEntity policyApplicationEntity, String previousStatus) {
+        return policyApplicationMapper.updateApplicationReview(policyApplicationEntity, previousStatus);
     }
 
     @Override

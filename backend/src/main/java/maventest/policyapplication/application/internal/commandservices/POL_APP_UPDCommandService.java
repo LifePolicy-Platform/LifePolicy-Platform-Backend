@@ -17,6 +17,7 @@ import maventest.policyapplication.infrastructure.repository.InsuranceApplicatio
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationUpdateReqDto;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationUpdateRespDto;
 import maventest.policyapplication.interfaces.transform.InsuranceApplicationConverter;
+import maventest.service.PolicyAprvLogAppender;
 
 @Service
 @RequiredArgsConstructor
@@ -25,9 +26,14 @@ public class POL_APP_UPDCommandService {
     private final InsuranceApplicationRepository insuranceApplicationRepository;
     private final InsuranceApplicationConverter insuranceApplicationConverter;
     private final PolicyApplicationRuleService policyApplicationRuleService;
+    private final PolicyAprvLogAppender policyAprvLogAppender;
 
     @Transactional
-    public InsuranceApplicationUpdateRespDto updateApplication(String applicationId, InsuranceApplicationUpdateReqDto reqDto) {
+    public InsuranceApplicationUpdateRespDto updateApplication(
+            String applicationId,
+            InsuranceApplicationUpdateReqDto reqDto,
+            String updatedBy
+    ) {
         PolicyApplicationEntity existingApplication = insuranceApplicationRepository.findApplicationById(applicationId)
                 .orElseThrow(() -> new ErrorInputException(ApiCode.APPLICATION_NOT_FOUND.getCode(), ApiCode.APPLICATION_NOT_FOUND.getMessage()));
 
@@ -52,18 +58,33 @@ public class POL_APP_UPDCommandService {
         }
 
         LocalDateTime updatedTime = LocalDateTime.now();
-        PolicyApplicationEntity updatedApplication = insuranceApplicationConverter.toUpdatedPolicyApplicationEntity(existingApplication, reqDto);
+        PolicyApplicationEntity updatedApplication = insuranceApplicationConverter.toUpdatedPolicyApplicationEntity(
+                existingApplication,
+                reqDto,
+                updatedBy
+        );
 
         int applicationRows = insuranceApplicationRepository.updateApplication(updatedApplication);
         if (applicationRows == 0) {
             throw new BusinessRuleException(ApiCode.APPLICATION_UPDATE_NOT_ALLOWED.getCode(), ApiCode.APPLICATION_UPDATE_NOT_ALLOWED.getMessage());
         }
 
+        policyAprvLogAppender.append(
+                updatedApplication.getPolicyNo(),
+                "SUBMIT",
+                updatedBy,
+                "補件後重新送審"
+        );
+
         return insuranceApplicationConverter.toUpdateRespDto(updatedApplication, reqDto, updatedTime);
     }
 
+    public InsuranceApplicationUpdateRespDto updateApplication(String applicationId, InsuranceApplicationUpdateReqDto reqDto) {
+        return updateApplication(applicationId, reqDto, null);
+    }
+
     private void validateUpdatable(PolicyApplicationEntity existingApplication) {
-        if (!"PENDING".equals(existingApplication.getPolicyStatus())) {
+        if (!"RETURN".equals(existingApplication.getPolicyStatus())) {
             throw new BusinessRuleException(ApiCode.APPLICATION_UPDATE_NOT_ALLOWED.getCode(), ApiCode.APPLICATION_UPDATE_NOT_ALLOWED.getMessage());
         }
     }

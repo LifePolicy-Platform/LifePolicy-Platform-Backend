@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,12 @@ import lombok.RequiredArgsConstructor;
 import maventest.dto.AptBatchUpdateRequest;
 import maventest.dto.AptBatchUpdateResponse;
 import maventest.dto.AptUpdateItem;
+import maventest.dto.CallAppointmentConfirmRequest;
+import maventest.dto.CallAppointmentConfirmResponse;
+import maventest.dto.CallAppointmentCreateRequest;
+import maventest.dto.CallAppointmentCreateResponse;
 import maventest.service.AptRecordSingleService;
+import maventest.service.CallAppointmentCommandService;
 import maventest.service.CustomerCommandService;
 
 @Service
@@ -21,6 +27,7 @@ import maventest.service.CustomerCommandService;
 public class CustomerCommandServiceImpl implements CustomerCommandService {
 
     private final AptRecordSingleService singleService;
+    private final CallAppointmentCommandService callAppointmentCommandService;
 
     @Override
     public List<AptBatchUpdateResponse> updateAptRecords(AptBatchUpdateRequest request) {
@@ -49,7 +56,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
 
         
         
-       String updateUser = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+       String updateUser = resolveUpdateUser();
 
         // ===  for 迴圈，逐筆處理 → 驗證（無交易）→ 更新（REQUIRES_NEW） ===
         List<AptBatchUpdateResponse> results = new ArrayList<>();
@@ -76,6 +83,28 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
             results.add(resp);
         }
         return results;
+    }
+
+    @Override
+    public CallAppointmentCreateResponse createAppointment(CallAppointmentCreateRequest request) {
+        return callAppointmentCommandService.createAppointment(request, resolveUpdateUser());
+    }
+
+    @Override
+    public CallAppointmentConfirmResponse confirmAppointmentResult(CallAppointmentConfirmRequest request) {
+        return callAppointmentCommandService.confirmAppointmentResult(request, resolveUpdateUser());
+    }
+
+    private String resolveUpdateUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "system";
+        }
+        String name = authentication.getName();
+        if (name == null || name.isBlank() || "anonymousUser".equals(name)) {
+            return "system";
+        }
+        return name;
     }
 
     /** 今日 + N 個工作天（排除週六、週日） */

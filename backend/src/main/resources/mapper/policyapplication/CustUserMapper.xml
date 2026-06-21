@@ -11,4 +11,11 @@
         LIMIT 1
     </select>
 
+    <select id="findNameByMemberId" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT NAME
+        FROM tb_cust_user
+        WHERE MEMBER_ID = #{memberId}
+        LIMIT 1
+    </select>
+
 </mapper>

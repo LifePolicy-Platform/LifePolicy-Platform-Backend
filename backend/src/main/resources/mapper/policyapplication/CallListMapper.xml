@@ -25,4 +25,11 @@
         WHERE LIST_NO LIKE CONCAT(#{prefix}, '%')
     </select>
 
+    <update id="updateListStatus">
+        UPDATE tb_call_list
+        SET LIST_STATUS = #{listStatus},
+            UPDATE_TIME = CURRENT_TIMESTAMP
+        WHERE LIST_NO = #{listNo}
+    </update>
+
 </mapper>

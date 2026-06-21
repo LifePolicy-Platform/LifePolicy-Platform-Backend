@@ -39,7 +39,7 @@ public class InsuranceApplicationConverter {
                 .memberId(memberId)
                 .listNo(listNo)
                 .productCode(reqDto.getProductCode())
-                .policyStatus("PENDING")
+                .policyStatus("SUBMIT")
                 .insuredName(reqDto.getInsuredName())
                 .insuredIdentityCard(reqDto.getInsuredIdNo())
                 .insuredGender(reqDto.getInsuredGender() != null ? reqDto.getInsuredGender().name() : null)
@@ -117,14 +117,18 @@ public class InsuranceApplicationConverter {
 
     public PolicyApplicationEntity toUpdatedPolicyApplicationEntity(
             PolicyApplicationEntity existingApplication,
-            InsuranceApplicationUpdateReqDto reqDto
+            InsuranceApplicationUpdateReqDto reqDto,
+            String updatedBy
     ) {
+        String nextStatus = "RETURN".equals(existingApplication.getPolicyStatus())
+                ? "SUBMIT"
+                : existingApplication.getPolicyStatus();
         return PolicyApplicationEntity.builder()
                 .policyNo(existingApplication.getPolicyNo())
                 .memberId(existingApplication.getMemberId())
                 .listNo(existingApplication.getListNo())
                 .productCode(reqDto.getProductCode())
-                .policyStatus(existingApplication.getPolicyStatus())
+                .policyStatus(nextStatus)
                 .insuredName(reqDto.getInsuredName())
                 .insuredIdentityCard(reqDto.getInsuredIdNo())
                 .insuredGender(reqDto.getInsuredGender() != null ? reqDto.getInsuredGender().name() : null)
@@ -138,7 +142,7 @@ public class InsuranceApplicationConverter {
                 .expireDate(existingApplication.getExpireDate())
                 .applyTime(existingApplication.getApplyTime())
                 .createTime(existingApplication.getCreateTime())
-                .updateUser(existingApplication.getUpdateUser())
+                .updateUser(updatedBy)
                 .build();
     }
 
@@ -219,16 +223,16 @@ public class InsuranceApplicationConverter {
     public InsuranceApplicationReviewCommandRespDto toReviewCommandRespDto(
             PolicyApplicationEntity before,
             PolicyApplicationEntity after,
-            Boolean documentsConfirmed
+            InsuranceApplicationReviewCommandReqDto reqDto
     ) {
         return InsuranceApplicationReviewCommandRespDto.builder()
                 .applicationId(after.getPolicyNo())
                 .previousStatus(before.getPolicyStatus())
                 .currentStatus(after.getPolicyStatus())
                 .reviewedBy(after.getUpdateUser())
-                .rejectionReason(null)
+                .rejectionReason(reqDto.getRejectionReason())
                 .reviewTime(after.getUpdateTime())
-                .documentsConfirmed(documentsConfirmed)
+                .documentsConfirmed(reqDto.getDocumentsConfirmed())
                 .build();
     }
 

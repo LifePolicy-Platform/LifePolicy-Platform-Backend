@@ -6,4 +6,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface CustUserMapper {
 
     Long findMemberIdByIdentityCard(String identityCard);
+
+    String findNameByMemberId(Long memberId);
 }
