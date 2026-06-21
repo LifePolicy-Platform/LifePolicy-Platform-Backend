@@ -5,19 +5,28 @@ import maventest.mapper.ClaimMapper;
 import maventest.common.ApiResponse; // 確定匯入你們的 ApiResponse
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin/claim")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*") 
+@CrossOrigin(origins = "*")
 public class ClaimAdminController {
 
     private final ClaimMapper claimMapper;
+    @Value("${app.upload-dir}")
+    private String uploadDir;
 
     // 1. 查詢理賠申請清單
     @GetMapping("/list")
@@ -26,7 +35,7 @@ public class ClaimAdminController {
             @RequestParam(required = false) String policyNo,
             @RequestParam(required = false) String applyDate) {
         List<ClaimEntity> list = claimMapper.selectClaimList(status, policyNo, applyDate);
-        
+
         // ⭕ 使用標準的 ok()
         return ResponseEntity.ok(ApiResponse.ok(list));
     }
@@ -47,8 +56,8 @@ public class ClaimAdminController {
     public ResponseEntity<?> createClaim(@RequestBody ClaimEntity claim) {
         String newClaimNo = "CLM" + System.currentTimeMillis() / 1000;
         claim.setClaimNo(newClaimNo);
-        claim.setClaimStatus("PENDING"); 
-        
+        claim.setClaimStatus("SUBMIT");
+
         int rows = claimMapper.insertClaim(claim);
         if (rows > 0) {
             return ResponseEntity.ok(ApiResponse.ok(Map.of("claimNo", newClaimNo)));
@@ -81,7 +90,7 @@ public class ClaimAdminController {
             // ⭕ 改用 fail(code, message)
             return ResponseEntity.badRequest().body(ApiResponse.fail(400, "只有 PENDING 狀態的案件允許刪除"));
         }
-        
+
         claimMapper.deleteClaim(claimNo);
         return ResponseEntity.ok(ApiResponse.ok("案件已成功刪除"));
     }
@@ -100,5 +109,40 @@ public class ClaimAdminController {
         // 直接叫 mapper 去查出所有保單號碼、名稱以及所屬客戶 ID
         List<Map<String, Object>> policies = claimMapper.selectAllPolicyOptions();
         return ResponseEntity.ok(ApiResponse.ok(policies));
+    }
+
+    // 🌟 補上 3：提供前端「經辦人員下拉選單」的資料來源
+    @GetMapping("/agent-options")
+    public ResponseEntity<?> getAgentOptions() {
+        List<Map<String, Object>> agents = claimMapper.selectAllAgentOptions();
+        return ResponseEntity.ok(ApiResponse.ok(agents));
+    }
+
+   @PostMapping("/upload")
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return ResponseEntity.badRequest().body(ApiResponse.fail(400, "請選擇要上傳的檔案"));
+        }
+        try {
+            File dir = new File(uploadDir, "claim");
+            if (!dir.exists()) dir.mkdirs();
+
+            String originalName = file.getOriginalFilename();
+            if (originalName == null || originalName.isBlank()) {
+                originalName = "file_" + System.currentTimeMillis();
+            }
+            String savedName = UUID.randomUUID() + "_" + originalName;
+            File dest = new File(dir, savedName);
+            file.transferTo(dest);
+
+            Map<String, String> result = new HashMap<>();
+            result.put("fileName", originalName);
+            result.put("filePath", "/uploads/claim/" + savedName);
+
+            return ResponseEntity.ok(ApiResponse.ok(result));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(ApiResponse.fail(500, "檔案上傳失敗: " + e.getMessage()));
+        }
     }
 }
