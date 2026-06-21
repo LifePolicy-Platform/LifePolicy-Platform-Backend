@@ -26,6 +26,11 @@ public enum ApiCode {
     TOKEN_INVALID("INS-AUTH-4012", "Access token is invalid or expired"),
     ACCESS_DENIED("INS-AUTH-4030", "You do not have permission to perform this action"),
     USER_DISABLED("INS-AUTH-4031", "User account is disabled"),
+    PRODUCT_CODE_DUPLICATE("INS-PROD-4039", "Product code already exists"),
+    PRODUCT_AMOUNT_RANGE_INVALID("INS-PROD-4040", "Min amount must be less than or equal to max amount"),
+    PRODUCT_AGE_RANGE_INVALID("INS-PROD-4041", "Min age must be less than or equal to max age"),
+    PRODUCT_STATUS_INVALID("INS-PROD-4042", "Product status must be ACTIVE or INACTIVE"),
+    PRODUCT_TYPE_INVALID("INS-PROD-4043", "Invalid product type"),
     SYSTEM_ERROR("INS-SYS-5000", "System error"),
     USERNAME_ALREADY_EXISTS("INS-SYS-6000", "User is already eisits");
 

@@ -22,9 +22,11 @@ public interface PolicyApplicationMapper {
             @Param("previousStatus") String previousStatus
     );
 
+    String findMaxPolicyNoByPrefix(String prefix);
+
     long countApplications(Map<String, Object> paramMap);
 
     List<Map<String, Object>> selectApplications(Map<String, Object> paramMap);
 
-    String findMaxPolicyNoByPrefix(String prefix);
+    List<Map<String, Object>> selectIncompleteApplications(Map<String, Object> paramMap);
 }
