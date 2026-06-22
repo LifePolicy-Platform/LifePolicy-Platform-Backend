@@ -18,11 +18,12 @@
         <result property="createTime"   column="CREATE_TIME"/>
         <result property="updateTime"   column="UPDATE_TIME"/>
         <result property="updateUser"   column="UPDATE_USER"/>
+        <result property="productTerm"  column="PRODUCT_TERM"/>
     </resultMap>
 
     <select id="findByCode" parameterType="java.lang.String" resultMap="ProductResultMap">
         SELECT PRODUCT_CODE, PRODUCT_NAME, PRODUCT_TYPE, BASE_PREMIUM,
-               MIN_AMOUNT, MAX_AMOUNT, MIN_AGE, MAX_AGE,
+               MIN_AMOUNT, MAX_AMOUNT, MIN_AGE, MAX_AGE, PRODUCT_TERM,
                STATUS, REMARK, CREATE_TIME, UPDATE_TIME, UPDATE_USER
         FROM tb_product
         WHERE PRODUCT_CODE = #{productCode}
@@ -30,7 +31,7 @@
 
     <select id="findAll" resultMap="ProductResultMap">
         SELECT PRODUCT_CODE, PRODUCT_NAME, PRODUCT_TYPE, BASE_PREMIUM,
-               MIN_AMOUNT, MAX_AMOUNT, MIN_AGE, MAX_AGE,
+               MIN_AMOUNT, MAX_AMOUNT, MIN_AGE, MAX_AGE, PRODUCT_TERM,
                STATUS, REMARK, CREATE_TIME, UPDATE_TIME, UPDATE_USER
         FROM tb_product
         ORDER BY PRODUCT_CODE

@@ -2,6 +2,7 @@ package maventest.policyapplication.application.internal.commandservices;
 
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
@@ -13,8 +14,10 @@ import maventest.code.ApiCode;
 import maventest.common.exception.ApiException;
 import maventest.common.exception.BusinessRuleException;
 import maventest.common.exception.ErrorInputException;
+import maventest.policyapplication.application.internal.PolicyApplicationRuleService;
 import maventest.policyapplication.application.internal.PolicyApplicationStatusTransition;
 import maventest.policyapplication.domain.entity.PolicyApplicationEntity;
+import maventest.policyapplication.domain.entity.ProductEntity;
 import maventest.policyapplication.domain.enums.ApplicationStatus;
 import maventest.policyapplication.infrastructure.repository.InsuranceApplicationRepository;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationReviewCommandReqDto;
@@ -28,6 +31,7 @@ public class POL_APP_APRVCommandService {
 
     private final InsuranceApplicationRepository insuranceApplicationRepository;
     private final InsuranceApplicationConverter insuranceApplicationConverter;
+    private final PolicyApplicationRuleService policyApplicationRuleService;
     private final PolicyAprvLogAppender policyAprvLogAppender;
 
     @Transactional
@@ -53,6 +57,10 @@ public class POL_APP_APRVCommandService {
                 reviewTime,
                 reviewedBy
         );
+
+        if (isSupervisorApproval(currentStatus, reqDto.getTargetStatus())) {
+            reviewTarget = applyApprovedPolicyDates(reviewTarget, reviewTime);
+        }
 
         int updatedRows = insuranceApplicationRepository.updateApplicationReview(reviewTarget, currentStatus);
         if (updatedRows == 0) {
@@ -116,5 +124,32 @@ public class POL_APP_APRVCommandService {
             case REJECTED -> rejectionReason;
             default -> null;
         };
+    }
+
+    private boolean isSupervisorApproval(String currentStatus, ApplicationStatus targetStatus) {
+        return ApplicationStatus.PENDING.name().equals(currentStatus)
+                && ApplicationStatus.APPROVED.equals(targetStatus);
+    }
+
+    private PolicyApplicationEntity applyApprovedPolicyDates(
+            PolicyApplicationEntity reviewTarget,
+            LocalDateTime reviewTime
+    ) {
+        ProductEntity product = insuranceApplicationRepository.findProductByCode(reviewTarget.getProductCode())
+                .orElseThrow(() -> new ErrorInputException(
+                        ApiCode.PRODUCT_NOT_FOUND.getCode(),
+                        ApiCode.PRODUCT_NOT_FOUND.getMessage()
+                ));
+
+        LocalDate effectDate = policyApplicationRuleService.calculateApprovedEffectDate(reviewTime.toLocalDate());
+        LocalDate expireDate = policyApplicationRuleService.calculateApprovedExpireDate(
+                effectDate,
+                product.getProductTerm()
+        );
+
+        return reviewTarget.toBuilder()
+                .effectDate(effectDate)
+                .expireDate(expireDate)
+                .build();
     }
 }
