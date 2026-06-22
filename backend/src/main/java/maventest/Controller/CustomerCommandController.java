@@ -21,6 +21,8 @@ import maventest.dto.CallAppointmentConfirmRequest;
 import maventest.dto.CallAppointmentConfirmResponse;
 import maventest.dto.CallAppointmentCreateRequest;
 import maventest.dto.CallAppointmentCreateResponse;
+import maventest.dto.UserDetailUpdateRequest;
+import maventest.dto.UserDetailUpdateResponse;
 import maventest.service.CustomerCommandService;
 
 
@@ -57,4 +59,12 @@ public class CustomerCommandController {
         CallAppointmentConfirmResponse result = customerCommandService.confirmAppointmentResult(request);
         return ResponseEntity.ok(ApiResponse.ok(result));
     }
+
+    // @Operation(summary = "更新個人資料", description = "更新客戶個人資料，包含姓名、聯絡電話、電子郵件等")
+    // @PostMapping("/updatePersonalInfo")
+    // public ResponseEntity<ApiResponse<UserDetailUpdateResponse>> updatePersonalInfo(
+    //         @Valid @RequestBody UserDetailUpdateRequest request) {
+    //     UserDetailUpdateResponse result = customerCommandService.updatePersonalInfo(request);
+    //     return ResponseEntity.ok(ApiResponse.ok(result));
+    // }
 }
