@@ -114,6 +114,12 @@
         SET POLICY_STATUS = #{entity.policyStatus},
             UPDATE_TIME   = CURRENT_TIMESTAMP,
             UPDATE_USER   = #{entity.updateUser}
+            <if test="entity.effectDate != null">
+            , EFFECT_DATE = #{entity.effectDate}
+            </if>
+            <if test="entity.expireDate != null">
+            , EXPIRE_DATE = #{entity.expireDate}
+            </if>
         WHERE POLICY_NO = #{entity.policyNo}
           AND POLICY_STATUS = #{previousStatus}
     </update>
@@ -163,6 +169,7 @@
                pa.INSURED_NAME           AS insuredName,
                pa.INSURED_GENDER         AS insuredGender,
                pa.INSURED_BIRTHDAY       AS insuredBirthdate,
+               pa.POLICY_MOBILE          AS contactPhone,
                pa.PRODUCT_CODE           AS productCode,
                p.PRODUCT_NAME            AS productName,
                pa.POLICY_STATUS          AS applicationStatus,

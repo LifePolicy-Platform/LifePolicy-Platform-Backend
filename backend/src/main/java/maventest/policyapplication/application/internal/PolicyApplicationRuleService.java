@@ -68,6 +68,19 @@ public class PolicyApplicationRuleService {
         return annualPremium.divide(sumInsured, 4, RoundingMode.HALF_UP);
     }
 
+    /** 主管核准後：生效日 = 審核日 D+1 */
+    public LocalDate calculateApprovedEffectDate(LocalDate approvalDate) {
+        return approvalDate.plusDays(1);
+    }
+
+    /** 主管核准後：到期日 = 生效日 + 商品年期（年） */
+    public LocalDate calculateApprovedExpireDate(LocalDate effectDate, Integer productTermYears) {
+        if (productTermYears == null || productTermYears <= 0) {
+            throw new BusinessRuleException(ApiCode.INPUT_INVALID.getCode(), "productTerm must be greater than zero");
+        }
+        return effectDate.plusYears(productTermYears);
+    }
+
     public UnderwritingRiskLevel evaluateRiskLevel(
             LocalDate insuredBirthdate,
             RelationshipToInsured relationshipToInsured,
