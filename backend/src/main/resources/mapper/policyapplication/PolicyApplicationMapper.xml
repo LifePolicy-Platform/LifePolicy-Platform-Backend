@@ -212,7 +212,7 @@
     <select id="selectIncompleteApplications" parameterType="map" resultType="map">
         SELECT pa.POLICY_NO             AS applicationId,
                cu.IDENTITY_CARD         AS applicantIdNo,
-               cu.USERNAME              AS applicantName,
+               cu.NAME                  AS applicantName,
                cu.GENDER                AS applicantGender,
                cu.BIRTHDAY              AS applicantBirthdate,
                pa.INSURED_IDENTITY_CARD AS insuredIdNo,

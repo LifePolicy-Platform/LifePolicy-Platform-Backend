@@ -104,13 +104,13 @@ public class POL_APP_QRYQueryService {
         }
         Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
         if (hasRole(authorities, "ROLE_ADMIN")) {
-            return List.of("APPLIED", "RETURNED", "PENDING");
+            return List.of("SUBMIT", "RETURN", "PENDING");
         }
-        if (hasRole(authorities, "ROLE_MANAGER")) {
+        if (hasRole(authorities, "ROLE_MANAGER") || hasRole(authorities, "ROLE_REVIEWER")) {
             return List.of("PENDING");
         }
-        if (hasRole(authorities, "ROLE_AGENT")) {
-            return List.of("APPLIED", "RETURNED");
+        if (hasRole(authorities, "ROLE_AGENT") || hasRole(authorities, "ROLE_APPLICANT")) {
+            return List.of("SUBMIT", "RETURN");
         }
         throw new ApiException(ApiCode.ACCESS_DENIED.getCode(),
                 ApiCode.ACCESS_DENIED.getMessage(), HttpStatus.FORBIDDEN);
