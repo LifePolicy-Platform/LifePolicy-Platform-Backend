@@ -1,7 +1,6 @@
 package maventest.policyapplication.application.internal.commandservices;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,21 +10,29 @@ import maventest.code.ApiCode;
 import maventest.common.exception.BusinessRuleException;
 import maventest.common.exception.ErrorInputException;
 import maventest.policyapplication.application.internal.PolicyApplicationRuleService;
-import maventest.policyapplication.domain.entity.InsuredPersonEntity;
+import maventest.policyapplication.application.internal.PolicyNumberGenerator;
+import maventest.policyapplication.domain.entity.CallListEntity;
 import maventest.policyapplication.domain.entity.PolicyApplicationEntity;
 import maventest.policyapplication.domain.entity.ProductEntity;
 import maventest.policyapplication.infrastructure.repository.InsuranceApplicationRepository;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationCommandReqDto;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationCommandRespDto;
 import maventest.policyapplication.interfaces.transform.InsuranceApplicationConverter;
+import maventest.service.PolicyAprvLogAppender;
+import maventest.service.impl.AppUserRepository;
 
 @Service
 @RequiredArgsConstructor
 public class POL_APP_CMDCommandService {
 
+    private static final int CALL_LIST_STATUS_PENDING = 0;
+
     private final InsuranceApplicationRepository insuranceApplicationRepository;
     private final InsuranceApplicationConverter insuranceApplicationConverter;
     private final PolicyApplicationRuleService policyApplicationRuleService;
+    private final PolicyNumberGenerator policyNumberGenerator;
+    private final AppUserRepository appUserRepository;
+    private final PolicyAprvLogAppender policyAprvLogAppender;
 
     @Transactional
     public InsuranceApplicationCommandRespDto createApplication(InsuranceApplicationCommandReqDto reqDto, String createdBy) {
@@ -38,17 +45,34 @@ public class POL_APP_CMDCommandService {
         policyApplicationRuleService.validateSumInsured(reqDto.getSumInsured(), productEntity);
         policyApplicationRuleService.validateAnnualPremium(reqDto.getAnnualPremium(), reqDto.getSumInsured());
         validateDuplicate(reqDto.getApplicantIdNo(), reqDto.getInsuredIdNo(), reqDto.getProductCode());
+        
+        Long memberId = insuranceApplicationRepository.findMemberIdByIdentityCard(reqDto.getApplicantIdNo())
+                .orElseThrow(() -> new ErrorInputException(ApiCode.MEMBER_NOT_FOUND.getCode(), ApiCode.MEMBER_NOT_FOUND.getMessage()));
 
-        String applicationId = generateIdentifier("APP");
-        String insuredId = generateIdentifier("INS");
         LocalDateTime submissionTime = LocalDateTime.now();
+        String listNo = policyNumberGenerator.generateListNo(submissionTime);
+        insuranceApplicationRepository.insertCallList(CallListEntity.builder()
+                .listNo(listNo)
+                .memberId(memberId)
+                .listLastPhone(reqDto.getContactPhone())
+                .listStatus(CALL_LIST_STATUS_PENDING)
+                .build());
+
+        String applicationId = policyNumberGenerator.generatePolicyNo(submissionTime);
+
+        Long agentId = resolveAgentId(createdBy);
 
         PolicyApplicationEntity policyApplicationEntity = insuranceApplicationConverter
-            .toPolicyApplicationEntity(reqDto, applicationId, submissionTime, createdBy);
-        InsuredPersonEntity insuredPersonEntity = insuranceApplicationConverter
-                .toInsuredPersonEntity(reqDto, applicationId, insuredId);
+                .toPolicyApplicationEntity(reqDto, applicationId, memberId, listNo, submissionTime, createdBy, agentId);
 
-        insuranceApplicationRepository.save(policyApplicationEntity, insuredPersonEntity);
+        insuranceApplicationRepository.save(policyApplicationEntity);
+
+        policyAprvLogAppender.append(
+                applicationId,
+                "SUBMIT",
+                createdBy,
+                "業務送件"
+        );
 
         return insuranceApplicationConverter.toCommandRespDto(policyApplicationEntity, reqDto.getInsuredBirthdate());
     }
@@ -63,7 +87,12 @@ public class POL_APP_CMDCommandService {
         }
     }
 
-    private String generateIdentifier(String prefix) {
-        return prefix + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase();
+    private Long resolveAgentId(String username) {
+        if (username == null || username.isBlank()) {
+            return null;
+        }
+        return appUserRepository.findByUsername(username)
+                .map(user -> user.getId())
+                .orElse(null);
     }
 }

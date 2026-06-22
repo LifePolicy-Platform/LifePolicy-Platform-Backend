@@ -6,178 +6,202 @@
 
     <select id="countPendingApplication" parameterType="map" resultType="int">
         SELECT COUNT(1)
-        FROM policy_application
-        WHERE applicant_id_no = #{applicantIdNo}
-          AND insured_id_no = #{insuredIdNo}
-          AND product_code = #{productCode}
-          AND application_status = 'PENDING'
+        FROM tb_policy
+        WHERE INSURED_IDENTITY_CARD = #{insuredIdNo}
+          AND PRODUCT_CODE = #{productCode}
+          AND POLICY_STATUS IN ('SUBMIT', 'PENDING', 'RETURN')
           <if test="applicationId != null and applicationId != ''">
-              AND application_id != #{applicationId}
+              AND POLICY_NO != #{applicationId}
           </if>
     </select>
 
+    <select id="findMaxPolicyNoByPrefix" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT MAX(POLICY_NO)
+        FROM tb_policy
+        WHERE POLICY_NO LIKE CONCAT(#{prefix}, '%')
+    </select>
+
     <insert id="insertPolicyApplication"
-            parameterType="maventest.policyapplication.domain.entity.PolicyApplicationEntity">
-        INSERT INTO policy_application (
-            application_id,
-            applicant_id_no,
-            applicant_name,
-            applicant_gender,
-            applicant_birthdate,
-            relationship_to_insured,
-            insured_id_no,
-            product_code,
-            sum_insured,
-            annual_premium,
-            application_status,
-            submission_time,
-            created_by
-        ) VALUES (
-            #{applicationId},
-            #{applicantIdNo},
-            #{applicantName},
-            #{applicantGender},
-            #{applicantBirthdate},
-            #{relationshipToInsured},
-            #{insuredIdNo},
-            #{productCode},
-            #{sumInsured},
-            #{annualPremium},
-            #{applicationStatus},
-            #{submissionTime},
-            #{createdBy}
-        )
+        parameterType="maventest.policyapplication.domain.entity.PolicyApplicationEntity">
+    INSERT INTO tb_policy (
+        POLICY_NO,
+        MEMBER_ID,
+        LIST_NO,
+        PRODUCT_CODE,
+        POLICY_STATUS,
+        INSURED_NAME,
+        INSURED_IDENTITY_CARD,
+        INSURED_GENDER,
+        INSURED_BIRTHDAY,
+        INSURED_AMOUNT,
+        POLICY_MOBILE,
+        PREMIUM_AMOUNT,
+        AGENT_ID,
+        RISK_LEVEL,
+        EFFECT_DATE,
+        EXPIRE_DATE,
+        APPLY_TIME,
+        UPDATE_USER
+    ) VALUES (
+        #{policyNo},
+        #{memberId},
+        #{listNo},
+        #{productCode},
+        #{policyStatus},
+        #{insuredName},
+        #{insuredIdentityCard},
+        #{insuredGender},
+        #{insuredBirthday},
+        #{insuredAmount},
+        #{policyMobile},
+        #{premiumAmount},
+        #{agentId},
+        #{riskLevel},
+        #{effectDate},
+        #{expireDate},
+        #{applyTime},
+        #{updateUser}
+    )
     </insert>
 
     <select id="selectByApplicationId"
             parameterType="java.lang.String"
             resultType="maventest.policyapplication.domain.entity.PolicyApplicationEntity">
-        SELECT application_id,
-               applicant_id_no,
-               applicant_name,
-               applicant_gender,
-               applicant_birthdate,
-               relationship_to_insured,
-               insured_id_no,
-               product_code,
-               sum_insured,
-               annual_premium,
-               application_status,
-               submission_time,
-               review_time,
-               reviewed_by,
-               rejection_reason,
-               created_by
-        FROM policy_application
-        WHERE application_id = #{applicationId}
+        SELECT POLICY_NO          AS policyNo,
+               MEMBER_ID          AS memberId,
+               LIST_NO            AS listNo,
+               PRODUCT_CODE       AS productCode,
+               POLICY_STATUS      AS policyStatus,
+               INSURED_NAME       AS insuredName,
+               INSURED_IDENTITY_CARD AS insuredIdentityCard,
+               INSURED_GENDER     AS insuredGender,
+               INSURED_BIRTHDAY   AS insuredBirthday,
+               INSURED_AMOUNT     AS insuredAmount,
+               POLICY_MOBILE      AS policyMobile,
+               PREMIUM_AMOUNT     AS premiumAmount,
+               AGENT_ID           AS agentId,
+               RISK_LEVEL         AS riskLevel,
+               EFFECT_DATE        AS effectDate,
+               EXPIRE_DATE        AS expireDate,
+               APPLY_TIME         AS applyTime,
+               CREATE_TIME        AS createTime,
+               UPDATE_TIME        AS updateTime,
+               UPDATE_USER        AS updateUser
+        FROM tb_policy
+        WHERE POLICY_NO = #{applicationId}
     </select>
 
     <update id="updatePendingApplication"
             parameterType="maventest.policyapplication.domain.entity.PolicyApplicationEntity">
-        UPDATE policy_application
-        SET applicant_id_no = #{applicantIdNo},
-            applicant_name = #{applicantName},
-            applicant_gender = #{applicantGender},
-            applicant_birthdate = #{applicantBirthdate},
-            relationship_to_insured = #{relationshipToInsured},
-            insured_id_no = #{insuredIdNo},
-            product_code = #{productCode},
-            sum_insured = #{sumInsured},
-            annual_premium = #{annualPremium},
-            updated_at = CURRENT_TIMESTAMP
-        WHERE application_id = #{applicationId}
-          AND application_status = 'PENDING'
+        UPDATE tb_policy
+        SET PRODUCT_CODE          = #{productCode},
+            INSURED_NAME          = #{insuredName},
+            INSURED_IDENTITY_CARD = #{insuredIdentityCard},
+            INSURED_GENDER        = #{insuredGender},
+            INSURED_BIRTHDAY      = #{insuredBirthday},
+            INSURED_AMOUNT        = #{insuredAmount},
+            POLICY_MOBILE         = #{policyMobile},
+            PREMIUM_AMOUNT        = #{premiumAmount},
+            POLICY_STATUS         = #{policyStatus},
+            UPDATE_TIME           = CURRENT_TIMESTAMP,
+            UPDATE_USER           = #{updateUser}
+        WHERE POLICY_NO = #{policyNo}
+          AND POLICY_STATUS = 'RETURN'
     </update>
 
-    <update id="updateApplicationReview"
-            parameterType="maventest.policyapplication.domain.entity.PolicyApplicationEntity">
-        UPDATE policy_application
-        SET application_status = #{applicationStatus},
-            review_time = #{reviewTime},
-            reviewed_by = #{reviewedBy},
-            rejection_reason = #{rejectionReason},
-            updated_at = CURRENT_TIMESTAMP
-        WHERE application_id = #{applicationId}
-          AND application_status = 'PENDING'
+    <update id="updateApplicationReview">
+        UPDATE tb_policy
+        SET POLICY_STATUS = #{entity.policyStatus},
+            UPDATE_TIME   = CURRENT_TIMESTAMP,
+            UPDATE_USER   = #{entity.updateUser}
+        WHERE POLICY_NO = #{entity.policyNo}
+          AND POLICY_STATUS = #{previousStatus}
     </update>
 
     <select id="countApplications" parameterType="map" resultType="long">
         SELECT COUNT(1)
-        FROM policy_application pa
+        FROM tb_policy pa
+                 LEFT JOIN tb_cust_user cu ON pa.MEMBER_ID = cu.MEMBER_ID
         <where>
             <if test="applicationId != null and applicationId != ''">
-                AND pa.application_id = #{applicationId}
+                AND pa.POLICY_NO = #{applicationId}
             </if>
             <if test="applicantIdNo != null and applicantIdNo != ''">
-                AND pa.applicant_id_no = #{applicantIdNo}
+                AND cu.IDENTITY_CARD = #{applicantIdNo}
             </if>
             <if test="insuredIdNo != null and insuredIdNo != ''">
-                AND pa.insured_id_no = #{insuredIdNo}
+                AND pa.INSURED_IDENTITY_CARD = #{insuredIdNo}
             </if>
             <if test="applicationStatus != null and applicationStatus != ''">
-                AND pa.application_status = #{applicationStatus}
+                AND pa.POLICY_STATUS = #{applicationStatus}
             </if>
             <if test="productCode != null and productCode != ''">
-                AND pa.product_code = #{productCode}
+                AND pa.PRODUCT_CODE = #{productCode}
             </if>
             <if test="submissionStartTime != null">
-                AND pa.submission_time <![CDATA[ >= ]]> #{submissionStartTime}
+                AND pa.APPLY_TIME <![CDATA[ >= ]]> #{submissionStartTime}
             </if>
             <if test="submissionEndTime != null">
-                AND pa.submission_time <![CDATA[ <= ]]> #{submissionEndTime}
+                AND pa.APPLY_TIME <![CDATA[ <= ]]> #{submissionEndTime}
             </if>
         </where>
     </select>
 
     <select id="selectApplications" parameterType="map" resultType="map">
-        SELECT pa.application_id      AS applicationId,
-               pa.applicant_id_no    AS applicantIdNo,
-               pa.applicant_name     AS applicantName,
-               pa.applicant_gender   AS applicantGender,
-               pa.applicant_birthdate AS applicantBirthdate,
-               pa.insured_id_no      AS insuredIdNo,
-               ip.insured_name       AS insuredName,
-               ip.insured_gender     AS insuredGender,
-               ip.insured_birthdate  AS insuredBirthdate,
-               ip.contact_phone      AS contactPhone,
-               pa.product_code       AS productCode,
-               p.PRODUCT_NAME        AS productName,
-               pa.application_status AS applicationStatus,
-               pa.relationship_to_insured AS relationshipToInsured,
-               pa.sum_insured        AS sumInsured,
-               pa.annual_premium     AS annualPremium,
-               pa.submission_time    AS submissionTime,
-               pa.review_time        AS reviewTime,
-               pa.reviewed_by        AS reviewedBy,
-               pa.rejection_reason   AS rejectionReason,
-               pa.created_by         AS createdBy
-        FROM policy_application pa
-                 INNER JOIN insured_person ip ON pa.application_id = ip.application_id
-                 INNER JOIN tb_product p ON pa.product_code = p.PRODUCT_CODE
+        SELECT pa.POLICY_NO              AS applicationId,
+               cu.IDENTITY_CARD          AS applicantIdNo,
+               COALESCE(
+                   cu.NAME,
+                   CASE
+                       WHEN cu.IDENTITY_CARD = pa.INSURED_IDENTITY_CARD THEN pa.INSURED_NAME
+                       ELSE NULL
+                   END
+               )                         AS applicantName,
+               cu.GENDER                 AS applicantGender,
+               cu.BIRTHDAY               AS applicantBirthdate,
+               pa.INSURED_IDENTITY_CARD  AS insuredIdNo,
+               pa.INSURED_NAME           AS insuredName,
+               pa.INSURED_GENDER         AS insuredGender,
+               pa.INSURED_BIRTHDAY       AS insuredBirthdate,
+               pa.PRODUCT_CODE           AS productCode,
+               p.PRODUCT_NAME            AS productName,
+               pa.POLICY_STATUS          AS applicationStatus,
+               NULL                      AS relationshipToInsured,
+               pa.INSURED_AMOUNT         AS sumInsured,
+               pa.PREMIUM_AMOUNT         AS annualPremium,
+               pa.RISK_LEVEL             AS riskLevel,
+               pa.APPLY_TIME             AS submissionTime,
+               pa.UPDATE_TIME            AS reviewTime,
+               pa.UPDATE_USER            AS reviewedBy,
+               NULL                      AS rejectionReason,
+               pa.UPDATE_USER            AS createdBy
+        FROM tb_policy pa
+                 LEFT JOIN tb_product p ON pa.PRODUCT_CODE = p.PRODUCT_CODE
+                 LEFT JOIN tb_cust_user cu ON pa.MEMBER_ID = cu.MEMBER_ID
         <where>
             <if test="applicationId != null and applicationId != ''">
-                AND pa.application_id = #{applicationId}
+                AND pa.POLICY_NO = #{applicationId}
             </if>
             <if test="applicantIdNo != null and applicantIdNo != ''">
-                AND pa.applicant_id_no = #{applicantIdNo}
+                AND cu.IDENTITY_CARD = #{applicantIdNo}
             </if>
             <if test="insuredIdNo != null and insuredIdNo != ''">
-                AND pa.insured_id_no = #{insuredIdNo}
+                AND pa.INSURED_IDENTITY_CARD = #{insuredIdNo}
             </if>
             <if test="applicationStatus != null and applicationStatus != ''">
-                AND pa.application_status = #{applicationStatus}
+                AND pa.POLICY_STATUS = #{applicationStatus}
             </if>
             <if test="productCode != null and productCode != ''">
-                AND pa.product_code = #{productCode}
+                AND pa.PRODUCT_CODE = #{productCode}
             </if>
             <if test="submissionStartTime != null">
-                AND pa.submission_time <![CDATA[ >= ]]> #{submissionStartTime}
+                AND pa.APPLY_TIME <![CDATA[ >= ]]> #{submissionStartTime}
             </if>
             <if test="submissionEndTime != null">
-                AND pa.submission_time <![CDATA[ <= ]]> #{submissionEndTime}
+                AND pa.APPLY_TIME <![CDATA[ <= ]]> #{submissionEndTime}
             </if>
         </where>
-        ORDER BY pa.submission_time
+        ORDER BY pa.APPLY_TIME
         <choose>
             <when test="sortDirection == 'ASC'">ASC</when>
             <otherwise>DESC</otherwise>

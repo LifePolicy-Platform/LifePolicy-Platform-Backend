@@ -1,10 +1,11 @@
 package maventest.policyapplication.infrastructure.repository;
 
 import lombok.RequiredArgsConstructor;
-import maventest.policyapplication.domain.entity.InsuredPersonEntity;
+import maventest.policyapplication.domain.entity.CallListEntity;
 import maventest.policyapplication.domain.entity.PolicyApplicationEntity;
 import maventest.policyapplication.domain.entity.ProductEntity;
-import maventest.policyapplication.infrastructure.repository.mapper.InsuredPersonMapper;
+import maventest.policyapplication.infrastructure.repository.mapper.CallListMapper;
+import maventest.policyapplication.infrastructure.repository.mapper.CustUserMapper;
 import maventest.policyapplication.infrastructure.repository.mapper.PolicyApplicationMapper;
 import maventest.policyapplication.infrastructure.repository.mapper.ProductMapper;
 
@@ -22,7 +23,8 @@ public class InsuranceApplicationRepositoryImpl implements InsuranceApplicationR
 
     private final ProductMapper productMapper;
     private final PolicyApplicationMapper policyApplicationMapper;
-    private final InsuredPersonMapper insuredPersonMapper;
+    private final CustUserMapper custUserMapper;
+    private final CallListMapper callListMapper;
 
     @Override
     public Optional<ProductEntity> findProductByCode(String productCode) {
@@ -55,14 +57,28 @@ public class InsuranceApplicationRepositoryImpl implements InsuranceApplicationR
     }
 
     @Override
-    public void save(PolicyApplicationEntity policyApplicationEntity, InsuredPersonEntity insuredPersonEntity) {
-        policyApplicationMapper.insertPolicyApplication(policyApplicationEntity);
-        insuredPersonMapper.insertInsuredPerson(insuredPersonEntity);
+    public Optional<Long> findMemberIdByIdentityCard(String identityCard) {
+        return Optional.ofNullable(custUserMapper.findMemberIdByIdentityCard(identityCard));
     }
 
     @Override
-    public Optional<InsuredPersonEntity> findInsuredPersonByApplicationId(String applicationId) {
-        return Optional.ofNullable(insuredPersonMapper.selectByApplicationId(applicationId));
+    public String findMaxPolicyNoByPrefix(String prefix) {
+        return policyApplicationMapper.findMaxPolicyNoByPrefix(prefix);
+    }
+
+    @Override
+    public String findMaxListNoByPrefix(String prefix) {
+        return callListMapper.findMaxListNoByPrefix(prefix);
+    }
+
+    @Override
+    public void insertCallList(CallListEntity callListEntity) {
+        callListMapper.insertCallList(callListEntity);
+    }
+
+    @Override
+    public void save(PolicyApplicationEntity policyApplicationEntity) {
+        policyApplicationMapper.insertPolicyApplication(policyApplicationEntity);
     }
 
     @Override
@@ -71,18 +87,13 @@ public class InsuranceApplicationRepositoryImpl implements InsuranceApplicationR
     }
 
     @Override
-    public int updateInsuredPerson(InsuredPersonEntity insuredPersonEntity) {
-        return insuredPersonMapper.updateByApplicationId(insuredPersonEntity);
-    }
-
-    @Override
     public Optional<PolicyApplicationEntity> findApplicationById(String applicationId) {
         return Optional.ofNullable(policyApplicationMapper.selectByApplicationId(applicationId));
     }
 
     @Override
-    public int updateApplicationReview(PolicyApplicationEntity policyApplicationEntity) {
-        return policyApplicationMapper.updateApplicationReview(policyApplicationEntity);
+    public int updateApplicationReview(PolicyApplicationEntity policyApplicationEntity, String previousStatus) {
+        return policyApplicationMapper.updateApplicationReview(policyApplicationEntity, previousStatus);
     }
 
     @Override

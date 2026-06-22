@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="maventest.mapper.PolicyAprvLogMapper">
+
+    <select id="selectByPolicyNo" resultType="maventest.dto.PolicyAprvLogList">
+        SELECT
+            log.POLICY_LOG_NO AS policyLogNo,
+            log.POLICY_NO     AS policyNo,
+            log.APRV_STATUS   AS aprvStatus,
+            COALESCE(u.DISPLAY_NAME, log.APRV_USER) AS displayName,
+            log.APRV_TIME     AS aprvTime,
+            log.APRV_REMARK   AS aprvRemark
+        FROM tb_policy_aprv_log log
+        LEFT JOIN tb_user u ON log.APRV_USER = u.USERNAME
+        WHERE log.POLICY_NO = #{policyNo}
+        ORDER BY log.APRV_TIME ASC
+    </select>
+
+</mapper>
