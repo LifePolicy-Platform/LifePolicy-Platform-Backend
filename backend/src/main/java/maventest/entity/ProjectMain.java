@@ -9,10 +9,10 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
- * 專案主檔（tbcb001）
+ * 專案主檔（tb_camp_mst）
  */
 @Data
-@TableName("tbcb001")
+@TableName("tb_camp_mst")
 public class ProjectMain {
 
     /** 行銷活動代碼（PK） */

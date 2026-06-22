@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="maventest.mapper.DashboardMapper">
+
+    <select id="sumApprovedPremiumByEffectDateRange" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(pa.PREMIUM_AMOUNT), 0)
+        FROM tb_policy pa
+        WHERE pa.POLICY_STATUS = 'APPROVED'
+          AND pa.EFFECT_DATE <![CDATA[ >= ]]> #{startDate}
+          AND pa.EFFECT_DATE <![CDATA[ <= ]]> #{endDate}
+    </select>
+
+    <select id="countApprovedByEffectDateRange" resultType="long">
+        SELECT COUNT(1)
+        FROM tb_policy pa
+        WHERE pa.POLICY_STATUS = 'APPROVED'
+          AND pa.EFFECT_DATE <![CDATA[ >= ]]> #{startDate}
+          AND pa.EFFECT_DATE <![CDATA[ <= ]]> #{endDate}
+    </select>
+
+    <!-- 當月申請保單：依 APPLY_TIME 每日統計 -->
+    <select id="countMonthApplicationsByDay" resultType="maventest.dto.DashboardDailyCountRow">
+        SELECT DAY(pa.APPLY_TIME) AS dayOfMonth,
+               COUNT(1)           AS count
+        FROM tb_policy pa
+        WHERE pa.APPLY_TIME <![CDATA[ >= ]]> #{monthStart}
+          AND pa.APPLY_TIME <![CDATA[ <= ]]> #{monthEnd}
+        GROUP BY DAY(pa.APPLY_TIME)
+        ORDER BY dayOfMonth
+    </select>
+
+    <!-- 保單狀態分布：依 APPLY_TIME 落在區間內 -->
+    <select id="countByPolicyStatusInApplyTimeRange" resultType="maventest.dto.DashboardStatusCountRow">
+        SELECT pa.POLICY_STATUS AS policyStatus,
+               COUNT(1)         AS count
+        FROM tb_policy pa
+        WHERE pa.APPLY_TIME <![CDATA[ >= ]]> #{rangeStart}
+          AND pa.APPLY_TIME <![CDATA[ <= ]]> #{rangeEnd}
+        GROUP BY pa.POLICY_STATUS
+        ORDER BY count DESC
+    </select>
+
+    <!-- 商品種類銷售量：依 tb_product.PRODUCT_TYPE（ACCIDENT / HEALTH / LIFE） -->
+    <select id="countApprovedSalesByProductType" resultType="maventest.dto.DashboardProductTypeCountRow">
+        SELECT UPPER(TRIM(p.PRODUCT_TYPE)) AS productType,
+               COUNT(1)                    AS count
+        FROM tb_policy pa
+                 INNER JOIN tb_product p ON pa.PRODUCT_CODE = p.PRODUCT_CODE
+        WHERE pa.POLICY_STATUS = 'APPROVED'
+          AND pa.EFFECT_DATE <![CDATA[ >= ]]> #{startDate}
+          AND pa.EFFECT_DATE <![CDATA[ <= ]]> #{endDate}
+          AND UPPER(TRIM(p.PRODUCT_TYPE)) IN ('ACCIDENT', 'HEALTH', 'LIFE')
+        GROUP BY UPPER(TRIM(p.PRODUCT_TYPE))
+        ORDER BY productType
+    </select>
+
+    <select id="countPendingPolicies" resultType="long">
+        SELECT COUNT(1)
+        FROM tb_policy pa
+        WHERE pa.POLICY_STATUS IN ('SUBMIT', 'PENDING')
+    </select>
+
+    <select id="countPoliciesEnteredReviewToday" resultType="long">
+        SELECT COUNT(DISTINCT pa.POLICY_NO)
+        FROM tb_policy pa
+        WHERE pa.POLICY_STATUS IN ('SUBMIT', 'PENDING')
+          AND (
+            pa.APPLY_TIME <![CDATA[ >= ]]> #{todayStart}
+            OR EXISTS (
+                SELECT 1
+                FROM tb_policy_aprv_log log
+                WHERE log.POLICY_NO = pa.POLICY_NO
+                  AND log.APRV_STATUS IN ('SUBMIT', 'PENDING')
+                  AND log.APRV_TIME <![CDATA[ >= ]]> #{todayStart}
+            )
+          )
+    </select>
+
+    <select id="countPoliciesExitedReviewToday" resultType="long">
+        SELECT COUNT(DISTINCT log.POLICY_NO)
+        FROM tb_policy_aprv_log log
+        WHERE log.APRV_STATUS IN ('APPROVED', 'REJECTED', 'RETURN')
+          AND log.APRV_TIME <![CDATA[ >= ]]> #{todayStart}
+    </select>
+
+    <select id="countClaimsByApplyDate" resultType="long">
+        SELECT COUNT(1)
+        FROM tb_claim c
+        WHERE c.APPLY_TIME <![CDATA[ >= ]]> #{dayStart}
+          AND c.APPLY_TIME <![CDATA[ <= ]]> #{dayEnd}
+    </select>
+
+  <!-- SLA：收到審核流程後超過 slaDays 仍未結案（SUBMIT/PENDING） -->
+    <select id="countPolicySlaOverdue" resultType="long">
+        SELECT COUNT(1)
+        FROM tb_policy p
+        WHERE p.POLICY_STATUS IN ('SUBMIT', 'PENDING')
+          AND (
+            CASE p.POLICY_STATUS
+                WHEN 'SUBMIT' THEN COALESCE(
+                    (SELECT MIN(l.APRV_TIME)
+                     FROM tb_policy_aprv_log l
+                     WHERE l.POLICY_NO = p.POLICY_NO
+                       AND l.APRV_STATUS = 'SUBMIT'),
+                    p.APPLY_TIME)
+                WHEN 'PENDING' THEN COALESCE(
+                    (SELECT MAX(l.APRV_TIME)
+                     FROM tb_policy_aprv_log l
+                     WHERE l.POLICY_NO = p.POLICY_NO
+                       AND l.APRV_STATUS = 'PENDING'),
+                    p.APPLY_TIME)
+                ELSE p.APPLY_TIME
+                END
+            ) <![CDATA[ < ]]> DATE_SUB(NOW(), INTERVAL #{slaDays} DAY)
+    </select>
+
+    <select id="countClaimSlaOverdue" resultType="long">
+        SELECT COUNT(1)
+        FROM tb_claim c
+        WHERE c.CLAIM_STATUS IN ('SUBMIT', 'PENDING')
+          AND (
+            CASE c.CLAIM_STATUS
+                WHEN 'SUBMIT' THEN COALESCE(
+                    (SELECT MIN(l.APRV_TIME)
+                     FROM tb_claim_aprv_log l
+                     WHERE l.CLAIM_NO = c.CLAIM_NO
+                       AND l.CLAIM_STATUS = 'SUBMIT'),
+                    c.APPLY_TIME)
+                WHEN 'PENDING' THEN COALESCE(
+                    (SELECT MAX(l.APRV_TIME)
+                     FROM tb_claim_aprv_log l
+                     WHERE l.CLAIM_NO = c.CLAIM_NO
+                       AND l.CLAIM_STATUS = 'PENDING'),
+                    c.APPLY_TIME)
+                ELSE c.APPLY_TIME
+                END
+            ) <![CDATA[ < ]]> DATE_SUB(NOW(), INTERVAL #{slaDays} DAY)
+    </select>
+
+</mapper>

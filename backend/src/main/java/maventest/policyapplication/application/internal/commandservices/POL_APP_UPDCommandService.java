@@ -11,14 +11,13 @@ import maventest.code.ApiCode;
 import maventest.common.exception.BusinessRuleException;
 import maventest.common.exception.ErrorInputException;
 import maventest.policyapplication.application.internal.PolicyApplicationRuleService;
-import maventest.policyapplication.domain.entity.InsuredPersonEntity;
 import maventest.policyapplication.domain.entity.PolicyApplicationEntity;
 import maventest.policyapplication.domain.entity.ProductEntity;
-import maventest.policyapplication.domain.enums.ApplicationStatus;
 import maventest.policyapplication.infrastructure.repository.InsuranceApplicationRepository;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationUpdateReqDto;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationUpdateRespDto;
 import maventest.policyapplication.interfaces.transform.InsuranceApplicationConverter;
+import maventest.service.PolicyAprvLogAppender;
 
 @Service
 @RequiredArgsConstructor
@@ -27,13 +26,15 @@ public class POL_APP_UPDCommandService {
     private final InsuranceApplicationRepository insuranceApplicationRepository;
     private final InsuranceApplicationConverter insuranceApplicationConverter;
     private final PolicyApplicationRuleService policyApplicationRuleService;
+    private final PolicyAprvLogAppender policyAprvLogAppender;
 
     @Transactional
-    public InsuranceApplicationUpdateRespDto updateApplication(String applicationId, InsuranceApplicationUpdateReqDto reqDto) {
+    public InsuranceApplicationUpdateRespDto updateApplication(
+            String applicationId,
+            InsuranceApplicationUpdateReqDto reqDto,
+            String updatedBy
+    ) {
         PolicyApplicationEntity existingApplication = insuranceApplicationRepository.findApplicationById(applicationId)
-                .orElseThrow(() -> new ErrorInputException(ApiCode.APPLICATION_NOT_FOUND.getCode(), ApiCode.APPLICATION_NOT_FOUND.getMessage()));
-
-        InsuredPersonEntity existingInsuredPerson = insuranceApplicationRepository.findInsuredPersonByApplicationId(applicationId)
                 .orElseThrow(() -> new ErrorInputException(ApiCode.APPLICATION_NOT_FOUND.getCode(), ApiCode.APPLICATION_NOT_FOUND.getMessage()));
 
         validateUpdatable(existingApplication);
@@ -57,21 +58,33 @@ public class POL_APP_UPDCommandService {
         }
 
         LocalDateTime updatedTime = LocalDateTime.now();
-        PolicyApplicationEntity updatedApplication = insuranceApplicationConverter.toUpdatedPolicyApplicationEntity(existingApplication, reqDto);
-        InsuredPersonEntity updatedInsuredPerson = insuranceApplicationConverter.toUpdatedInsuredPersonEntity(existingInsuredPerson, reqDto);
+        PolicyApplicationEntity updatedApplication = insuranceApplicationConverter.toUpdatedPolicyApplicationEntity(
+                existingApplication,
+                reqDto,
+                updatedBy
+        );
 
         int applicationRows = insuranceApplicationRepository.updateApplication(updatedApplication);
-        int insuredRows = insuranceApplicationRepository.updateInsuredPerson(updatedInsuredPerson);
-
-        if (applicationRows == 0 || insuredRows == 0) {
+        if (applicationRows == 0) {
             throw new BusinessRuleException(ApiCode.APPLICATION_UPDATE_NOT_ALLOWED.getCode(), ApiCode.APPLICATION_UPDATE_NOT_ALLOWED.getMessage());
         }
+
+        policyAprvLogAppender.append(
+                updatedApplication.getPolicyNo(),
+                "SUBMIT",
+                updatedBy,
+                "補件後重新送審"
+        );
 
         return insuranceApplicationConverter.toUpdateRespDto(updatedApplication, reqDto, updatedTime);
     }
 
+    public InsuranceApplicationUpdateRespDto updateApplication(String applicationId, InsuranceApplicationUpdateReqDto reqDto) {
+        return updateApplication(applicationId, reqDto, null);
+    }
+
     private void validateUpdatable(PolicyApplicationEntity existingApplication) {
-        if (existingApplication.getApplicationStatus() != ApplicationStatus.PENDING) {
+        if (!"RETURN".equals(existingApplication.getPolicyStatus())) {
             throw new BusinessRuleException(ApiCode.APPLICATION_UPDATE_NOT_ALLOWED.getCode(), ApiCode.APPLICATION_UPDATE_NOT_ALLOWED.getMessage());
         }
     }

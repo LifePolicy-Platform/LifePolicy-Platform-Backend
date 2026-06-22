@@ -17,6 +17,10 @@ import maventest.common.ApiResponse;
 import maventest.common.config.OpenApiConfig;
 import maventest.dto.AptBatchUpdateResponse;
 import maventest.dto.AptBatchUpdateRequest;
+import maventest.dto.CallAppointmentConfirmRequest;
+import maventest.dto.CallAppointmentConfirmResponse;
+import maventest.dto.CallAppointmentCreateRequest;
+import maventest.dto.CallAppointmentCreateResponse;
 import maventest.service.CustomerCommandService;
 
 
@@ -27,15 +31,30 @@ import maventest.service.CustomerCommandService;
 @RequiredArgsConstructor
 public class CustomerCommandController {
     
-     private final CustomerCommandService customerCommandService;
+    private final CustomerCommandService customerCommandService;
 
-    @Operation(summary  = "異動約訪記錄檔")
+    @Operation(summary = "異動約訪記錄檔")
     @PostMapping("/updateAppoint")
-    public ResponseEntity<ApiResponse<List<AptBatchUpdateResponse>>> batchUpdate
-        (@Valid @RequestBody AptBatchUpdateRequest request) {
+    public ResponseEntity<ApiResponse<List<AptBatchUpdateResponse>>> batchUpdate(
+            @Valid @RequestBody AptBatchUpdateRequest request) {
         List<AptBatchUpdateResponse> result = customerCommandService.updateAptRecords(request);
-        
-         return ResponseEntity.ok(ApiResponse.ok(result));
+
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
-    
+
+    @Operation(summary = "新增約訪", description = "於保單對應名單新增 tb_call_appointment 約訪記錄")
+    @PostMapping("/createAppoint")
+    public ResponseEntity<ApiResponse<CallAppointmentCreateResponse>> createAppointment(
+            @Valid @RequestBody CallAppointmentCreateRequest request) {
+        CallAppointmentCreateResponse result = customerCommandService.createAppointment(request);
+        return ResponseEntity.ok(ApiResponse.ok(result));
+    }
+
+    @Operation(summary = "確認約訪結果", description = "約訪承辦人確認成功或失敗，並將名單結案")
+    @PostMapping("/confirmAppointResult")
+    public ResponseEntity<ApiResponse<CallAppointmentConfirmResponse>> confirmAppointmentResult(
+            @Valid @RequestBody CallAppointmentConfirmRequest request) {
+        CallAppointmentConfirmResponse result = customerCommandService.confirmAppointmentResult(request);
+        return ResponseEntity.ok(ApiResponse.ok(result));
+    }
 }

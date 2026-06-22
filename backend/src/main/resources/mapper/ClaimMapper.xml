@@ -6,7 +6,7 @@
         SELECT 
             c.CLAIM_NO as claimNo, 
             c.MEMBER_ID as memberId, 
-            m.NAME as memberName,                c.POLICY_NO as policyNo, 
+            m.USERNAME  as memberName,                c.POLICY_NO as policyNo, 
             c.CLAIM_AMOUNT as claimAmount, 
             c.APPROVE_AMOUNT as approveAmount, 
             c.CLAIM_STATUS as claimStatus, 
@@ -53,7 +53,7 @@
             c.FILE_02_NAME as file02Name,
             c.FILE_02_PATH as file02Path,
             u.DISPLAY_NAME as agentName, 
-            m.NAME as memberName, 
+            m.USERNAME  as memberName, 
             p.PRODUCT_CODE as productCode, 
             prod.PRODUCT_NAME as productName,
             prod.PRODUCT_TYPE as productType,
@@ -135,7 +135,7 @@
         c.FILE_01_PATH as file01Path,
         c.FILE_02_NAME as file02Name,
         c.FILE_02_PATH as file02Path,
-        m.NAME as memberName,
+        m.USERNAME  as memberName,
         prod.PRODUCT_NAME as productName
     FROM tb_claim c
     LEFT JOIN tb_cust_user m ON c.MEMBER_ID = m.MEMBER_ID

@@ -33,7 +33,7 @@ public class PolicyApplicationRuleService {
 
     public void validateInsuredAge(LocalDate insuredBirthdate, ProductEntity productEntity) {
         int insuredAge = Period.between(insuredBirthdate, LocalDate.now()).getYears();
-        if (insuredAge < productEntity.getMinInsuredAge() || insuredAge > productEntity.getMaxInsuredAge()) {
+        if (insuredAge < productEntity.getMinAge() || insuredAge > productEntity.getMaxAge()) {
             throw new BusinessRuleException(ApiCode.INSURED_AGE_INVALID.getCode(), ApiCode.INSURED_AGE_INVALID.getMessage());
         }
     }
@@ -45,8 +45,8 @@ public class PolicyApplicationRuleService {
     }
 
     public void validateSumInsured(BigDecimal sumInsured, ProductEntity productEntity) {
-        if (sumInsured.compareTo(productEntity.getMinSumInsured()) < 0
-                || sumInsured.compareTo(productEntity.getMaxSumInsured()) > 0) {
+        if (sumInsured.compareTo(productEntity.getMinAmount()) < 0
+                || sumInsured.compareTo(productEntity.getMaxAmount()) > 0) {
             throw new BusinessRuleException(ApiCode.SUM_INSURED_INVALID.getCode(), ApiCode.SUM_INSURED_INVALID.getMessage());
         }
     }

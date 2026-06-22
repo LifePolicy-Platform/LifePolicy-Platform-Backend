@@ -5,23 +5,25 @@
 <mapper namespace="maventest.policyapplication.infrastructure.repository.mapper.ProductMapper">
 
     <resultMap id="ProductResultMap" type="maventest.policyapplication.domain.entity.ProductEntity">
-        <id  property="code"          column="PRODUCT_CODE"/>
-        <result property="name"          column="PRODUCT_NAME"/>
-        <result property="productType"   column="PRODUCT_TYPE"/>
-        <result property="basePremium"   column="BASE_PREMIUM"/>
-        <result property="minSumInsured" column="MIN_AMOUNT"/>
-        <result property="maxSumInsured" column="MAX_AMOUNT"/>
-        <result property="minInsuredAge" column="MIN_AGE"/>
-        <result property="maxInsuredAge" column="MAX_AGE"/>
-        <result property="status"        column="STATUS"/>
-        <result property="remark"        column="REMARK"/>
-        <result property="createTime"    column="CREATE_TIME"/>
+        <id     property="productCode"  column="PRODUCT_CODE"/>
+        <result property="productName"  column="PRODUCT_NAME"/>
+        <result property="productType"  column="PRODUCT_TYPE"/>
+        <result property="basePremium"  column="BASE_PREMIUM"/>
+        <result property="minAmount"    column="MIN_AMOUNT"/>
+        <result property="maxAmount"    column="MAX_AMOUNT"/>
+        <result property="minAge"       column="MIN_AGE"/>
+        <result property="maxAge"       column="MAX_AGE"/>
+        <result property="status"       column="STATUS"/>
+        <result property="remark"       column="REMARK"/>
+        <result property="createTime"   column="CREATE_TIME"/>
+        <result property="updateTime"   column="UPDATE_TIME"/>
+        <result property="updateUser"   column="UPDATE_USER"/>
     </resultMap>
 
     <select id="findByCode" parameterType="java.lang.String" resultMap="ProductResultMap">
         SELECT PRODUCT_CODE, PRODUCT_NAME, PRODUCT_TYPE, BASE_PREMIUM,
                MIN_AMOUNT, MAX_AMOUNT, MIN_AGE, MAX_AGE,
-               STATUS, REMARK, CREATE_TIME
+               STATUS, REMARK, CREATE_TIME, UPDATE_TIME, UPDATE_USER
         FROM tb_product
         WHERE PRODUCT_CODE = #{productCode}
     </select>
@@ -29,7 +31,7 @@
     <select id="findAll" resultMap="ProductResultMap">
         SELECT PRODUCT_CODE, PRODUCT_NAME, PRODUCT_TYPE, BASE_PREMIUM,
                MIN_AMOUNT, MAX_AMOUNT, MIN_AGE, MAX_AGE,
-               STATUS, REMARK, CREATE_TIME
+               STATUS, REMARK, CREATE_TIME, UPDATE_TIME, UPDATE_USER
         FROM tb_product
         ORDER BY PRODUCT_CODE
     </select>
@@ -61,7 +63,6 @@
             UPDATE_USER  = #{updateUser}
         WHERE PRODUCT_CODE = #{code}
     </update>
-
 
     <update id="updateStatus">
         UPDATE tb_product

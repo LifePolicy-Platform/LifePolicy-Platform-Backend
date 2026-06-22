@@ -8,10 +8,15 @@ import maventest.policyapplication.interfaces.dto.ProductUpdateReqDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-@Mapper
-public interface ProductMapper {
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
-    ProductEntity findByCode(String productCode);
+@Mapper
+public interface ProductMapper extends BaseMapper<ProductEntity> {
+
+    ProductEntity findByCode(@Param("productCode") String productCode);
+
+    List<ProductEntity> selectList(LambdaQueryWrapper<ProductEntity> eq);
 
     List<ProductEntity> findAll();
 

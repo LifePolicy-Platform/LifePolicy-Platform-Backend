@@ -53,6 +53,13 @@ public class POL_APP_CMDController {
 
     private String resolveActor(String fallbackActor) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication == null ? fallbackActor : authentication.getName();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return fallbackActor;
+        }
+        String name = authentication.getName();
+        if (name == null || name.isBlank() || "anonymousUser".equals(name)) {
+            return fallbackActor;
+        }
+        return name;
     }
 }
