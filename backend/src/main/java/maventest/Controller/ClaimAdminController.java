@@ -36,7 +36,6 @@ public class ClaimAdminController {
             @RequestParam(required = false) String applyDate) {
         List<ClaimEntity> list = claimMapper.selectClaimList(status, policyNo, applyDate);
 
-        // ⭕ 使用標準的 ok()
         return ResponseEntity.ok(ApiResponse.ok(list));
     }
 
@@ -45,7 +44,6 @@ public class ClaimAdminController {
     public ResponseEntity<?> getClaimDetail(@PathVariable String claimNo) {
         ClaimEntity claim = claimMapper.selectByClaimNo(claimNo);
         if (claim == null) {
-            // ⭕ 改用 fail(code, message)
             return ResponseEntity.status(404).body(ApiResponse.fail(404, "找不到該理賠案件"));
         }
         return ResponseEntity.ok(ApiResponse.ok(claim));
@@ -62,7 +60,6 @@ public class ClaimAdminController {
         if (rows > 0) {
             return ResponseEntity.ok(ApiResponse.ok(Map.of("claimNo", newClaimNo)));
         }
-        // ⭕ 改用 fail(code, message)
         return ResponseEntity.badRequest().body(ApiResponse.fail(400, "建立失敗"));
     }
 
@@ -74,7 +71,6 @@ public class ClaimAdminController {
         if (rows > 0) {
             return ResponseEntity.ok(ApiResponse.ok("理賠案件更新成功"));
         }
-        // ⭕ 改用 fail(code, message)
         return ResponseEntity.badRequest().body(ApiResponse.fail(400, "更新失敗"));
     }
 
@@ -83,11 +79,9 @@ public class ClaimAdminController {
     public ResponseEntity<?> deleteClaim(@PathVariable String claimNo) {
         ClaimEntity currentClaim = claimMapper.selectByClaimNo(claimNo);
         if (currentClaim == null) {
-            // ⭕ 改用 fail(code, message)
             return ResponseEntity.status(404).body(ApiResponse.fail(404, "案件不存在"));
         }
         if (!"PENDING".equals(currentClaim.getClaimStatus())) {
-            // ⭕ 改用 fail(code, message)
             return ResponseEntity.badRequest().body(ApiResponse.fail(400, "只有 PENDING 狀態的案件允許刪除"));
         }
 
@@ -95,7 +89,7 @@ public class ClaimAdminController {
         return ResponseEntity.ok(ApiResponse.ok("案件已成功刪除"));
     }
 
-    // 🌟 補上 1：提供前端「客戶下拉選單」的資料來源
+    // 補上 1：提供前端「客戶下拉選單」的資料來源
     @GetMapping("/member-options")
     public ResponseEntity<?> getMemberOptions() {
         // 直接叫 mapper 去查出所有客戶的 ID 和姓名
@@ -103,7 +97,7 @@ public class ClaimAdminController {
         return ResponseEntity.ok(ApiResponse.ok(members));
     }
 
-    // 🌟 補上 2：提供前端「保單下拉選單」的資料來源
+    // 補上 2：提供前端「保單下拉選單」的資料來源
     @GetMapping("/policy-options")
     public ResponseEntity<?> getPolicyOptions() {
         // 直接叫 mapper 去查出所有保單號碼、名稱以及所屬客戶 ID
@@ -111,7 +105,7 @@ public class ClaimAdminController {
         return ResponseEntity.ok(ApiResponse.ok(policies));
     }
 
-    // 🌟 補上 3：提供前端「經辦人員下拉選單」的資料來源
+    // 補上 3：提供前端「經辦人員下拉選單」的資料來源
     @GetMapping("/agent-options")
     public ResponseEntity<?> getAgentOptions() {
         List<Map<String, Object>> agents = claimMapper.selectAllAgentOptions();

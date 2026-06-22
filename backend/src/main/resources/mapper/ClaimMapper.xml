@@ -122,6 +122,15 @@
         DELETE FROM tb_claim WHERE CLAIM_NO = #{claimNo} AND CLAIM_STATUS = 'PENDING'
     </update>
 
+    <update id="updateClaimStatus">
+    UPDATE tb_claim 
+    SET CLAIM_STATUS = #{claimStatus}, 
+        UPDATE_USER = #{aprvUser},
+        <if test="approveAmount != null">APPROVE_AMOUNT = #{approveAmount},</if>
+        SETTLE_TIME = CASE WHEN #{claimStatus} IN ('APPROVED', 'REJECTED') THEN NOW() ELSE NULL END
+    WHERE CLAIM_NO = #{claimNo}
+</update>
+
     <select id="selectClaimAuditList" resultType="maventest.entity.ClaimEntity">
     SELECT 
         c.CLAIM_NO as claimNo, 

@@ -1,4 +1,9 @@
 package maventest.common.security;
+// ⬇️ 補上這幾行 Java 標準庫與 JJWT 依賴
+import java.util.List;
+import java.util.stream.Collectors;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
