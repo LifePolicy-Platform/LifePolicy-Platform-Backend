@@ -55,7 +55,10 @@
             u.DISPLAY_NAME as agentName, 
             m.NAME as memberName, 
             p.PRODUCT_CODE as productCode, 
-            prod.PRODUCT_NAME as productName 
+            prod.PRODUCT_NAME as productName,
+            prod.PRODUCT_TYPE as productType,
+            p.EFFECT_DATE as effectDate,
+            p.EXPIRE_DATE as expireDate
         FROM tb_claim c
         LEFT JOIN tb_user u ON c.AGENT_ID = u.USER_ID
         LEFT JOIN tb_cust_user m ON c.MEMBER_ID = m.MEMBER_ID
