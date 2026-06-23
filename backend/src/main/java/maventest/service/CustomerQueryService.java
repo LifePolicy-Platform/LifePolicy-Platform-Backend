@@ -13,6 +13,8 @@ public interface CustomerQueryService {
     
     List<AptRecordListResponse> listAptRecords(AptRecordListRequest request);
 
+    List<AptRecordListResponse> listAptRecordsByCustName(String custName);
+
     PolicyAppointmentContextDto getPolicyAppointmentContext(String policyNo);
 
     List<ActiveProjectOptionDto> listActiveProjects();

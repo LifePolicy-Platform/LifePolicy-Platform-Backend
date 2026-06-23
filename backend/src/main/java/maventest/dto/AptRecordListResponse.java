@@ -47,4 +47,8 @@ public class AptRecordListResponse {
     @Schema(description = "名單回收日")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate campServiceDt;
+
+    /** 約訪結果：0=尚未完成，1=約訪成功，2=約訪失敗 */
+    @Schema(description = "約訪結果")
+    private Integer recallResult;
 }

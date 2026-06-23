@@ -27,6 +27,11 @@ public class CustomerQueryServiceImpl implements CustomerQueryService {
     }
 
     @Override
+    public List<AptRecordListResponse> listAptRecordsByCustName(String custName) {
+        return aptRecordMapper.selectAptRecordHistoryByCustName(custName.trim());
+    }
+
+    @Override
     public PolicyAppointmentContextDto getPolicyAppointmentContext(String policyNo) {
         return callAppointmentMapper.selectAppointmentContextByPolicyNo(policyNo);
     }

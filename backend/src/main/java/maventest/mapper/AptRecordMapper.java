@@ -16,4 +16,6 @@ public interface AptRecordMapper extends BaseMapper<AptRecord> {
 
     
     List<AptRecordListResponse> selectAptRecordList(@Param("request") AptRecordListRequest request);
+
+    List<AptRecordListResponse> selectAptRecordHistoryByCustName(@Param("custName") String custName);
 }

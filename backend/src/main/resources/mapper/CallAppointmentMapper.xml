@@ -42,7 +42,7 @@
         FROM tb_call_appointment a
                  LEFT JOIN tb_camp_mst p ON a.CAMP_CODE = p.CAMP_CODE
         WHERE a.LIST_NO = #{listNo}
-        ORDER BY a.RECALL_TIME DESC
+        ORDER BY a.REC_NO DESC
     </select>
 
     <select id="selectPendingByListNo" resultType="maventest.entity.CallAppointmentEntity">

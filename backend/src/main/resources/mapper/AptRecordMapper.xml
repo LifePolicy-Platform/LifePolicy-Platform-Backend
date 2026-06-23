@@ -10,7 +10,7 @@
             a.SNO              AS sno,
             a.LIST_NO          AS listNo,
             a.REC_NO           AS recNo,
-            u.USERNAME         AS custName,
+            u.NAME             AS custName,
             c.CAMP_NAME        AS campName,
             a.RECALL_TIME      AS recallTime,
             a.REC_TIME         AS recTime,
@@ -25,6 +25,27 @@
                   AND TIMESTAMP(#{request.endDate}, #{request.endTime})
           AND a.REC_TIME IS NULL
         ORDER BY a.RECALL_TIME
+    </select>
+
+    <select id="selectAptRecordHistoryByCustName"
+            resultType="maventest.dto.AptRecordListResponse">
+        SELECT
+            a.SNO              AS sno,
+            a.LIST_NO          AS listNo,
+            a.REC_NO           AS recNo,
+            u.NAME             AS custName,
+            c.CAMP_NAME        AS campName,
+            a.RECALL_TIME      AS recallTime,
+            a.REC_TIME         AS recTime,
+            a.RECALL_RESULT    AS recallResult,
+            l.LIST_LASTPHONE   AS listLastphone,
+            c.CAMP_SERVICE_DT  AS campServiceDt
+        FROM tb_call_appointment a
+        JOIN tb_call_list  l ON a.LIST_NO       = l.LIST_NO
+        JOIN tb_cust_user  u ON l.MEMBER_ID     = u.MEMBER_ID
+        JOIN tb_camp_mst   c ON a.CAMP_CODE     = c.CAMP_CODE
+        WHERE u.NAME = #{custName}
+        ORDER BY a.RECALL_TIME DESC
     </select>
 
 </mapper>
