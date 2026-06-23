@@ -120,9 +120,20 @@ public class CallAppointmentCommandServiceImpl implements CallAppointmentCommand
             throw new IllegalArgumentException("約訪結果僅能選擇成功或失敗");
         }
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime recTime;
+        if (recallResult == RECALL_RESULT_SUCCESS) {
+            recTime = request.getRecTime();
+            if (recTime == null) {
+                throw new IllegalArgumentException("請選擇實際約訪時間");
+            }
+            if (pending.getRecallTime() != null && !recTime.isAfter(pending.getRecallTime())) {
+                throw new IllegalArgumentException("實際約訪時間需大於約訪時間");
+            }
+        } else {
+            recTime = request.getRecTime() != null ? request.getRecTime() : LocalDateTime.now();
+        }
         int updated = callAppointmentMapper.confirmAppointmentResult(
-                pending.getSno(), recallResult, now, updateUser);
+                pending.getSno(), recallResult, recTime, updateUser);
         if (updated == 0) {
             throw new IllegalArgumentException("約訪結果已確認或資料不存在");
         }
@@ -134,7 +145,7 @@ public class CallAppointmentCommandServiceImpl implements CallAppointmentCommand
                 .listNo(context.getListNo())
                 .recallResult(recallResult)
                 .listStatus(CALL_LIST_STATUS_CLOSED)
-                .recTime(now)
+                .recTime(recTime)
                 .build();
     }
 
