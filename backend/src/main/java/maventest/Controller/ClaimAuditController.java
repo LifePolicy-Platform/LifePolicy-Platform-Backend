@@ -5,6 +5,8 @@ import maventest.common.ApiResponse;
 import maventest.entity.ClaimEntity;
 import maventest.entity.ClaimAprvLogEntity;
 import maventest.mapper.ClaimMapper;
+import maventest.policyapplication.application.internal.commandservices.NotificationService;
+import maventest.service.impl.AppUserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,8 @@ import java.util.Map;
 public class ClaimAuditController {
 
     private final ClaimMapper claimMapper;
+    private final NotificationService notificationService;
+    private final AppUserRepository appUserRepository;
 
     // 1. 取得待審核理賠清單
     @GetMapping("/list")
@@ -109,7 +113,35 @@ public class ClaimAuditController {
         log.setAprvUser(user);
         claimMapper.insertAprvLog(log);
 
+        pushClaimNotification(claim, claimNo, action, user);
+
         return ResponseEntity.ok(ApiResponse.ok("審核核決處理完成，狀態更新為: " + action));
+    }
+
+    private void pushClaimNotification(ClaimEntity claim, String claimNo, String action, String reviewer) {
+        String agentUsername = appUserRepository.findById(claim.getAgentId())
+                .map(u -> u.getUsername())
+                .orElse(null);
+
+        switch (action) {
+            case "PENDING" -> notificationService.pushToUsername(agentUsername, "CLAIM",
+                    "理賠案件審核中",
+                    "理賠案件 " + claimNo + " 已進入審核程序，請耐心等候。",
+                    claimNo, reviewer);
+            case "RETURN" -> notificationService.pushToUsername(agentUsername, "CLAIM",
+                    "理賠案件退件",
+                    "理賠案件 " + claimNo + " 已退件，請修正後重新送件。",
+                    claimNo, reviewer);
+            case "APPROVED" -> notificationService.pushToUsername(agentUsername, "CLAIM",
+                    "理賠案件核准",
+                    "理賠案件 " + claimNo + " 已核准。",
+                    claimNo, reviewer);
+            case "REJECTED" -> notificationService.pushToUsername(agentUsername, "CLAIM",
+                    "理賠案件駁回",
+                    "理賠案件 " + claimNo + " 已駁回，如有疑問請洽主管。",
+                    claimNo, reviewer);
+            default -> { /* 其他狀態不推播 */ }
+        }
     }
 
     // 3. 獲取單一理賠案件的歷史軌跡履歷

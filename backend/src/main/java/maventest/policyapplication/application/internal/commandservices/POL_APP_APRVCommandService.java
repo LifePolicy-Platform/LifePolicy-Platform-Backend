@@ -178,4 +178,31 @@ public class POL_APP_APRVCommandService {
             default -> { /* 其他狀態不推播 */ }
         }
     }
+
+     private boolean isSupervisorApproval(String currentStatus, ApplicationStatus targetStatus) {
+        return ApplicationStatus.PENDING.name().equals(currentStatus)
+                && ApplicationStatus.APPROVED.equals(targetStatus);
+    }
+
+    private PolicyApplicationEntity applyApprovedPolicyDates(
+            PolicyApplicationEntity reviewTarget,
+            LocalDateTime reviewTime
+    ) {
+        ProductEntity product = insuranceApplicationRepository.findProductByCode(reviewTarget.getProductCode())
+                .orElseThrow(() -> new ErrorInputException(
+                        ApiCode.PRODUCT_NOT_FOUND.getCode(),
+                        ApiCode.PRODUCT_NOT_FOUND.getMessage()
+                ));
+
+        LocalDate effectDate = policyApplicationRuleService.calculateApprovedEffectDate(reviewTime.toLocalDate());
+        LocalDate expireDate = policyApplicationRuleService.calculateApprovedExpireDate(
+                effectDate,
+                product.getProductTerm()
+        );
+
+        return reviewTarget.toBuilder()
+                .effectDate(effectDate)
+                .expireDate(expireDate)
+                .build();
+    }
 }

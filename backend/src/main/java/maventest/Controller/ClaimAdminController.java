@@ -2,7 +2,8 @@ package maventest.Controller;
 
 import maventest.entity.ClaimEntity;
 import maventest.mapper.ClaimMapper;
-import maventest.common.ApiResponse; // 確定匯入你們的 ApiResponse
+import maventest.common.ApiResponse;
+import maventest.policyapplication.application.internal.commandservices.NotificationService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +26,7 @@ import java.util.UUID;
 public class ClaimAdminController {
 
     private final ClaimMapper claimMapper;
+    private final NotificationService notificationService;
     @Value("${app.upload-dir}")
     private String uploadDir;
 
@@ -58,6 +60,10 @@ public class ClaimAdminController {
 
         int rows = claimMapper.insertClaim(claim);
         if (rows > 0) {
+            notificationService.pushToRole("REVIEWER", "CLAIM",
+                    "理賠新件待審",
+                    "理賠案件 " + newClaimNo + " 已送件，請確認處理。",
+                    newClaimNo, "SYSTEM");
             return ResponseEntity.ok(ApiResponse.ok(Map.of("claimNo", newClaimNo)));
         }
         return ResponseEntity.badRequest().body(ApiResponse.fail(400, "建立失敗"));
