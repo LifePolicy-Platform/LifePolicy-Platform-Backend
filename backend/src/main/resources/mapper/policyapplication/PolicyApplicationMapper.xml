@@ -41,7 +41,11 @@
         EFFECT_DATE,
         EXPIRE_DATE,
         APPLY_TIME,
-        UPDATE_USER
+        UPDATE_USER,
+        PFILE_01_NAME,
+        PFILE_01_PATH,
+        PFILE_02_NAME,
+        PFILE_02_PATH
     ) VALUES (
         #{policyNo},
         #{memberId},
@@ -60,7 +64,11 @@
         #{effectDate},
         #{expireDate},
         #{applyTime},
-        #{updateUser}
+        #{updateUser},
+        #{pfile01Name},
+        #{pfile01Path},
+        #{pfile02Name},
+        #{pfile02Path}
     )
     </insert>
 
@@ -86,7 +94,11 @@
                APPLY_TIME         AS applyTime,
                CREATE_TIME        AS createTime,
                UPDATE_TIME        AS updateTime,
-               UPDATE_USER        AS updateUser
+               UPDATE_USER        AS updateUser,
+               PFILE_01_NAME      AS pfile01Name,
+               PFILE_01_PATH      AS pfile01Path,
+               PFILE_02_NAME      AS pfile02Name,
+               PFILE_02_PATH      AS pfile02Path
         FROM tb_policy
         WHERE POLICY_NO = #{applicationId}
     </select>
@@ -103,6 +115,10 @@
             POLICY_MOBILE         = #{policyMobile},
             PREMIUM_AMOUNT        = #{premiumAmount},
             POLICY_STATUS         = #{policyStatus},
+            PFILE_01_NAME         = #{pfile01Name},
+            PFILE_01_PATH         = #{pfile01Path},
+            PFILE_02_NAME         = #{pfile02Name},
+            PFILE_02_PATH         = #{pfile02Path},
             UPDATE_TIME           = CURRENT_TIMESTAMP,
             UPDATE_USER           = #{updateUser}
         WHERE POLICY_NO = #{policyNo}
@@ -177,6 +193,10 @@
                pa.INSURED_AMOUNT         AS sumInsured,
                pa.PREMIUM_AMOUNT         AS annualPremium,
                pa.RISK_LEVEL             AS riskLevel,
+               pa.PFILE_01_NAME          AS pfile01Name,
+               pa.PFILE_01_PATH          AS pfile01Path,
+               pa.PFILE_02_NAME          AS pfile02Name,
+               pa.PFILE_02_PATH          AS pfile02Path,
                pa.APPLY_TIME             AS submissionTime,
                pa.UPDATE_TIME            AS reviewTime,
                pa.UPDATE_USER            AS reviewedBy,
@@ -234,6 +254,10 @@
                pa.INSURED_AMOUNT        AS sumInsured,
                pa.PREMIUM_AMOUNT        AS annualPremium,
                pa.RISK_LEVEL            AS riskLevel,
+               pa.PFILE_01_NAME         AS pfile01Name,
+               pa.PFILE_01_PATH         AS pfile01Path,
+               pa.PFILE_02_NAME         AS pfile02Name,
+               pa.PFILE_02_PATH         AS pfile02Path,
                pa.APPLY_TIME            AS submissionTime,
                pa.UPDATE_TIME           AS reviewTime,
                pa.UPDATE_USER           AS reviewedBy,

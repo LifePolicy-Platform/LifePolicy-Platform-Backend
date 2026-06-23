@@ -75,4 +75,16 @@ public class InsuranceApplicationUpdateReqDto {
     @JsonProperty("CONTACT_PHONE")
     @NotBlank(message = "contactPhone is required")
     private String contactPhone;
+
+    @JsonProperty("PFILE_01_NAME")
+    private String pfile01Name;
+
+    @JsonProperty("PFILE_01_PATH")
+    private String pfile01Path;
+
+    @JsonProperty("PFILE_02_NAME")
+    private String pfile02Name;
+
+    @JsonProperty("PFILE_02_PATH")
+    private String pfile02Path;
 }

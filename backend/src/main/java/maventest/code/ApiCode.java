@@ -21,6 +21,7 @@ public enum ApiCode {
     APPLICATION_REVIEWED("INS-POL-4230", "Only SUBMIT or PENDING application can be reviewed"),
     APPLICATION_UPDATE_NOT_ALLOWED("INS-POL-4231", "Only RETURN application can be updated"),
     DOCUMENTS_INCOMPLETE("INS-POL-4232", "Required documents must be confirmed before review"),
+    POLICY_FILES_REQUIRED("INS-POL-4233", "Policy document files are required"),
     AUTHENTICATION_REQUIRED("INS-AUTH-4010", "Authentication is required"),
     INVALID_CREDENTIALS("INS-AUTH-4011", "Username or password is invalid"),
     TOKEN_INVALID("INS-AUTH-4012", "Access token is invalid or expired"),

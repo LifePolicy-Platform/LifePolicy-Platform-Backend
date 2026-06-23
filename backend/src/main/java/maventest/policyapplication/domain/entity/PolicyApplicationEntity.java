@@ -103,4 +103,20 @@ public class PolicyApplicationEntity {
     /** 更新人員 */
     @TableField("UPDATE_USER")
     private String updateUser;
+
+    /** 文件1 檔名 */
+    @TableField("PFILE_01_NAME")
+    private String pfile01Name;
+
+    /** 文件1 路徑 */
+    @TableField("PFILE_01_PATH")
+    private String pfile01Path;
+
+    /** 文件2 檔名 */
+    @TableField("PFILE_02_NAME")
+    private String pfile02Name;
+
+    /** 文件2 路徑 */
+    @TableField("PFILE_02_PATH")
+    private String pfile02Path;
 }

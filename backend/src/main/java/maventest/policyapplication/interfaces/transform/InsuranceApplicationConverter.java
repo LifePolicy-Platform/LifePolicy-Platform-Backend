@@ -51,6 +51,10 @@ public class InsuranceApplicationConverter {
                 .riskLevel(reqDto.getRiskLevel())
                 .applyTime(submissionTime)
                 .updateUser(createdBy)
+                .pfile01Name(reqDto.getPfile01Name())
+                .pfile01Path(reqDto.getPfile01Path())
+                .pfile02Name(reqDto.getPfile02Name())
+                .pfile02Path(reqDto.getPfile02Path())
                 .build();
     }
 
@@ -143,6 +147,10 @@ public class InsuranceApplicationConverter {
                 .applyTime(existingApplication.getApplyTime())
                 .createTime(existingApplication.getCreateTime())
                 .updateUser(updatedBy)
+                .pfile01Name(reqDto.getPfile01Name())
+                .pfile01Path(reqDto.getPfile01Path())
+                .pfile02Name(reqDto.getPfile02Name())
+                .pfile02Path(reqDto.getPfile02Path())
                 .build();
     }
 
@@ -209,6 +217,10 @@ public class InsuranceApplicationConverter {
                 .applyTime(existingApplication.getApplyTime())
                 .createTime(existingApplication.getCreateTime())
                 .updateUser(reviewedBy)
+                .pfile01Name(existingApplication.getPfile01Name())
+                .pfile01Path(existingApplication.getPfile01Path())
+                .pfile02Name(existingApplication.getPfile02Name())
+                .pfile02Path(existingApplication.getPfile02Path())
                 .build();
     }
 
@@ -277,6 +289,10 @@ public class InsuranceApplicationConverter {
                                                         (BigDecimal) row.get("sumInsured"),
                                                         (BigDecimal) row.get("annualPremium")
                                                 ).name())
+                                .pfile01Name(asString(row.get("pfile01Name")))
+                                .pfile01Path(asString(row.get("pfile01Path")))
+                                .pfile02Name(asString(row.get("pfile02Name")))
+                                .pfile02Path(asString(row.get("pfile02Path")))
                                 .build();
         }
 

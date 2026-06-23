@@ -38,6 +38,7 @@ public class POL_APP_UPDCommandService {
                 .orElseThrow(() -> new ErrorInputException(ApiCode.APPLICATION_NOT_FOUND.getCode(), ApiCode.APPLICATION_NOT_FOUND.getMessage()));
 
         validateUpdatable(existingApplication);
+        validatePolicyFiles(reqDto);
 
         ProductEntity productEntity = insuranceApplicationRepository.findProductByCode(reqDto.getProductCode())
                 .orElseThrow(() -> new ErrorInputException(ApiCode.PRODUCT_NOT_FOUND.getCode(), ApiCode.PRODUCT_NOT_FOUND.getMessage()));
@@ -87,5 +88,15 @@ public class POL_APP_UPDCommandService {
         if (!"RETURN".equals(existingApplication.getPolicyStatus())) {
             throw new BusinessRuleException(ApiCode.APPLICATION_UPDATE_NOT_ALLOWED.getCode(), ApiCode.APPLICATION_UPDATE_NOT_ALLOWED.getMessage());
         }
+    }
+
+    private void validatePolicyFiles(InsuranceApplicationUpdateReqDto reqDto) {
+        if (isBlank(reqDto.getPfile01Path()) || isBlank(reqDto.getPfile02Path())) {
+            throw new BusinessRuleException(ApiCode.POLICY_FILES_REQUIRED.getCode(), ApiCode.POLICY_FILES_REQUIRED.getMessage());
+        }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 }
