@@ -25,6 +25,8 @@ import maventest.service.impl.AppUserRepository;
 @RequiredArgsConstructor
 public class POL_APP_CMDCommandService {
 
+    private static final String NOTIF_TYPE_POLICY = "POLICY";
+
     private static final int CALL_LIST_STATUS_PENDING = 0;
 
     private final InsuranceApplicationRepository insuranceApplicationRepository;
@@ -33,6 +35,7 @@ public class POL_APP_CMDCommandService {
     private final PolicyNumberGenerator policyNumberGenerator;
     private final AppUserRepository appUserRepository;
     private final PolicyAprvLogAppender policyAprvLogAppender;
+    private final NotificationService notificationService;
 
     @Transactional
     public InsuranceApplicationCommandRespDto createApplication(InsuranceApplicationCommandReqDto reqDto, String createdBy) {
@@ -73,6 +76,11 @@ public class POL_APP_CMDCommandService {
                 createdBy,
                 "業務送件"
         );
+
+        notificationService.pushToRole("APPLICANT", NOTIF_TYPE_POLICY,
+                "新件待審",
+                "保單 " + applicationId + " 已送件，請確認處理。",
+                applicationId, "SYSTEM");
 
         return insuranceApplicationConverter.toCommandRespDto(policyApplicationEntity, reqDto.getInsuredBirthdate());
     }

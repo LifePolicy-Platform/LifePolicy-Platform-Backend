@@ -18,4 +18,11 @@
         LIMIT 1
     </select>
 
+    <select id="findUsernameByMemberId" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT USERNAME
+        FROM tb_cust_user
+        WHERE MEMBER_ID = #{memberId}
+        LIMIT 1
+    </select>
+
 </mapper>

@@ -33,25 +33,25 @@ public class ProductCreateReqDto {
     private BigDecimal basePremium;
 
     @JsonProperty("MIN_AMOUNT")
-    @NotNull(message = "minAmount is required")
+    @NotNull(message = "最低保額不得為空")
     @DecimalMin(value = "1", message = "minAmount must be greater than zero")
     private BigDecimal minAmount;
 
     @JsonProperty("MAX_AMOUNT")
-    @NotNull(message = "maxAmount is required")
+    @NotNull(message = "最高保額不得為空")
     @DecimalMin(value = "1", message = "maxAmount must be greater than zero")
     private BigDecimal maxAmount;
 
     @JsonProperty("MIN_AGE")
-    @NotNull(message = "minAge is required")
-    @Min(value = 0, message = "minAge must be at least 0")
-    @Max(value = 99, message = "minAge must be at most 99")
+    @NotNull(message = "投保最低年齡不得為空")
+    @Min(value = 1, message = "投保年齡最低為 1 歲")
+    @Max(value = 99, message = "投保年齡最高為 99 歲")
     private Integer minAge;
 
     @JsonProperty("MAX_AGE")
-    @NotNull(message = "maxAge is required")
-    @Min(value = 0, message = "maxAge must be at least 0")
-    @Max(value = 99, message = "maxAge must be at most 99")
+    @NotNull(message = "投保最高年齡不得為空")
+    @Min(value = 1, message = "投保年齡最低為 1 歲")
+    @Max(value = 99, message = "投保年齡最高為 99 歲")
     private Integer maxAge;
 
     @JsonProperty("REMARK")

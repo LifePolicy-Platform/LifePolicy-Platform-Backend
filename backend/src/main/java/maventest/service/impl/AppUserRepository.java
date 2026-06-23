@@ -61,6 +61,15 @@ public class AppUserRepository {
         return appUserMapper.findAllUser();
     }
 
+    public List<AppUserEntity> findByRoleCode(String roleCode) {
+        return appUserMapper.findByRoleCode(roleCode);
+    }
+
+    public Optional<AppUserEntity> findById(Long id) {
+        AppUserEntity user = appUserMapper.findById(id);
+        return Optional.ofNullable(user);
+    }
+
     public void updateByUserName(AppUserEntity user) {
         appUserMapper.updateByUserName(user);
     }

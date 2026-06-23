@@ -45,6 +45,7 @@ public class SecurityConfig {
                     .requestMatchers("/api/v1/auth/me").authenticated()
                     // 約訪時間相關 API 需要登入
                     .requestMatchers("/api/customer/**").authenticated()
+                    .requestMatchers("/api/notifications/**").authenticated()
                     .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

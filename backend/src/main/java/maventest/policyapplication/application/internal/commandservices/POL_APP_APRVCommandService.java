@@ -21,14 +21,19 @@ import maventest.policyapplication.interfaces.dto.InsuranceApplicationReviewComm
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationReviewCommandRespDto;
 import maventest.policyapplication.interfaces.transform.InsuranceApplicationConverter;
 import maventest.service.PolicyAprvLogAppender;
+import maventest.service.impl.AppUserRepository;
 
 @Service
 @RequiredArgsConstructor
 public class POL_APP_APRVCommandService {
 
+    private static final String NOTIF_TYPE_POLICY = "POLICY";
+
     private final InsuranceApplicationRepository insuranceApplicationRepository;
     private final InsuranceApplicationConverter insuranceApplicationConverter;
     private final PolicyAprvLogAppender policyAprvLogAppender;
+    private final NotificationService notificationService;
+    private final AppUserRepository appUserRepository;
 
     @Transactional
     public InsuranceApplicationReviewCommandRespDto reviewApplication(
@@ -60,6 +65,7 @@ public class POL_APP_APRVCommandService {
         }
 
         appendReviewLog(reviewTarget.getPolicyNo(), reqDto, reviewedBy);
+        pushReviewNotification(existingApplication, reqDto.getTargetStatus(), reviewedBy);
 
         return insuranceApplicationConverter.toReviewCommandRespDto(existingApplication, reviewTarget, reqDto);
     }
@@ -116,5 +122,52 @@ public class POL_APP_APRVCommandService {
             case REJECTED -> rejectionReason;
             default -> null;
         };
+    }
+
+    private void pushReviewNotification(PolicyApplicationEntity app,
+                                        ApplicationStatus targetStatus,
+                                        String reviewedBy) {
+        String policyNo = app.getPolicyNo();
+        String agentUsername = appUserRepository.findById(app.getAgentId())
+                .map(u -> u.getUsername())
+                .orElse(null);
+
+        switch (targetStatus) {
+            case RETURN -> notificationService.pushToMember(
+                    app.getMemberId(), NOTIF_TYPE_POLICY,
+                    "保單退回通知",
+                    "保單 " + policyNo + " 已被退回，請確認並補正資料。",
+                    policyNo, reviewedBy);
+
+            case PENDING -> notificationService.pushToRole(
+                    "REVIEWER", NOTIF_TYPE_POLICY,
+                    "待審保單通知",
+                    "保單 " + policyNo + " 已送主管審核，請確認處理。",
+                    policyNo, reviewedBy);
+
+            case APPROVED -> {
+                notificationService.pushToUsername(agentUsername, NOTIF_TYPE_POLICY,
+                        "保單核准通知",
+                        "保單 " + policyNo + " 已核准。",
+                        policyNo, reviewedBy);
+                notificationService.pushToMember(app.getMemberId(), NOTIF_TYPE_POLICY,
+                        "保單核准通知",
+                        "您的保單 " + policyNo + " 已核准，感謝投保。",
+                        policyNo, reviewedBy);
+            }
+
+            case REJECTED -> {
+                notificationService.pushToUsername(agentUsername, NOTIF_TYPE_POLICY,
+                        "保單拒絕通知",
+                        "保單 " + policyNo + " 已被拒絕。",
+                        policyNo, reviewedBy);
+                notificationService.pushToMember(app.getMemberId(), NOTIF_TYPE_POLICY,
+                        "保單拒絕通知",
+                        "您的保單 " + policyNo + " 申請未通過，請洽業務人員。",
+                        policyNo, reviewedBy);
+            }
+
+            default -> { /* 其他狀態不推播 */ }
+        }
     }
 }

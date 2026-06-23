@@ -28,6 +28,15 @@
         WHERE PRODUCT_CODE = #{productCode}
     </select>
 
+    <select id="findByName" parameterType="java.lang.String" resultMap="ProductResultMap">
+        SELECT PRODUCT_CODE, PRODUCT_NAME, PRODUCT_TYPE, BASE_PREMIUM,
+               MIN_AMOUNT, MAX_AMOUNT, MIN_AGE, MAX_AGE,
+               STATUS, REMARK, CREATE_TIME, UPDATE_TIME, UPDATE_USER
+        FROM tb_product
+        WHERE PRODUCT_NAME = #{productName}
+        LIMIT 1
+    </select>
+
     <select id="findAll" resultMap="ProductResultMap">
         SELECT PRODUCT_CODE, PRODUCT_NAME, PRODUCT_TYPE, BASE_PREMIUM,
                MIN_AMOUNT, MAX_AMOUNT, MIN_AGE, MAX_AGE,
