@@ -16,6 +16,8 @@ public interface ProductMapper extends BaseMapper<ProductEntity> {
 
     ProductEntity findByCode(@Param("productCode") String productCode);
 
+    ProductEntity findByName(@Param("productName") String productName);
+
     List<ProductEntity> selectList(LambdaQueryWrapper<ProductEntity> eq);
 
     List<ProductEntity> findAll();

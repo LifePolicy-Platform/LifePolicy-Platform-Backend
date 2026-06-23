@@ -44,6 +44,21 @@
         WHERE USERNAME = #{username}
     </update>
 
+    <select id="findByRoleCode" resultMap="AppUserResultMap">
+        SELECT USER_ID, USERNAME, PASSWORD, DISPLAY_NAME, ROLE_CODE, STATUS,
+               LAST_LOGIN_TIME, CREATE_TIME, UPDATE_TIME
+        FROM TB_USER
+        WHERE ROLE_CODE = #{roleCode}
+    </select>
+
+    <select id="findById" resultMap="AppUserResultMap">
+        SELECT USER_ID, USERNAME, PASSWORD, DISPLAY_NAME, ROLE_CODE, STATUS,
+               LAST_LOGIN_TIME, CREATE_TIME, UPDATE_TIME
+        FROM TB_USER
+        WHERE USER_ID = #{id}
+        LIMIT 1
+    </select>
+
     <delete id="deleteUserByUsername">
         DELETE FROM TB_USER WHERE USERNAME = #{username}
     </delete>

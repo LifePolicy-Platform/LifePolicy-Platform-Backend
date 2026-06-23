@@ -31,6 +31,7 @@ public enum ApiCode {
     PRODUCT_AGE_RANGE_INVALID("INS-PROD-4041", "Min age must be less than or equal to max age"),
     PRODUCT_STATUS_INVALID("INS-PROD-4042", "Product status must be ACTIVE or INACTIVE"),
     PRODUCT_TYPE_INVALID("INS-PROD-4043", "Invalid product type"),
+    PRODUCT_NAME_DUPLICATE("INS-PROD-4044", "Product name already exists"),
     SYSTEM_ERROR("INS-SYS-5000", "System error"),
     USERNAME_ALREADY_EXISTS("INS-SYS-6000", "User is already eisits");
 

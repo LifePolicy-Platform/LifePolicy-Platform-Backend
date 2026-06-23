@@ -30,6 +30,11 @@ public class ProductCommandService {
                     ApiCode.PRODUCT_CODE_DUPLICATE.getCode(),
                     ApiCode.PRODUCT_CODE_DUPLICATE.getMessage());
         }
+        if (productMapper.findByName(dto.getProductName()) != null) {
+            throw new ErrorInputException(
+                    ApiCode.PRODUCT_NAME_DUPLICATE.getCode(),
+                    ApiCode.PRODUCT_NAME_DUPLICATE.getMessage());
+        }
         validateTypeAndRanges(dto.getProductType(),
                 dto.getMinAmount(), dto.getMaxAmount(),
                 dto.getMinAge(), dto.getMaxAge());
@@ -47,6 +52,12 @@ public class ProductCommandService {
                     HttpStatus.NOT_FOUND);
         }
 
+        ProductEntity existing = productMapper.findByName(dto.getProductName());
+        if (existing != null && !existing.getProductCode().equals(code)) {
+            throw new ErrorInputException(
+                    ApiCode.PRODUCT_NAME_DUPLICATE.getCode(),
+                    ApiCode.PRODUCT_NAME_DUPLICATE.getMessage());
+        }
         validateDto(dto);
 
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
