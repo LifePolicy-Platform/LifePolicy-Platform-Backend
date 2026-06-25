@@ -21,4 +21,9 @@ public interface NotificationMapper {
     int markAsRead(@Param("notifNo") Long notifNo, @Param("username") String username);
 
     int markAllAsReadByUsername(@Param("username") String username);
+
+    boolean existsSentToday(
+            @Param("recipientUsername") String recipientUsername,
+            @Param("refNo") String refNo,
+            @Param("title") String title);
 }

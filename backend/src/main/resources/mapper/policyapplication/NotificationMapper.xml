@@ -70,4 +70,13 @@
           AND STATUS = 'SENT'
     </update>
 
+    <select id="existsSentToday" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM tb_notification
+        WHERE RECIPIENT_USERNAME = #{recipientUsername}
+          AND REF_NO = #{refNo}
+          AND TITLE = #{title}
+          AND CREATE_TIME <![CDATA[ >= ]]> CURDATE()
+    </select>
+
 </mapper>

@@ -20,6 +20,21 @@ public class NotificationService {
     private final AppUserRepository appUserRepository;
     private final CustUserMapper custUserMapper;
 
+    /** 通知所有指定角色的有效使用者（同日同標題同案件不重複發送） */
+    public void pushToRoleIfNotSentToday(String roleCode, String notifType, String title,
+                                         String content, String refNo, String createUser) {
+        List<AppUserEntity> users = appUserRepository.findByRoleCode(roleCode);
+        for (AppUserEntity user : users) {
+            if (!"ACTIVE".equals(user.getStatus())) {
+                continue;
+            }
+            if (notificationMapper.existsSentToday(user.getUsername(), refNo, title)) {
+                continue;
+            }
+            push(user.getUsername(), null, notifType, title, content, refNo, createUser);
+        }
+    }
+
     /** 通知所有指定角色的有效使用者 */
     public void pushToRole(String roleCode, String notifType, String title,
                            String content, String refNo, String createUser) {
