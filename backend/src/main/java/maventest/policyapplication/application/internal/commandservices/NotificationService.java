@@ -8,6 +8,9 @@ import maventest.policyapplication.infrastructure.repository.mapper.CustUserMapp
 import maventest.policyapplication.infrastructure.repository.mapper.NotificationMapper;
 import maventest.auth.repository.AppUserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.List;
 
@@ -20,14 +23,31 @@ public class NotificationService {
     private final AppUserRepository appUserRepository;
     private final CustUserMapper custUserMapper;
 
-    /** 通知所有指定角色的有效使用者 */
+    /** 通知所有指定角色的有效使用者（整批 all-or-nothing，與呼叫端交易隔離） */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void pushToRole(String roleCode, String notifType, String title,
                            String content, String refNo, String createUser) {
-        List<AppUserEntity> users = appUserRepository.findByRoleCode(roleCode);
-        for (AppUserEntity user : users) {
-            if ("ACTIVE".equals(user.getStatus())) {
-                push(user.getUsername(), null, notifType, title, content, refNo, createUser);
+        try {
+            List<AppUserEntity> users = appUserRepository.findByRoleCode(roleCode);
+            for (AppUserEntity user : users) {
+                if (!"ACTIVE".equals(user.getStatus())) continue;
+                String username = user.getUsername();
+                if (username == null || username.isBlank()) continue;
+                NotificationEntity entity = NotificationEntity.builder()
+                        .notifType(notifType)
+                        .title(title)
+                        .content(content)
+                        .targetType("ROLE")
+                        .memberId(null)
+                        .refNo(refNo)
+                        .recipientUsername(username)
+                        .createUser(createUser != null ? createUser : "SYSTEM")
+                        .build();
+                notificationMapper.insert(entity);
             }
+        } catch (Exception e) {
+            log.error("角色推播整批失敗 roleCode={} title={}", roleCode, title, e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
     }
 
