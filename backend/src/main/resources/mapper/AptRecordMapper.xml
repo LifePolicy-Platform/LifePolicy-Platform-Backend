@@ -2,10 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="maventest.mapper.AptRecordMapper">
+<mapper namespace="maventest.appointment.mapper.AptRecordMapper">
 
     <select id="selectAptRecordList"
-            resultType="maventest.dto.AptRecordListResponse">
+            resultType="maventest.appointment.dto.AptRecordListResponse">
         SELECT
             a.SNO              AS sno,
             a.LIST_NO          AS listNo,
@@ -28,7 +28,7 @@
     </select>
 
     <select id="selectAptRecordHistoryByCustName"
-            resultType="maventest.dto.AptRecordListResponse">
+            resultType="maventest.appointment.dto.AptRecordListResponse">
         SELECT
             a.SNO              AS sno,
             a.LIST_NO          AS listNo,

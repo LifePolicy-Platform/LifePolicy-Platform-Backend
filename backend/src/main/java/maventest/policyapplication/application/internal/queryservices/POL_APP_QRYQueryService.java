@@ -2,7 +2,7 @@ package maventest.policyapplication.application.internal.queryservices;
 
 
 import lombok.RequiredArgsConstructor;
-import maventest.code.ApiCode;
+import maventest.common.ApiCode;
 import maventest.common.PageResult;
 import maventest.common.exception.ApiException;
 import maventest.common.exception.ErrorInputException;

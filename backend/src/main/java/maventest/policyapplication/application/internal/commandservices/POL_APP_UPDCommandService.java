@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import maventest.code.ApiCode;
+import maventest.common.ApiCode;
 import maventest.common.exception.BusinessRuleException;
 import maventest.common.exception.ErrorInputException;
 import maventest.policyapplication.application.internal.PolicyApplicationRuleService;
@@ -17,7 +17,7 @@ import maventest.policyapplication.infrastructure.repository.InsuranceApplicatio
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationUpdateReqDto;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationUpdateRespDto;
 import maventest.policyapplication.interfaces.transform.InsuranceApplicationConverter;
-import maventest.service.PolicyAprvLogAppender;
+import maventest.policy.service.PolicyAprvLogAppender;
 
 @Service
 @RequiredArgsConstructor

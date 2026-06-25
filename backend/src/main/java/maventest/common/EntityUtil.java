@@ -3,7 +3,6 @@ package maventest.common;
 
 import org.springframework.validation.BindingResult;
 
-import maventest.code.ApiCode;
 import maventest.common.exception.ErrorInputException;
 
 import java.util.stream.Collectors;

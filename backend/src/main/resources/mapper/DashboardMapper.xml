@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="maventest.mapper.DashboardMapper">
+<mapper namespace="maventest.dashboard.mapper.DashboardMapper">
 
     <select id="sumApprovedPremiumByEffectDateRange" resultType="java.math.BigDecimal">
         SELECT COALESCE(SUM(pa.PREMIUM_AMOUNT), 0)
@@ -20,7 +20,7 @@
     </select>
 
     <!-- 當月申請保單：依 APPLY_TIME 每日統計 -->
-    <select id="countMonthApplicationsByDay" resultType="maventest.dto.DashboardDailyCountRow">
+    <select id="countMonthApplicationsByDay" resultType="maventest.dashboard.dto.DashboardDailyCountRow">
         SELECT DAY(pa.APPLY_TIME) AS dayOfMonth,
                COUNT(1)           AS count
         FROM tb_policy pa
@@ -31,7 +31,7 @@
     </select>
 
     <!-- 保單狀態分布：依 APPLY_TIME 落在區間內 -->
-    <select id="countByPolicyStatusInApplyTimeRange" resultType="maventest.dto.DashboardStatusCountRow">
+    <select id="countByPolicyStatusInApplyTimeRange" resultType="maventest.dashboard.dto.DashboardStatusCountRow">
         SELECT pa.POLICY_STATUS AS policyStatus,
                COUNT(1)         AS count
         FROM tb_policy pa
@@ -42,7 +42,7 @@
     </select>
 
     <!-- 商品種類銷售量：依 tb_product.PRODUCT_TYPE（ACCIDENT / HEALTH / LIFE） -->
-    <select id="countApprovedSalesByProductType" resultType="maventest.dto.DashboardProductTypeCountRow">
+    <select id="countApprovedSalesByProductType" resultType="maventest.dashboard.dto.DashboardProductTypeCountRow">
         SELECT UPPER(TRIM(p.PRODUCT_TYPE)) AS productType,
                COUNT(1)                    AS count
         FROM tb_policy pa

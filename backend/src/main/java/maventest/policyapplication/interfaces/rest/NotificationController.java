@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import maventest.common.ReturnMsg;
-import maventest.entity.AppUserPrincipal;
+import maventest.auth.entity.AppUserPrincipal;
 import maventest.policyapplication.application.internal.commandservices.NotificationService;
 import maventest.policyapplication.domain.entity.NotificationEntity;
 import org.springframework.http.ResponseEntity;

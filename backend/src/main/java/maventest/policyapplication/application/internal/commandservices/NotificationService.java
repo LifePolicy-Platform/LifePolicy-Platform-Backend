@@ -2,11 +2,11 @@ package maventest.policyapplication.application.internal.commandservices;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import maventest.entity.AppUserEntity;
+import maventest.auth.entity.AppUserEntity;
 import maventest.policyapplication.domain.entity.NotificationEntity;
 import maventest.policyapplication.infrastructure.repository.mapper.CustUserMapper;
 import maventest.policyapplication.infrastructure.repository.mapper.NotificationMapper;
-import maventest.service.impl.AppUserRepository;
+import maventest.auth.repository.AppUserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

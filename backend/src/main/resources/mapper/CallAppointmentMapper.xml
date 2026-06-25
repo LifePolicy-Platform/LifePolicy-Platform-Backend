@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="maventest.mapper.CallAppointmentMapper">
+<mapper namespace="maventest.appointment.mapper.CallAppointmentMapper">
 
     <select id="selectAppointmentContextByPolicyNo"
-            resultType="maventest.dto.PolicyAppointmentContextDto">
+            resultType="maventest.appointment.dto.PolicyAppointmentContextDto">
         SELECT pa.POLICY_NO      AS policyNo,
                pa.LIST_NO        AS listNo,
                pa.MEMBER_ID      AS memberId,
@@ -30,7 +30,7 @@
         LIMIT 1
     </select>
 
-    <select id="selectByListNo" resultType="maventest.dto.CallAppointmentItemDto">
+    <select id="selectByListNo" resultType="maventest.appointment.dto.CallAppointmentItemDto">
         SELECT a.SNO            AS sno,
                a.REC_NO         AS recNo,
                a.LIST_NO        AS listNo,
@@ -45,7 +45,7 @@
         ORDER BY a.REC_NO DESC
     </select>
 
-    <select id="selectPendingByListNo" resultType="maventest.entity.CallAppointmentEntity">
+    <select id="selectPendingByListNo" resultType="maventest.appointment.entity.CallAppointmentEntity">
         SELECT SNO           AS sno,
                REC_NO        AS recNo,
                LIST_NO       AS listNo,
@@ -70,7 +70,7 @@
     </select>
 
     <insert id="insertCallAppointment"
-            parameterType="maventest.entity.CallAppointmentEntity"
+            parameterType="maventest.appointment.entity.CallAppointmentEntity"
             useGeneratedKeys="true"
             keyProperty="sno">
         INSERT INTO tb_call_appointment (

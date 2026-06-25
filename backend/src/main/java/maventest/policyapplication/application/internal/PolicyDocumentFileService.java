@@ -1,6 +1,6 @@
 package maventest.policyapplication.application.internal;
 
-import maventest.code.ApiCode;
+import maventest.common.ApiCode;
 import maventest.common.exception.ApiException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;

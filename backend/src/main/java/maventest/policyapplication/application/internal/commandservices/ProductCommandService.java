@@ -1,7 +1,7 @@
 package maventest.policyapplication.application.internal.commandservices;
 
 import lombok.RequiredArgsConstructor;
-import maventest.code.ApiCode;
+import maventest.common.ApiCode;
 import maventest.common.exception.ApiException;
 import maventest.common.exception.ErrorInputException;
 import maventest.policyapplication.domain.entity.ProductEntity;

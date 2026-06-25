@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import maventest.code.ApiCode;
+import maventest.common.ApiCode;
 import maventest.common.EntityUtil;
 import maventest.common.ReturnMsg;
 import maventest.common.exception.ApiException;

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="maventest.mapper.PolicyAprvLogMapper">
+<mapper namespace="maventest.policy.mapper.PolicyAprvLogMapper">
 
-    <select id="selectByPolicyNo" resultType="maventest.dto.PolicyAprvLogList">
+    <select id="selectByPolicyNo" resultType="maventest.policy.dto.PolicyAprvLogList">
         SELECT
             log.POLICY_LOG_NO AS policyLogNo,
             log.POLICY_NO     AS policyNo,

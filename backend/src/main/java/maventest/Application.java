@@ -7,7 +7,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-@MapperScan({"maventest.mapper", "maventest.policyapplication.infrastructure.repository.mapper"})
+@MapperScan({"maventest.**.mapper"})
 public class Application extends SpringBootServletInitializer {
 
     @Override
