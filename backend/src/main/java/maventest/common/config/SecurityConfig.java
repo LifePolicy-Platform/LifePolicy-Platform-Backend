@@ -42,11 +42,15 @@ public class SecurityConfig {
                             "/v3/api-docs/**",
                             "/error"
                     ).permitAll()
-                    .requestMatchers("/api/v1/auth/me").authenticated()
-                    // 約訪時間相關 API 需要登入
-                    .requestMatchers("/api/customer/**").authenticated()
-                    .requestMatchers("/api/notifications/**").authenticated()
-                    .anyRequest().permitAll()
+                    // 用戶管理：僅限 REVIEWER / ADMIN
+                    .requestMatchers(
+                            "/api/v1/auth/register",
+                            "/api/v1/auth/users"
+                    ).hasAnyRole("REVIEWER", "ADMIN")
+                    .requestMatchers(
+                            "/api/v1/auth/user/**"
+                    ).hasRole("ADMIN")
+                    .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
