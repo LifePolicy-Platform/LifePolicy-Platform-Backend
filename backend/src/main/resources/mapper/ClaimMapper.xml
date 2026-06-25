@@ -6,12 +6,14 @@
         SELECT 
             c.CLAIM_NO as claimNo, 
             c.MEMBER_ID as memberId, 
-            m.USERNAME  as memberName,                c.POLICY_NO as policyNo, 
+            m.USERNAME  as memberName,                
+            c.POLICY_NO as policyNo, 
             c.CLAIM_AMOUNT as claimAmount, 
             c.APPROVE_AMOUNT as approveAmount, 
             c.CLAIM_STATUS as claimStatus, 
             c.AGENT_ID as agentId, 
-            c.APPLY_TIME as applyTime,           c.EXPIRY_TIME as expiryTime, 
+            c.APPLY_TIME as applyTime,           
+            c.EXPIRY_TIME as expiryTime, 
             c.SETTLE_TIME as settleTime, 
             c.REMARK as remark, 
             c.UPDATE_USER as updateUser,
@@ -20,7 +22,8 @@
             c.FILE_02_NAME as file02Name, 
             c.FILE_02_PATH as file02Path
         FROM tb_claim c
-        LEFT JOIN tb_cust_user m ON c.MEMBER_ID = m.MEMBER_ID  <where>
+        LEFT JOIN tb_cust_user m ON c.MEMBER_ID = m.MEMBER_ID  
+        <where>
             <if test="status != null and status != ''">
                 AND c.CLAIM_STATUS = #{status}
             </if>
@@ -48,17 +51,22 @@
             c.SETTLE_TIME as settleTime, 
             c.REMARK as remark, 
             c.UPDATE_USER as updateUser,
+            m.NAME as memberName,              <!-- 🌟 修正：改抓真實姓名 (已被保留，重複定義已移除) -->
+            m.BIRTHDAY as birthday,            <!-- 🌟 新增：補上生日 (讓前端算年齡) -->
+            m.GENDER as gender,                <!-- 🌟 新增：補上性別 -->
+            p.RISK_LEVEL as riskLevel,          <!-- 🌟 新增：保險風險等級 -->
             c.FILE_01_NAME as file01Name,
             c.FILE_01_PATH as file01Path,
             c.FILE_02_NAME as file02Name,
             c.FILE_02_PATH as file02Path,
             u.DISPLAY_NAME as agentName, 
-            m.USERNAME  as memberName, 
             p.PRODUCT_CODE as productCode, 
             prod.PRODUCT_NAME as productName,
             prod.PRODUCT_TYPE as productType,
             p.EFFECT_DATE as effectDate,
-            p.EXPIRE_DATE as expireDate
+            p.EXPIRE_DATE as expireDate,
+            prod.MIN_AMOUNT as minAmount,       <!-- 🌟 新增：理賠上限 -->
+            prod.MAX_AMOUNT as maxAmount        <!-- 🌟 新增：理賠下限 -->
         FROM tb_claim c
         LEFT JOIN tb_user u ON c.AGENT_ID = u.USER_ID
         LEFT JOIN tb_cust_user m ON c.MEMBER_ID = m.MEMBER_ID
@@ -123,48 +131,53 @@
     </update>
 
     <update id="updateClaimStatus">
-    UPDATE tb_claim 
-    SET CLAIM_STATUS = #{claimStatus}, 
-        UPDATE_USER = #{aprvUser},
-        <if test="approveAmount != null">APPROVE_AMOUNT = #{approveAmount},</if>
-        SETTLE_TIME = CASE WHEN #{claimStatus} IN ('APPROVED', 'REJECTED') THEN NOW() ELSE NULL END
-    WHERE CLAIM_NO = #{claimNo}
-</update>
+        UPDATE tb_claim 
+        SET CLAIM_STATUS = #{claimStatus}, 
+            UPDATE_USER = #{aprvUser},
+            <if test="approveAmount != null">APPROVE_AMOUNT = #{approveAmount},</if>
+            SETTLE_TIME = CASE WHEN #{claimStatus} IN ('APPROVED', 'REJECTED') THEN NOW() ELSE NULL END
+        WHERE CLAIM_NO = #{claimNo}
+    </update>
 
     <select id="selectClaimAuditList" resultType="maventest.entity.ClaimEntity">
-    SELECT 
-        c.CLAIM_NO as claimNo, 
-        c.POLICY_NO as policyNo, 
-        c.CLAIM_AMOUNT as claimAmount, 
-        c.APPROVE_AMOUNT as approveAmount,  
-        c.CLAIM_STATUS as claimStatus,
-        c.MEMBER_ID as memberId,
-        c.REMARK as remark,
-        c.FILE_01_NAME as file01Name,
-        c.FILE_01_PATH as file01Path,
-        c.FILE_02_NAME as file02Name,
-        c.FILE_02_PATH as file02Path,
-        m.USERNAME  as memberName,
-        prod.PRODUCT_NAME as productName
-    FROM tb_claim c
-    LEFT JOIN tb_cust_user m ON c.MEMBER_ID = m.MEMBER_ID
-    LEFT JOIN tb_policy p ON c.POLICY_NO = p.POLICY_NO
-    LEFT JOIN tb_product prod ON p.PRODUCT_CODE = prod.PRODUCT_CODE
-    <where>
-        <choose>
-            <when test="status != null and status != ''">
-                AND c.CLAIM_STATUS = #{status}
-            </when>
-            <otherwise>
-                AND c.CLAIM_STATUS IN ('SUBMIT', 'PENDING', 'RETURN')
-            </otherwise>
-        </choose>
-        <if test="policyNo != null and policyNo != ''">
-            AND c.POLICY_NO LIKE CONCAT('%', #{policyNo}, '%')
-        </if>
-    </where>
-    ORDER BY c.APPLY_TIME DESC
-</select>
+        SELECT 
+            c.CLAIM_NO as claimNo, 
+            c.POLICY_NO as policyNo, 
+            c.CLAIM_AMOUNT as claimAmount, 
+            c.APPROVE_AMOUNT as approveAmount,  
+            c.CLAIM_STATUS as claimStatus,
+            c.MEMBER_ID as memberId,
+            c.REMARK as remark,
+            c.FILE_01_NAME as file01Name,
+            c.FILE_01_PATH as file01Path,
+            c.FILE_02_NAME as file02Name,
+            c.FILE_02_PATH as file02Path,
+            m.NAME as memberName,
+            m.BIRTHDAY as birthday,            
+            m.GENDER as gender,                
+            p.RISK_LEVEL as riskLevel,          
+            prod.PRODUCT_NAME as productName,
+            prod.MIN_AMOUNT as minAmount,       
+            prod.MAX_AMOUNT as maxAmount        
+        FROM tb_claim c
+        LEFT JOIN tb_cust_user m ON c.MEMBER_ID = m.MEMBER_ID
+        LEFT JOIN tb_policy p ON c.POLICY_NO = p.POLICY_NO
+        LEFT JOIN tb_product prod ON p.PRODUCT_CODE = prod.PRODUCT_CODE
+        <where>
+            <choose>
+                <when test="status != null and status != ''">
+                    AND c.CLAIM_STATUS = #{status}
+                </when>
+                <otherwise>
+                    AND c.CLAIM_STATUS IN ('SUBMIT', 'PENDING', 'RETURN')
+                </otherwise>
+            </choose>
+            <if test="policyNo != null and policyNo != ''">
+                AND c.POLICY_NO LIKE CONCAT('%', #{policyNo}, '%')
+            </if>
+        </where>
+        ORDER BY c.UPDATE_TIME DESC
+    </select>
 
     <insert id="insertAprvLog">
         INSERT INTO tb_claim_aprv_log (
@@ -176,10 +189,22 @@
         )
     </insert>
 
+    <!-- 🌟 修正：透過 LEFT JOIN tb_user 聯結，並用 COALESCE 確保顯示為 真實真實姓名 (DISPLAY_NAME) -->
     <select id="selectAprvLogHistory" resultType="maventest.entity.ClaimAprvLogEntity">
-        SELECT * FROM tb_claim_aprv_log
-        WHERE CLAIM_NO = #{claimNo}
-        ORDER BY CLAIM_LOG_NO DESC
+        SELECT 
+            l.CLAIM_LOG_NO as claimLogNo,
+            l.CLAIM_NO as claimNo,
+            l.POLICY_NO as policyNo,
+            l.CLAIM_STATUS as claimStatus,
+            l.APPROVE_AMOUNT as approveAmount,
+            l.APRV_REMARK as aprvRemark,
+            l.CREATE_TIME as createTime,
+            l.APRV_TIME as aprvTime,
+            COALESCE(u.DISPLAY_NAME, l.APRV_USER) as aprvUser
+        FROM tb_claim_aprv_log l
+        LEFT JOIN tb_user u ON l.APRV_USER = u.USERNAME
+        WHERE l.CLAIM_NO = #{claimNo}
+        ORDER BY l.CLAIM_LOG_NO DESC
     </select>
 
 </mapper>

@@ -25,11 +25,17 @@ public class ClaimEntity {
     private String remark;
     private String updateUser;
     
-    // 補上最新的 PDF 檔案欄位
+    
     private String file01Name;
     private String file01Path;
     private String file02Name;
     private String file02Path;
+    
+    private String birthday;
+    private String gender;
+    private String riskLevel;
+    private BigDecimal minAmount;
+    private BigDecimal maxAmount;
 
     // 請確保 ClaimEntity 內有這四個欄位
     @com.baomidou.mybatisplus.annotation.TableField(exist = false)
@@ -41,7 +47,7 @@ public class ClaimEntity {
     @com.baomidou.mybatisplus.annotation.TableField(exist = false)
     private String productName;  // 商品名稱
 
-    // 額外 JOIN 的欄位
+    
     private String productType;   // 來自 tb_product (用於判斷是否為 HEALTH)
     private java.util.Date effectDate;   // 來自 tb_policy
     private java.util.Date expireDate;   // 來自 tb_policy
