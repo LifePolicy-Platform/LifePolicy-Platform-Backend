@@ -124,22 +124,22 @@ public class ClaimAuditController {
                 .orElse(null);
 
         switch (action) {
-            case "PENDING" -> notificationService.pushToUsername(agentUsername, "CLAIM",
-                    "理賠案件審核中",
-                    "理賠案件 " + claimNo + " 已進入審核程序，請耐心等候。",
+            case "PENDING" -> notificationService.pushToRole("REVIEWER", "CLAIM",
+                    "理賠複審待審",
+                    "理賠案件 " + claimNo + " 已完成初審，請進行複審處理。",
                     claimNo, reviewer);
-            case "RETURN" -> notificationService.pushToUsername(agentUsername, "CLAIM",
+            case "RETURN" -> notificationService.pushToUsername(agentUsername, "CLAIM_RESULT",
                     "理賠案件退件",
                     "理賠案件 " + claimNo + " 已退件，請修正後重新送件。",
-                    claimNo, reviewer);
-            case "APPROVED" -> notificationService.pushToUsername(agentUsername, "CLAIM",
+                    claim.getPolicyNo(), reviewer);
+            case "APPROVED" -> notificationService.pushToUsername(agentUsername, "CLAIM_RESULT",
                     "理賠案件核准",
                     "理賠案件 " + claimNo + " 已核准。",
-                    claimNo, reviewer);
-            case "REJECTED" -> notificationService.pushToUsername(agentUsername, "CLAIM",
+                    claim.getPolicyNo(), reviewer);
+            case "REJECTED" -> notificationService.pushToUsername(agentUsername, "CLAIM_RESULT",
                     "理賠案件駁回",
                     "理賠案件 " + claimNo + " 已駁回，如有疑問請洽主管。",
-                    claimNo, reviewer);
+                    claim.getPolicyNo(), reviewer);
             default -> { /* 其他狀態不推播 */ }
         }
     }

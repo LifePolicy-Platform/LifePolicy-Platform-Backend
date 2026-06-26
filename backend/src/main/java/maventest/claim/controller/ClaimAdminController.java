@@ -60,9 +60,9 @@ public class ClaimAdminController {
 
         int rows = claimMapper.insertClaim(claim);
         if (rows > 0) {
-            notificationService.pushToRole("REVIEWER", "CLAIM",
-                    "理賠新件待審",
-                    "理賠案件 " + newClaimNo + " 已送件，請確認處理。",
+            notificationService.pushToRole("APPLICANT", "CLAIM",
+                    "理賠新件待初審",
+                    "理賠案件 " + newClaimNo + " 已送件，請進行初審處理。",
                     newClaimNo, "SYSTEM");
             return ResponseEntity.ok(ApiResponse.ok(Map.of("claimNo", newClaimNo)));
         }
