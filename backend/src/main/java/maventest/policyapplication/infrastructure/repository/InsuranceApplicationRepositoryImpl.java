@@ -2,6 +2,7 @@ package maventest.policyapplication.infrastructure.repository;
 
 import lombok.RequiredArgsConstructor;
 import maventest.policyapplication.domain.entity.CallListEntity;
+import maventest.policyapplication.interfaces.dto.MemberProfileRespDto;
 import maventest.policyapplication.domain.entity.PolicyApplicationEntity;
 import maventest.policyapplication.domain.entity.ProductEntity;
 import maventest.policyapplication.infrastructure.repository.mapper.CallListMapper;
@@ -59,6 +60,11 @@ public class InsuranceApplicationRepositoryImpl implements InsuranceApplicationR
     @Override
     public Optional<Long> findMemberIdByIdentityCard(String identityCard) {
         return Optional.ofNullable(custUserMapper.findMemberIdByIdentityCard(identityCard));
+    }
+
+    @Override
+    public Optional<MemberProfileRespDto> findActiveMemberProfileByIdentityCard(String identityCard) {
+        return Optional.ofNullable(custUserMapper.findActiveProfileByIdentityCard(identityCard));
     }
 
     @Override

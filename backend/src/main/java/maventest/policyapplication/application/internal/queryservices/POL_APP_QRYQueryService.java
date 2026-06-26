@@ -9,6 +9,7 @@ import maventest.common.exception.ErrorInputException;
 import maventest.policyapplication.infrastructure.repository.InsuranceApplicationRepository;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationQueryReqDto;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationQueryRespDto;
+import maventest.policyapplication.interfaces.dto.MemberProfileRespDto;
 import maventest.policyapplication.interfaces.transform.InsuranceApplicationConverter;
 
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -94,6 +96,14 @@ public class POL_APP_QRYQueryService {
         List<String> statusList = resolveIncompleteStatusList();
         List<Map<String, Object>> rows = insuranceApplicationRepository.findIncompleteApplications(statusList);
         return insuranceApplicationConverter.toQueryRespDtos(rows);
+    }
+
+    public Optional<MemberProfileRespDto> findActiveMemberByIdentityCard(String identityCard) {
+        if (isBlank(identityCard)) {
+            throw new ErrorInputException(ApiCode.INPUT_INVALID.getCode(), "身分證字號不可為空");
+        }
+        String normalized = identityCard.trim().toUpperCase(Locale.ROOT);
+        return insuranceApplicationRepository.findActiveMemberProfileByIdentityCard(normalized);
     }
 
     private List<String> resolveIncompleteStatusList() {
