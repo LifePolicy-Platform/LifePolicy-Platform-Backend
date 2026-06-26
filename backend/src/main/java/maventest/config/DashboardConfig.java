@@ -1,9 +1,0 @@
-package maventest.config;
-
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-@EnableConfigurationProperties(DashboardProperties.class)
-public class DashboardConfig {
-}

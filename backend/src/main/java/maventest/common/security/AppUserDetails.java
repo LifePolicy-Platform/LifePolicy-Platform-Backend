@@ -1,6 +1,6 @@
 package maventest.common.security;
 
-import maventest.entity.CustomerInfo;
+import maventest.customer.entity.CustomerInfo;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

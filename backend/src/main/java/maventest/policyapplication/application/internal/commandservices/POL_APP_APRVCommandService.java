@@ -23,8 +23,9 @@ import maventest.policyapplication.infrastructure.repository.InsuranceApplicatio
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationReviewCommandReqDto;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationReviewCommandRespDto;
 import maventest.policyapplication.interfaces.transform.InsuranceApplicationConverter;
-import maventest.service.PolicyAprvLogAppender;
-import maventest.service.impl.AppUserRepository;
+import maventest.policy.service.PolicyAprvLogAppender;
+import maventest.auth.repository.AppUserRepository;
+import maventest.notification.service.NotificationService;
 
 @Service
 @RequiredArgsConstructor

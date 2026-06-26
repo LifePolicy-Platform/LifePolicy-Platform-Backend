@@ -17,7 +17,7 @@ import maventest.policyapplication.infrastructure.repository.InsuranceApplicatio
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationUpdateReqDto;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationUpdateRespDto;
 import maventest.policyapplication.interfaces.transform.InsuranceApplicationConverter;
-import maventest.service.PolicyAprvLogAppender;
+import maventest.policy.service.PolicyAprvLogAppender;
 
 @Service
 @RequiredArgsConstructor

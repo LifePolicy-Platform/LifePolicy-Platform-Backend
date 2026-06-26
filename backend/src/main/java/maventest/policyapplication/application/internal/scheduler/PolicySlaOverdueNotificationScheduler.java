@@ -2,10 +2,10 @@ package maventest.policyapplication.application.internal.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import maventest.config.DashboardProperties;
-import maventest.dto.DashboardSlaOverduePolicyRow;
-import maventest.mapper.DashboardMapper;
-import maventest.policyapplication.application.internal.commandservices.NotificationService;
+import maventest.dashboard.config.DashboardProperties;
+import maventest.dashboard.dto.DashboardSlaOverduePolicyRow;
+import maventest.dashboard.mapper.DashboardMapper;
+import maventest.notification.service.NotificationService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 

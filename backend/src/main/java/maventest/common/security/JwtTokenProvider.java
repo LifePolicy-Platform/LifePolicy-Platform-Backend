@@ -1,6 +1,6 @@
 package maventest.common.security;
 
-import maventest.entity.AppUserPrincipal;
+import maventest.auth.entity.AppUserPrincipal;
 import maventest.code.ApiCode;
 import maventest.common.exception.ApiException;
 import io.jsonwebtoken.Claims;

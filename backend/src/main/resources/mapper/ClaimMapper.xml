@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="maventest.mapper.ClaimMapper">
+<mapper namespace="maventest.claim.mapper.ClaimMapper">
 
-    <select id="selectClaimList" resultType="maventest.entity.ClaimEntity">
+    <select id="selectClaimList" resultType="maventest.claim.entity.ClaimEntity">
         SELECT 
             c.CLAIM_NO as claimNo, 
             c.MEMBER_ID as memberId, 
@@ -37,7 +37,7 @@
         ORDER BY c.APPLY_TIME DESC
     </select>
 
-    <select id="selectByClaimNo" resultType="maventest.entity.ClaimEntity">
+    <select id="selectByClaimNo" resultType="maventest.claim.entity.ClaimEntity">
         SELECT 
             c.CLAIM_NO as claimNo, 
             c.MEMBER_ID as memberId, 
@@ -139,7 +139,7 @@
         WHERE CLAIM_NO = #{claimNo}
     </update>
 
-    <select id="selectClaimAuditList" resultType="maventest.entity.ClaimEntity">
+    <select id="selectClaimAuditList" resultType="maventest.claim.entity.ClaimEntity">
         SELECT 
             c.CLAIM_NO as claimNo, 
             c.POLICY_NO as policyNo, 
@@ -190,7 +190,7 @@
     </insert>
 
     <!-- 🌟 修正：透過 LEFT JOIN tb_user 聯結，並用 COALESCE 確保顯示為 真實真實姓名 (DISPLAY_NAME) -->
-    <select id="selectAprvLogHistory" resultType="maventest.entity.ClaimAprvLogEntity">
+    <select id="selectAprvLogHistory" resultType="maventest.claim.entity.ClaimAprvLogEntity">
         SELECT 
             l.CLAIM_LOG_NO as claimLogNo,
             l.CLAIM_NO as claimNo,

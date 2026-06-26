@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="maventest.mapper.AppUserMapper">
+<mapper namespace="maventest.auth.mapper.AppUserMapper">
 
-    <resultMap id="AppUserResultMap" type="maventest.entity.AppUserEntity">
+    <resultMap id="AppUserResultMap" type="maventest.auth.entity.AppUserEntity">
         <id property="id" column="USER_ID"/>
         <result property="username" column="USERNAME"/>
         <result property="password" column="PASSWORD"/>
@@ -17,7 +17,7 @@
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id"
-        parameterType="maventest.entity.AppUserEntity">
+        parameterType="maventest.auth.entity.AppUserEntity">
         INSERT INTO TB_USER (USERNAME, PASSWORD, DISPLAY_NAME, ROLE_CODE, STATUS)
         VALUES (#{username}, #{password}, #{displayName}, #{roleCode}, #{status})
     </insert>
@@ -35,7 +35,7 @@
         ORDER BY USER_ID
     </select>
 
-    <update id="updateByUserName" parameterType="maventest.entity.AppUserEntity">
+    <update id="updateByUserName" parameterType="maventest.auth.entity.AppUserEntity">
         UPDATE TB_USER
         SET DISPLAY_NAME = #{displayName},
             PASSWORD     = #{password},

@@ -5,7 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 
-import maventest.entity.AppUserPrincipal;
+import maventest.auth.entity.AppUserPrincipal;
 
 /**
  * 從 SecurityContext 解析業務角色（APPLICANT / REVIEWER / ADMIN）。

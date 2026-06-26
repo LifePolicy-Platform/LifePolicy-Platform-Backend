@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="maventest.policyapplication.infrastructure.repository.mapper.NotificationMapper">
+<mapper namespace="maventest.notification.mapper.NotificationMapper">
 
-    <resultMap id="NotificationResultMap" type="maventest.policyapplication.domain.entity.NotificationEntity">
+    <resultMap id="NotificationResultMap" type="maventest.notification.entity.NotificationEntity">
         <id     property="notifNo"           column="NOTIF_NO"/>
         <result property="notifType"         column="NOTIF_TYPE"/>
         <result property="title"             column="TITLE"/>
@@ -21,7 +21,7 @@
         <result property="createUser"        column="CREATE_USER"/>
     </resultMap>
 
-    <insert id="insert" parameterType="maventest.policyapplication.domain.entity.NotificationEntity"
+    <insert id="insert" parameterType="maventest.notification.entity.NotificationEntity"
             useGeneratedKeys="true" keyProperty="notifNo">
         INSERT INTO tb_notification (
             NOTIF_TYPE, TITLE, CONTENT, TARGET_TYPE,

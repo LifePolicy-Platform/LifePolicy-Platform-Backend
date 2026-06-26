@@ -1,0 +1,54 @@
+package maventest.visit.service.impl;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+
+import lombok.RequiredArgsConstructor;
+import maventest.visit.entity.AptRecord;
+import maventest.visit.mapper.AptRecordMapper;
+import maventest.visit.service.AptRecordSingleService;
+
+@Service
+@RequiredArgsConstructor
+public class AptRecordSingleServiceImpl implements AptRecordSingleService {
+
+    private final AptRecordMapper aptRecordMapper;
+
+    /**
+     * 依前端提供的原始約訪時間計算新約訪時間，不查 DB。
+     */
+    @Override
+    public LocalDateTime calcNewRecallTime(LocalDate targetDate, LocalDateTime originalRecallTime,
+            LocalDateTime specificDateTime) {
+        if (specificDateTime != null) {
+            return specificDateTime;
+        }
+
+        return LocalDateTime.of(targetDate, originalRecallTime.toLocalTime());
+    }
+
+    /**
+     * 執行 DB 更新，每筆獨立交易（REQUIRES_NEW）。
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+    public void executeUpdate(String listNo, LocalDateTime newRecallTime, String updateUser) {
+        LambdaUpdateWrapper<AptRecord> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.set(AptRecord::getRecallTime, newRecallTime)
+               .set(AptRecord::getUpdateTime, LocalDateTime.now())
+               .set(AptRecord::getUpdateUser, updateUser)
+               .eq(AptRecord::getListNo, listNo)
+               .isNull(AptRecord::getRecTime);
+
+        int affected = aptRecordMapper.update(wrapper);
+        if (affected == 0) {
+            throw new RuntimeException("更新失敗，名單序號=" + listNo);
+        }
+    }
+}
