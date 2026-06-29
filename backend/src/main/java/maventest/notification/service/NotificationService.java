@@ -8,6 +8,8 @@ import maventest.policyapplication.infrastructure.repository.mapper.CustUserMapp
 import maventest.notification.mapper.NotificationMapper;
 import maventest.auth.repository.AppUserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -84,6 +86,48 @@ public class NotificationService {
     /** 全部標記已讀 */
     public void markAllAsRead(String username) {
         notificationMapper.markAllAsReadByUsername(username);
+    }
+
+    /**
+     * 理賠審核結果推播，獨立交易確保推播失敗不影響主審核交易。
+     * pendingUser 由呼叫端預先查好（RETURN/REJECTED 才有值，其餘傳 null）。
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+    public void pushClaimNotification(String claimNo, String action,
+                                      String agentUsername, String pendingUser, String reviewer) {
+        switch (action) {
+            case "PENDING" -> {
+                markReadByRefNoAndTitle(claimNo, "理賠新件待審");
+                if (agentUsername != null) {
+                    pushToUsername(agentUsername, "CLAIM",
+                            "理賠案件審核中", "理賠案件 " + claimNo + " 已進入審核程序，請耐心等候。", claimNo, reviewer);
+                }
+                pushToRole("REVIEWER", "CLAIM",
+                        "理賠案件待複審", "業務 " + reviewer + " 已完成初審，理賠案件 " + claimNo + " 待主管複審。", claimNo, reviewer);
+            }
+            case "RETURN" -> {
+                markReadByRefNoAndTitle(claimNo, "理賠案件待複審");
+                if (pendingUser != null) {
+                    pushToUsername(pendingUser, "CLAIM",
+                            "理賠案件退件", "理賠案件 " + claimNo + " 已退件，請修正後重新送件。", claimNo, reviewer);
+                }
+            }
+            case "APPROVED" -> {
+                markReadByRefNoAndTitle(claimNo, "理賠案件待複審");
+                if (agentUsername != null) {
+                    pushToUsername(agentUsername, "CLAIM",
+                            "理賠案件核准", "理賠案件 " + claimNo + " 已核准。", claimNo, reviewer);
+                }
+            }
+            case "REJECTED" -> {
+                markReadByRefNoAndTitle(claimNo, "理賠案件待複審");
+                if (pendingUser != null) {
+                    pushToUsername(pendingUser, "CLAIM",
+                            "理賠案件駁回", "理賠案件 " + claimNo + " 已駁回，如有疑問請洽主管。", claimNo, reviewer);
+                }
+            }
+            default -> { }
+        }
     }
 
     /** 將指定案件號碼與標題的通知全部標記已讀（審核完成後自動清掉待處理通知） */
