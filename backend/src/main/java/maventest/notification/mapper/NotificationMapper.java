@@ -26,4 +26,8 @@ public interface NotificationMapper {
             @Param("recipientUsername") String recipientUsername,
             @Param("refNo") String refNo,
             @Param("title") String title);
+
+    int markReadByRefNoAndTitle(
+            @Param("refNo") String refNo,
+            @Param("title") String title);
 }

@@ -70,6 +70,15 @@
           AND STATUS = 'SENT'
     </update>
 
+    <update id="markReadByRefNoAndTitle">
+        UPDATE tb_notification
+        SET IS_READ   = 1,
+            READ_TIME = NOW()
+        WHERE REF_NO  = #{refNo}
+          AND TITLE   = #{title}
+          AND IS_READ = 0
+    </update>
+
     <select id="existsSentToday" resultType="boolean">
         SELECT COUNT(*) > 0
         FROM tb_notification

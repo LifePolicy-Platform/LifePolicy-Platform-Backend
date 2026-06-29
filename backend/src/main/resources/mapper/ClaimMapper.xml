@@ -179,6 +179,15 @@
         ORDER BY c.UPDATE_TIME DESC
     </select>
 
+    <select id="findPendingAprvUser" resultType="java.lang.String">
+        SELECT APRV_USER
+        FROM tb_claim_aprv_log
+        WHERE CLAIM_NO = #{claimNo}
+          AND CLAIM_STATUS = 'PENDING'
+        ORDER BY CLAIM_LOG_NO DESC
+        LIMIT 1
+    </select>
+
     <insert id="insertAprvLog">
         INSERT INTO tb_claim_aprv_log (
             CLAIM_NO, POLICY_NO, CLAIM_STATUS, APPROVE_AMOUNT, APRV_REMARK, 

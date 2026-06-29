@@ -86,6 +86,15 @@ public class NotificationService {
         notificationMapper.markAllAsReadByUsername(username);
     }
 
+    /** 將指定案件號碼與標題的通知全部標記已讀（審核完成後自動清掉待處理通知） */
+    public void markReadByRefNoAndTitle(String refNo, String title) {
+        try {
+            notificationMapper.markReadByRefNoAndTitle(refNo, title);
+        } catch (Exception e) {
+            log.error("自動清通知失敗 refNo={} title={}", refNo, title, e);
+        }
+    }
+
     private void push(String recipientUsername, Long memberId,
                       String notifType, String title, String content,
                       String refNo, String createUser) {

@@ -77,21 +77,43 @@ public class ClaimAuditServiceImpl implements ClaimAuditService {
                 .map(u -> u.getUsername())
                 .orElse(null);
 
-        if (agentUsername == null) return;
-
         switch (action) {
             case "PENDING" -> {
-                notificationService.pushToUsername(agentUsername, "CLAIM",
-                        "理賠案件審核中", "理賠案件 " + claimNo + " 已進入審核程序，請耐心等候。", claimNo, reviewer);
-                notificationService.pushToRoleIfNotSentToday("REVIEWER", "CLAIM",
+                // 業務完成初審 → 清掉業務的「待審」通知
+                notificationService.markReadByRefNoAndTitle(claimNo, "理賠新件待審");
+                if (agentUsername != null) {
+                    notificationService.pushToUsername(agentUsername, "CLAIM",
+                            "理賠案件審核中", "理賠案件 " + claimNo + " 已進入審核程序，請耐心等候。", claimNo, reviewer);
+                }
+                notificationService.pushToRole("REVIEWER", "CLAIM",
                         "理賠案件待複審", "業務 " + reviewer + " 已完成初審，理賠案件 " + claimNo + " 待主管複審。", claimNo, reviewer);
             }
-            case "RETURN" -> notificationService.pushToUsername(agentUsername, "CLAIM",
-                    "理賠案件退件", "理賠案件 " + claimNo + " 已退件，請修正後重新送件。", claimNo, reviewer);
-            case "APPROVED" -> notificationService.pushToUsername(agentUsername, "CLAIM",
-                    "理賠案件核准", "理賠案件 " + claimNo + " 已核准。", claimNo, reviewer);
-            case "REJECTED" -> notificationService.pushToUsername(agentUsername, "CLAIM",
-                    "理賠案件駁回", "理賠案件 " + claimNo + " 已駁回，如有疑問請洽主管。", claimNo, reviewer);
+            case "RETURN" -> {
+                // 主管退件 → 清掉主管的「待複審」通知，並通知做初審的業務
+                notificationService.markReadByRefNoAndTitle(claimNo, "理賠案件待複審");
+                String returnTo = claimMapper.findPendingAprvUser(claimNo);
+                if (returnTo != null) {
+                    notificationService.pushToUsername(returnTo, "CLAIM",
+                            "理賠案件退件", "理賠案件 " + claimNo + " 已退件，請修正後重新送件。", claimNo, reviewer);
+                }
+            }
+            case "APPROVED" -> {
+                // 主管核准 → 清掉主管的「待複審」通知
+                notificationService.markReadByRefNoAndTitle(claimNo, "理賠案件待複審");
+                if (agentUsername != null) {
+                    notificationService.pushToUsername(agentUsername, "CLAIM",
+                            "理賠案件核准", "理賠案件 " + claimNo + " 已核准。", claimNo, reviewer);
+                }
+            }
+            case "REJECTED" -> {
+                // 主管駁回 → 清掉主管的「待複審」通知，並通知做初審的業務
+                notificationService.markReadByRefNoAndTitle(claimNo, "理賠案件待複審");
+                String rejectTo = claimMapper.findPendingAprvUser(claimNo);
+                if (rejectTo != null) {
+                    notificationService.pushToUsername(rejectTo, "CLAIM",
+                            "理賠案件駁回", "理賠案件 " + claimNo + " 已駁回，如有疑問請洽主管。", claimNo, reviewer);
+                }
+            }
             default -> { /* 其他狀態不推播 */ }
         }
     }
