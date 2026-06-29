@@ -49,6 +49,7 @@
         FROM tb_notification
         WHERE RECIPIENT_USERNAME = #{username}
           AND STATUS = 'SENT'
+          AND (IS_READ = 0 OR TITLE = '理賠案件核准')
         ORDER BY CREATE_TIME DESC
         LIMIT #{size} OFFSET #{offset}
     </select>
