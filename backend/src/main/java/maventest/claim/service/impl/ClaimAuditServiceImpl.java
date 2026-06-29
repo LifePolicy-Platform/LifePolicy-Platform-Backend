@@ -80,8 +80,12 @@ public class ClaimAuditServiceImpl implements ClaimAuditService {
         if (agentUsername == null) return;
 
         switch (action) {
-            case "PENDING" -> notificationService.pushToUsername(agentUsername, "CLAIM",
-                    "理賠案件審核中", "理賠案件 " + claimNo + " 已進入審核程序，請耐心等候。", claimNo, reviewer);
+            case "PENDING" -> {
+                notificationService.pushToUsername(agentUsername, "CLAIM",
+                        "理賠案件審核中", "理賠案件 " + claimNo + " 已進入審核程序，請耐心等候。", claimNo, reviewer);
+                notificationService.pushToRoleIfNotSentToday("REVIEWER", "CLAIM",
+                        "理賠案件待複審", "業務 " + reviewer + " 已完成初審，理賠案件 " + claimNo + " 待主管複審。", claimNo, reviewer);
+            }
             case "RETURN" -> notificationService.pushToUsername(agentUsername, "CLAIM",
                     "理賠案件退件", "理賠案件 " + claimNo + " 已退件，請修正後重新送件。", claimNo, reviewer);
             case "APPROVED" -> notificationService.pushToUsername(agentUsername, "CLAIM",

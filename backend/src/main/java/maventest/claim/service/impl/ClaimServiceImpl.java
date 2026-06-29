@@ -74,7 +74,7 @@ public class ClaimServiceImpl implements ClaimService {
         }
 
         // 推送通知
-        notificationService.pushToRole("REVIEWER", "CLAIM",
+        notificationService.pushToRole("APPLICANT", "CLAIM",
                 "理賠新件待審",
                 "理賠案件 " + newClaimNo + " 已送件，請確認處理。",
                 newClaimNo, "SYSTEM");
