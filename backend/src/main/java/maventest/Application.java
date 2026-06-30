@@ -8,7 +8,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@MapperScan({"maventest.auth.mapper", "maventest.claim.mapper", "maventest.customer.mapper", "maventest.visit.mapper", "maventest.policy.mapper", "maventest.dashboard.mapper", "maventest.notification.mapper", "maventest.policyapplication.infrastructure.repository.mapper"})
+@MapperScan({"maventest.auth.mapper", "maventest.claim.mapper", "maventest.customer.mapper", "maventest.visit.mapper", "maventest.policy.mapper", "maventest.dashboard.mapper", "maventest.notification.mapper", "maventest.policyapplication.infrastructure.repository.mapper", "maventest.product.mapper"})
 @EnableScheduling
 public class Application extends SpringBootServletInitializer {
 

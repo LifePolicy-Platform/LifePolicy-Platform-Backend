@@ -1,10 +1,10 @@
-package maventest.policyapplication.infrastructure.repository.mapper;
+package maventest.product.mapper;
 
 import java.util.List;
 
-import maventest.policyapplication.domain.entity.ProductEntity;
-import maventest.policyapplication.interfaces.dto.ProductCreateReqDto;
-import maventest.policyapplication.interfaces.dto.ProductUpdateReqDto;
+import maventest.product.entity.ProductEntity;
+import maventest.product.dto.ProductCreateReqDto;
+import maventest.product.dto.ProductUpdateReqDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

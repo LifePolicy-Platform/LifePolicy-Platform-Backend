@@ -1,4 +1,4 @@
-package maventest.policyapplication.interfaces.rest;
+package maventest.product.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -9,11 +9,11 @@ import maventest.code.ApiCode;
 import maventest.common.EntityUtil;
 import maventest.common.ReturnMsg;
 import maventest.common.exception.ApiException;
-import maventest.policyapplication.application.internal.commandservices.ProductCommandService;
-import maventest.policyapplication.application.internal.queryservices.ProductQueryService;
-import maventest.policyapplication.domain.entity.ProductEntity;
-import maventest.policyapplication.interfaces.dto.ProductCreateReqDto;
-import maventest.policyapplication.interfaces.dto.ProductUpdateReqDto;
+import maventest.product.service.ProductCommandService;
+import maventest.product.service.ProductQueryService;
+import maventest.product.entity.ProductEntity;
+import maventest.product.dto.ProductCreateReqDto;
+import maventest.product.dto.ProductUpdateReqDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;

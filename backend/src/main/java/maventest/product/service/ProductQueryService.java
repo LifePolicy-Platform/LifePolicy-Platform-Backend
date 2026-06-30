@@ -1,9 +1,9 @@
-package maventest.policyapplication.application.internal.queryservices;
+package maventest.product.service;
 
 import lombok.RequiredArgsConstructor;
 import maventest.common.exception.ApiException;
-import maventest.policyapplication.domain.entity.ProductEntity;
-import maventest.policyapplication.infrastructure.repository.mapper.ProductMapper;
+import maventest.product.entity.ProductEntity;
+import maventest.product.mapper.ProductMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 

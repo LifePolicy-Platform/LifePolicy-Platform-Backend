@@ -1,13 +1,13 @@
-package maventest.policyapplication.application.internal.commandservices;
+package maventest.product.service;
 
 import lombok.RequiredArgsConstructor;
 import maventest.code.ApiCode;
 import maventest.common.exception.ApiException;
 import maventest.common.exception.ErrorInputException;
-import maventest.policyapplication.domain.entity.ProductEntity;
-import maventest.policyapplication.infrastructure.repository.mapper.ProductMapper;
-import maventest.policyapplication.interfaces.dto.ProductCreateReqDto;
-import maventest.policyapplication.interfaces.dto.ProductUpdateReqDto;
+import maventest.product.entity.ProductEntity;
+import maventest.product.mapper.ProductMapper;
+import maventest.product.dto.ProductCreateReqDto;
+import maventest.product.dto.ProductUpdateReqDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

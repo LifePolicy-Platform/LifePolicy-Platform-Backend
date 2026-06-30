@@ -1,4 +1,4 @@
-package maventest.policyapplication.domain.entity;
+package maventest.product.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
