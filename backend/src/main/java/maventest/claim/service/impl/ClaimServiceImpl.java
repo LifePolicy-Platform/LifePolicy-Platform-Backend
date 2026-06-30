@@ -48,7 +48,7 @@ public class ClaimServiceImpl implements ClaimService {
     public String createClaim(ClaimCreateRequest request) {
         String newClaimNo = "CLM" + (System.currentTimeMillis() / 1000);
         
-        // 🌟 核心安全優化：由後端伺服器生成標準時間，防止前端時間造假，並解決資料庫 null 衝突
+        // 核心安全優化：由後端伺服器生成標準時間，防止前端時間造假，並解決資料庫 null 衝突
         java.time.LocalDateTime now = java.time.LocalDateTime.now();
         java.time.LocalDateTime expiry = now.plusDays(15); // 預設 15 天過期
         
@@ -60,8 +60,8 @@ public class ClaimServiceImpl implements ClaimService {
                 .claimStatus("SUBMIT")
                 .agentId(request.getAgentId())
                 .remark(request.getRemark())
-                .applyTime(now)       // 🌟 寫入後端生成的申請時間
-                .expiryTime(expiry)   // 🌟 寫入後端生成的過期時間
+                .applyTime(now)
+                .expiryTime(expiry)
                 .file01Name(request.getFile01Name())
                 .file01Path(request.getFile01Path())
                 .file02Name(request.getFile02Name())
@@ -90,7 +90,7 @@ public class ClaimServiceImpl implements ClaimService {
             throw new IllegalArgumentException("找不到欲修改的理賠案件");
         }
 
-        // 🌟 核心安全防禦：只允許經辦將狀態變更為 'SUBMIT' (用於補件重新送審)
+        // 只允許經辦將狀態變更為 'SUBMIT' (用於補件重新送審)
         // 嚴格禁止非審核人員惡意傳入 APPROVED 或 REJECTED
         if (request.getClaimStatus() != null) {
             String targetStatus = request.getClaimStatus().toUpperCase().trim();

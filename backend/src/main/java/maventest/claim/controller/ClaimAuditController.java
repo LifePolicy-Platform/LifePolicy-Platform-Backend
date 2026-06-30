@@ -1,6 +1,7 @@
 package maventest.claim.controller;
 
 import lombok.RequiredArgsConstructor;
+import maventest.claim.dto.AiAnalyzeRequest;
 import maventest.claim.entity.ClaimEntity;
 import maventest.claim.entity.ClaimAprvLogEntity;
 import maventest.claim.service.ClaimAuditService;
@@ -40,5 +41,16 @@ public class ClaimAuditController {
     public ResponseEntity<?> getClaimLogs(@PathVariable String claimNo) {
         List<ClaimAprvLogEntity> logs = claimAuditService.getClaimLogs(claimNo);
         return ResponseEntity.ok(ApiResponse.ok(logs));
+    }
+
+    // 🌟 一鍵 AI 智慧醫理分析端點
+    @PostMapping("/ai-analyze")
+    public ResponseEntity<?> analyzeClaimWithAi(@RequestBody AiAnalyzeRequest request) {
+        try {
+            String analysisResult = claimAuditService.analyzeClaimWithAi(request);
+            return ResponseEntity.ok(ApiResponse.ok(analysisResult));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ApiResponse.fail(400, "AI 分析失敗: " + e.getMessage()));
+        }
     }
 }
