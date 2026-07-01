@@ -13,13 +13,17 @@ import maventest.policyapplication.application.internal.PolicyApplicationRuleSer
 import maventest.policyapplication.application.internal.PolicyNumberGenerator;
 import maventest.policyapplication.domain.entity.CallListEntity;
 import maventest.policyapplication.domain.entity.PolicyApplicationEntity;
-import maventest.policyapplication.domain.entity.ProductEntity;
+import maventest.product.entity.ProductEntity;
 import maventest.policyapplication.infrastructure.repository.InsuranceApplicationRepository;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationCommandReqDto;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationCommandRespDto;
 import maventest.policyapplication.interfaces.transform.InsuranceApplicationConverter;
 import maventest.policy.service.PolicyAprvLogAppender;
 import maventest.auth.repository.AppUserRepository;
+<<<<<<< HEAD
+=======
+import maventest.notification.service.NotificationService;
+>>>>>>> develop
 
 @Service
 @RequiredArgsConstructor

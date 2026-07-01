@@ -8,7 +8,9 @@ import java.util.Optional;
 import maventest.policyapplication.domain.entity.CallListEntity;
 import maventest.policyapplication.domain.entity.InsuredPersonEntity;
 import maventest.policyapplication.domain.entity.PolicyApplicationEntity;
-import maventest.policyapplication.domain.entity.ProductEntity;
+import maventest.product.entity.ProductEntity;
+
+import maventest.policyapplication.interfaces.dto.MemberProfileRespDto;
 
 public interface InsuranceApplicationRepository {
 
@@ -25,6 +27,8 @@ public interface InsuranceApplicationRepository {
     }
 
     Optional<Long> findMemberIdByIdentityCard(String identityCard);
+
+    Optional<MemberProfileRespDto> findActiveMemberProfileByIdentityCard(String identityCard);
 
     String findMaxPolicyNoByPrefix(String prefix);
 

@@ -17,7 +17,7 @@ import maventest.common.exception.ErrorInputException;
 import maventest.policyapplication.application.internal.PolicyApplicationRuleService;
 import maventest.policyapplication.application.internal.PolicyApplicationStatusTransition;
 import maventest.policyapplication.domain.entity.PolicyApplicationEntity;
-import maventest.policyapplication.domain.entity.ProductEntity;
+import maventest.product.entity.ProductEntity;
 import maventest.policyapplication.domain.enums.ApplicationStatus;
 import maventest.policyapplication.infrastructure.repository.InsuranceApplicationRepository;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationReviewCommandReqDto;
@@ -25,6 +25,10 @@ import maventest.policyapplication.interfaces.dto.InsuranceApplicationReviewComm
 import maventest.policyapplication.interfaces.transform.InsuranceApplicationConverter;
 import maventest.policy.service.PolicyAprvLogAppender;
 import maventest.auth.repository.AppUserRepository;
+<<<<<<< HEAD
+=======
+import maventest.notification.service.NotificationService;
+>>>>>>> develop
 
 @Service
 @RequiredArgsConstructor

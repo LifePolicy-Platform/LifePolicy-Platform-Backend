@@ -2,10 +2,17 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+<<<<<<< HEAD
 <mapper namespace="maventest.appointment.mapper.AptRecordMapper">
 
     <select id="selectAptRecordList"
             resultType="maventest.appointment.dto.AptRecordListResponse">
+=======
+<mapper namespace="maventest.visit.mapper.AptRecordMapper">
+
+    <select id="selectAptRecordList"
+            resultType="maventest.visit.dto.AptRecordListResponse">
+>>>>>>> develop
         SELECT
             a.SNO              AS sno,
             a.LIST_NO          AS listNo,
@@ -27,8 +34,13 @@
         ORDER BY a.RECALL_TIME
     </select>
 
+<<<<<<< HEAD
     <select id="selectAptRecordHistoryByCustName"
             resultType="maventest.appointment.dto.AptRecordListResponse">
+=======
+    <select id="selectAptRecordHistoryByIdentityCard"
+            resultType="maventest.visit.dto.AptRecordListResponse">
+>>>>>>> develop
         SELECT
             a.SNO              AS sno,
             a.LIST_NO          AS listNo,
@@ -44,7 +56,7 @@
         JOIN tb_call_list  l ON a.LIST_NO       = l.LIST_NO
         JOIN tb_cust_user  u ON l.MEMBER_ID     = u.MEMBER_ID
         JOIN tb_camp_mst   c ON a.CAMP_CODE     = c.CAMP_CODE
-        WHERE u.NAME = #{custName}
+        WHERE u.IDENTITY_CARD = #{identityCard}
         ORDER BY a.RECALL_TIME DESC
     </select>
 
