@@ -41,11 +41,11 @@ public class CustomerQueryController {
         return ResponseEntity.ok(ApiResponse.ok(data));
     }
 
-    @Operation(summary = "約訪歷程查詢", description = "依客戶姓名查詢約訪記錄")
+    @Operation(summary = "約訪歷程查詢", description = "依身分證字號查詢約訪記錄")
     @GetMapping("/history")
     public ResponseEntity<ApiResponse<List<AptRecordListResponse>>> searchHistory(
-            @RequestParam String name) {
-        return ResponseEntity.ok(ApiResponse.ok(customerQueryService.listAptRecordsByCustName(name)));
+            @RequestParam String identityCard) {
+        return ResponseEntity.ok(ApiResponse.ok(customerQueryService.listAptRecordsByIdentityCard(identityCard)));
     }
 
     @Operation(summary = "保單約訪上下文", description = "依保單編號取得名單序號、客戶姓名、撥出電話等自動帶入欄位")
