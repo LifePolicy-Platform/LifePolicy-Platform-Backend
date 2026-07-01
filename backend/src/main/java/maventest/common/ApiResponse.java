@@ -38,9 +38,4 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> fail(int code, String message) {
         return new ApiResponse<>(String.valueOf(code), message, false, null);
     }
-
-    /** 包裝失敗回應（業務錯誤碼） */
-    public static <T> ApiResponse<T> fail(String code, String message) {
-        return new ApiResponse<>(code, message, false, null);
-    }
 }

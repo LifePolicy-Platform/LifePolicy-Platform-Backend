@@ -22,20 +22,20 @@ import java.time.LocalDate;
 public class InsuranceApplicationCommandReqDto {
 
     @JsonProperty("APPLICANT_ID_NO")
-    @NotBlank(message = "投保人身份證號為必填")
+    @NotBlank(message = "applicantIdNo is required")
     private String applicantIdNo;
 
     @JsonProperty("APPLICANT_NAME")
-    @NotBlank(message = "投保人姓名為必填")
+    @NotBlank(message = "applicantName is required")
     private String applicantName;
 
     @JsonProperty("APPLICANT_GENDER")
-    @NotNull(message = "投保人性別為必填")
+    @NotNull(message = "applicantGender is required")
     private Gender applicantGender;
 
     @JsonProperty("APPLICANT_BIRTHDATE")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @NotNull(message = "投保人生日為必填")
+    @NotNull(message = "applicantBirthdate is required")
     private LocalDate applicantBirthdate;
 
     @JsonProperty("RELATIONSHIP_TO_INSURED")
@@ -43,42 +43,42 @@ public class InsuranceApplicationCommandReqDto {
     private RelationshipToInsured relationshipToInsured;
 
     @JsonProperty("INSURED_ID_NO")
-    @NotBlank(message = "被保人身份證為必填")
+    @NotBlank(message = "insuredIdNo is required")
     private String insuredIdNo;
 
     @JsonProperty("INSURED_NAME")
-    @NotBlank(message = "被保人姓名為必填")
+    @NotBlank(message = "insuredName is required")
     private String insuredName;
 
     @JsonProperty("INSURED_GENDER")
-    @NotNull(message = "被保人性別為必填")
+    @NotNull(message = "insuredGender is required")
     private Gender insuredGender;
 
     @JsonProperty("INSURED_BIRTHDATE")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @NotNull(message = "被保人生日為必填")
+    @NotNull(message = "insuredBirthdate is required")
     private LocalDate insuredBirthdate;
 
     @JsonProperty("PRODUCT_CODE")
-    @NotBlank(message = "產品代碼為必填")
+    @NotBlank(message = "productCode is required")
     private String productCode;
 
     @JsonProperty("SUM_INSURED")
-    @NotNull(message = "保險金額為必填")
-    @DecimalMin(value = "1.00", message = "保險金額必須大於零")
+    @NotNull(message = "sumInsured is required")
+    @DecimalMin(value = "1.00", message = "sumInsured must be greater than zero")
     private BigDecimal sumInsured;
 
     @JsonProperty("ANNUAL_PREMIUM")
-    @NotNull(message = "年繳保費為必填")
-    @DecimalMin(value = "1.00", message = "年繳保費必須大於零")
+    @NotNull(message = "annualPremium is required")
+    @DecimalMin(value = "1.00", message = "annualPremium must be greater than zero")
     private BigDecimal annualPremium;
 
     @JsonProperty("CONTACT_PHONE")
-    @NotBlank(message = "聯絡電話為必填")
+    @NotBlank(message = "contactPhone is required")
     private String contactPhone;
 
     @JsonProperty("RISK_LEVEL")
-    @NotBlank
+    @NotBlank(message = "riskLevel is required")
     private String riskLevel;
 
     @JsonProperty("CREATED_BY")

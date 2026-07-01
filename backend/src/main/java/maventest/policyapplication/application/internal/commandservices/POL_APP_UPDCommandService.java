@@ -12,7 +12,7 @@ import maventest.common.exception.BusinessRuleException;
 import maventest.common.exception.ErrorInputException;
 import maventest.policyapplication.application.internal.PolicyApplicationRuleService;
 import maventest.policyapplication.domain.entity.PolicyApplicationEntity;
-import maventest.product.entity.ProductEntity;
+import maventest.policyapplication.domain.entity.ProductEntity;
 import maventest.policyapplication.infrastructure.repository.InsuranceApplicationRepository;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationUpdateReqDto;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationUpdateRespDto;

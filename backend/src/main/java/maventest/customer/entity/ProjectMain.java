@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:backend/src/main/java/maventest/customer/entity/ProjectMain.java
 package maventest.customer.entity;
-========
-package maventest.visit.entity;
->>>>>>>> develop:backend/src/main/java/maventest/visit/entity/ProjectMain.java
 
 import java.time.LocalDate;
 

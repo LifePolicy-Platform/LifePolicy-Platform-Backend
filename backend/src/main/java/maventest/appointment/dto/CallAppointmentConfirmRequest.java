@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:backend/src/main/java/maventest/appointment/dto/CallAppointmentConfirmRequest.java
 package maventest.appointment.dto;
-========
-package maventest.visit.dto;
->>>>>>>> develop:backend/src/main/java/maventest/visit/dto/CallAppointmentConfirmRequest.java
 
 import java.time.LocalDateTime;
 

@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<<<<<<< HEAD
 <mapper namespace="maventest.customer.mapper.ProjectMainMapper">
-=======
-<mapper namespace="maventest.visit.mapper.ProjectMainMapper">
->>>>>>> develop
 
     <select id="selectActiveProjects" resultType="maventest.customer.dto.ActiveProjectOptionDto">
         SELECT CAMP_CODE       AS campCode,

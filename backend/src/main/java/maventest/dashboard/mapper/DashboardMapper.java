@@ -10,10 +10,6 @@ import org.apache.ibatis.annotations.Param;
 
 import maventest.dashboard.dto.DashboardDailyCountRow;
 import maventest.dashboard.dto.DashboardProductTypeCountRow;
-<<<<<<< HEAD
-=======
-import maventest.dashboard.dto.DashboardSlaOverduePolicyRow;
->>>>>>> develop
 import maventest.dashboard.dto.DashboardStatusCountRow;
 
 @Mapper
@@ -54,9 +50,6 @@ public interface DashboardMapper {
 
     /** 保單 SLA 逾期（審核中超過 slaDays） */
     long countPolicySlaOverdue(@Param("slaDays") int slaDays);
-
-    /** 保單 SLA 逾期清單 */
-    List<DashboardSlaOverduePolicyRow> findPolicySlaOverdueList(@Param("slaDays") int slaDays);
 
     /** 理賠 SLA 逾期（審核中超過 slaDays） */
     long countClaimSlaOverdue(@Param("slaDays") int slaDays);

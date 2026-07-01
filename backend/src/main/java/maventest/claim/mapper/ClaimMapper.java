@@ -37,11 +37,4 @@ public interface ClaimMapper {
     List<ClaimAprvLogEntity> selectAprvLogHistory(@Param("claimNo") String claimNo);
 
     List<Map<String, Object>> selectAllAgentOptions();
-<<<<<<< HEAD
 }
-=======
-
-    // 查出最近一次把該案件設為 PENDING 的業務 username（用於 RETURN/REJECTED 通知）
-    String findPendingAprvUser(@Param("claimNo") String claimNo);
-}
->>>>>>> develop

@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:backend/src/main/java/maventest/appointment/service/AptRecordSingleService.java
 package maventest.appointment.service;
-========
-package maventest.visit.service;
->>>>>>>> develop:backend/src/main/java/maventest/visit/service/AptRecordSingleService.java
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

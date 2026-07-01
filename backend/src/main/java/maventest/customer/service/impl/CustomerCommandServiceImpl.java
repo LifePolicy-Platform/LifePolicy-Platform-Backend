@@ -11,7 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-<<<<<<< HEAD
 import maventest.appointment.dto.AptBatchUpdateRequest;
 import maventest.appointment.dto.AptBatchUpdateResponse;
 import maventest.appointment.dto.AptUpdateItem;
@@ -21,17 +20,6 @@ import maventest.appointment.dto.CallAppointmentCreateRequest;
 import maventest.appointment.dto.CallAppointmentCreateResponse;
 import maventest.appointment.service.AptRecordSingleService;
 import maventest.appointment.service.CallAppointmentCommandService;
-=======
-import maventest.visit.dto.AptBatchUpdateRequest;
-import maventest.visit.dto.AptBatchUpdateResponse;
-import maventest.visit.dto.AptUpdateItem;
-import maventest.visit.dto.CallAppointmentConfirmRequest;
-import maventest.visit.dto.CallAppointmentConfirmResponse;
-import maventest.visit.dto.CallAppointmentCreateRequest;
-import maventest.visit.dto.CallAppointmentCreateResponse;
-import maventest.visit.service.AptRecordSingleService;
-import maventest.visit.service.CallAppointmentCommandService;
->>>>>>> develop
 import maventest.customer.service.CustomerCommandService;
 
 @Service

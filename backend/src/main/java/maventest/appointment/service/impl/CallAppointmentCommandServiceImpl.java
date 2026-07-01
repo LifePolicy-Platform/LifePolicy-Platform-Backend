@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:backend/src/main/java/maventest/appointment/service/impl/CallAppointmentCommandServiceImpl.java
 package maventest.appointment.service.impl;
-========
-package maventest.visit.service.impl;
->>>>>>>> develop:backend/src/main/java/maventest/visit/service/impl/CallAppointmentCommandServiceImpl.java
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-<<<<<<<< HEAD:backend/src/main/java/maventest/appointment/service/impl/CallAppointmentCommandServiceImpl.java
 import maventest.appointment.dto.CallAppointmentConfirmRequest;
 import maventest.appointment.dto.CallAppointmentConfirmResponse;
 import maventest.appointment.dto.CallAppointmentCreateRequest;
@@ -25,19 +20,6 @@ import maventest.appointment.service.CallAppointmentCommandService;
 import maventest.customer.dto.ActiveProjectOptionDto;
 import maventest.customer.mapper.ProjectMainMapper;
 import maventest.policyapplication.infrastructure.repository.mapper.CallListMapper;
-========
-import maventest.customer.dto.ActiveProjectOptionDto;
-import maventest.visit.dto.CallAppointmentConfirmRequest;
-import maventest.visit.dto.CallAppointmentConfirmResponse;
-import maventest.visit.dto.CallAppointmentCreateRequest;
-import maventest.visit.dto.CallAppointmentCreateResponse;
-import maventest.visit.dto.PolicyAppointmentContextDto;
-import maventest.visit.entity.CallAppointmentEntity;
-import maventest.visit.mapper.CallAppointmentMapper;
-import maventest.visit.mapper.ProjectMainMapper;
-import maventest.policyapplication.infrastructure.repository.mapper.CallListMapper;
-import maventest.visit.service.CallAppointmentCommandService;
->>>>>>>> develop:backend/src/main/java/maventest/visit/service/impl/CallAppointmentCommandServiceImpl.java
 
 @Service
 @RequiredArgsConstructor

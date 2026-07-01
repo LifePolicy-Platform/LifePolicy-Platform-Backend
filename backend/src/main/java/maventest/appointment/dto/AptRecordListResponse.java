@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:backend/src/main/java/maventest/appointment/dto/AptRecordListResponse.java
 package maventest.appointment.dto;
-========
-package maventest.visit.dto;
->>>>>>>> develop:backend/src/main/java/maventest/visit/dto/AptRecordListResponse.java
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

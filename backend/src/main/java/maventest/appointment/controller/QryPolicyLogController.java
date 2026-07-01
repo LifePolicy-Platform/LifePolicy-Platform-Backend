@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:backend/src/main/java/maventest/appointment/controller/QryPolicyLogController.java
 package maventest.appointment.controller;
-========
-package maventest.policy.controller;
->>>>>>>> develop:backend/src/main/java/maventest/policy/controller/QryPolicyLogController.java
 
 import java.util.List;
 

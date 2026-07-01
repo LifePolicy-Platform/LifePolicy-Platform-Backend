@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:backend/src/main/java/maventest/appointment/entity/AptRecord.java
 package maventest.appointment.entity;
-========
-package maventest.visit.entity;
->>>>>>>> develop:backend/src/main/java/maventest/visit/entity/AptRecord.java
 
 import java.time.LocalDateTime;
 

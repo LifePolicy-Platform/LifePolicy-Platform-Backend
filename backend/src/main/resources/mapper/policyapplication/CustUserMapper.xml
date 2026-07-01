@@ -8,34 +8,6 @@
         SELECT MEMBER_ID
         FROM tb_cust_user
         WHERE IDENTITY_CARD = #{identityCard}
-          AND STATUS = 'ACTIVE'
-        LIMIT 1
-    </select>
-
-    <select id="findActiveProfileByIdentityCard" resultType="maventest.policyapplication.interfaces.dto.MemberProfileRespDto">
-        SELECT cu.MEMBER_ID   AS memberId,
-               cu.NAME        AS memberName,
-               cu.GENDER      AS gender,
-               cu.BIRTHDAY    AS birthday,
-               COALESCE(
-                   (SELECT cl.LIST_LASTPHONE
-                    FROM tb_call_list cl
-                    WHERE cl.MEMBER_ID = cu.MEMBER_ID
-                      AND cl.LIST_LASTPHONE IS NOT NULL
-                      AND cl.LIST_LASTPHONE <![CDATA[ <> ]]> ''
-                    ORDER BY cl.LIST_NO DESC
-                    LIMIT 1),
-                   (SELECT pa.POLICY_MOBILE
-                    FROM tb_policy pa
-                    WHERE pa.MEMBER_ID = cu.MEMBER_ID
-                      AND pa.POLICY_MOBILE IS NOT NULL
-                      AND pa.POLICY_MOBILE <![CDATA[ <> ]]> ''
-                    ORDER BY pa.APPLY_TIME DESC
-                    LIMIT 1)
-               )              AS contactPhone
-        FROM tb_cust_user cu
-        WHERE cu.IDENTITY_CARD = #{identityCard}
-          AND cu.STATUS = 'ACTIVE'
         LIMIT 1
     </select>
 

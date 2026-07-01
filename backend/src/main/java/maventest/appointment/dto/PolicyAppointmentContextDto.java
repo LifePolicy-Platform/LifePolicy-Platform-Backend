@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:backend/src/main/java/maventest/appointment/dto/PolicyAppointmentContextDto.java
 package maventest.appointment.dto;
-========
-package maventest.visit.dto;
->>>>>>>> develop:backend/src/main/java/maventest/visit/dto/PolicyAppointmentContextDto.java
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

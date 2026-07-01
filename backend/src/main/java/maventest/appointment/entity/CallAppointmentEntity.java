@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:backend/src/main/java/maventest/appointment/entity/CallAppointmentEntity.java
 package maventest.appointment.entity;
-========
-package maventest.visit.entity;
->>>>>>>> develop:backend/src/main/java/maventest/visit/entity/CallAppointmentEntity.java
 
 import java.time.LocalDateTime;
 

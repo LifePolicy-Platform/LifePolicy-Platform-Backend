@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:backend/src/main/java/maventest/appointment/service/impl/AptRecordSingleServiceImpl.java
 package maventest.appointment.service.impl;
-========
-package maventest.visit.service.impl;
->>>>>>>> develop:backend/src/main/java/maventest/visit/service/impl/AptRecordSingleServiceImpl.java
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,15 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 
 import lombok.RequiredArgsConstructor;
-<<<<<<<< HEAD:backend/src/main/java/maventest/appointment/service/impl/AptRecordSingleServiceImpl.java
 import maventest.appointment.entity.AptRecord;
 import maventest.appointment.mapper.AptRecordMapper;
 import maventest.appointment.service.AptRecordSingleService;
-========
-import maventest.visit.entity.AptRecord;
-import maventest.visit.mapper.AptRecordMapper;
-import maventest.visit.service.AptRecordSingleService;
->>>>>>>> develop:backend/src/main/java/maventest/visit/service/impl/AptRecordSingleServiceImpl.java
 
 @Service
 @RequiredArgsConstructor

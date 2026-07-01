@@ -115,31 +115,6 @@
             ) <![CDATA[ < ]]> DATE_SUB(NOW(), INTERVAL #{slaDays} DAY)
     </select>
 
-    <select id="findPolicySlaOverdueList" resultType="maventest.dashboard.dto.DashboardSlaOverduePolicyRow">
-        SELECT p.POLICY_NO AS policyNo,
-               p.POLICY_STATUS AS policyStatus
-        FROM tb_policy p
-        WHERE p.POLICY_STATUS IN ('SUBMIT', 'PENDING')
-          AND (
-            CASE p.POLICY_STATUS
-                WHEN 'SUBMIT' THEN COALESCE(
-                    (SELECT MIN(l.APRV_TIME)
-                     FROM tb_policy_aprv_log l
-                     WHERE l.POLICY_NO = p.POLICY_NO
-                       AND l.APRV_STATUS = 'SUBMIT'),
-                    p.APPLY_TIME)
-                WHEN 'PENDING' THEN COALESCE(
-                    (SELECT MAX(l.APRV_TIME)
-                     FROM tb_policy_aprv_log l
-                     WHERE l.POLICY_NO = p.POLICY_NO
-                       AND l.APRV_STATUS = 'PENDING'),
-                    p.APPLY_TIME)
-                ELSE p.APPLY_TIME
-                END
-            ) <![CDATA[ < ]]> DATE_SUB(NOW(), INTERVAL #{slaDays} DAY)
-        ORDER BY p.POLICY_NO
-    </select>
-
     <select id="countClaimSlaOverdue" resultType="long">
         SELECT COUNT(1)
         FROM tb_claim c
