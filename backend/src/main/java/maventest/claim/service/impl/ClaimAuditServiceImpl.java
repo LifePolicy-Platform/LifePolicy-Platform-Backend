@@ -144,7 +144,8 @@ public class ClaimAuditServiceImpl implements ClaimAuditService {
 
         // 防護線 A：如果金鑰未配置、或者是 MOCK 模式，直接走本地降級（免連線，0.01 秒完成）
         if (openAiKey == null || openAiKey.isBlank() || "MOCK".equalsIgnoreCase(openAiKey)) {
-            return generateMockAiResponse(claim.getProductName(), claim.getClaimAmount(), remark, request.getAuditRuleMsg());
+            String mockResult = generateMockAiResponse(claim.getProductName(), claim.getClaimAmount(), remark, request.getAuditRuleMsg());
+            return mockResult;
         }
 
         // 1. 影像處理：讀取實體檔案並轉為 Base64（僅支援單圖：診斷書 file01）
@@ -227,6 +228,7 @@ public class ClaimAuditServiceImpl implements ClaimAuditService {
             if (choices != null && !choices.isEmpty()) {
                 Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
                 String analysisResult = (String) message.get("content");
+                System.out.println("[Gemini 成功] 案號 " + claim.getClaimNo() + " 已取得 AI 回應，長度=" + analysisResult.length() + " 字");
                 
                 // 2. 【快取自動寫入資料庫】
                 // 第一次獲取 AI 報告，立刻更新並存入資料庫，達成一輩子只收費一次！
@@ -241,7 +243,8 @@ public class ClaimAuditServiceImpl implements ClaimAuditService {
         } catch (Exception e) {
             // 防護線 B：如果 API 斷線、塞車 (503)，自動降級為本地 4 大點 Mock 報告
             System.err.println(" [AI 智慧防護] 實體 API 連線異常（原因: " + e.getMessage() + "），自動切換至『本地 4 大點降級報告』。");
-            return generateMockAiResponse(claim.getProductName(), claim.getClaimAmount(), remark, request.getAuditRuleMsg());
+            String fallbackResult = generateMockAiResponse(claim.getProductName(), claim.getClaimAmount(), remark, request.getAuditRuleMsg());
+            return fallbackResult;
         }
     }
 
