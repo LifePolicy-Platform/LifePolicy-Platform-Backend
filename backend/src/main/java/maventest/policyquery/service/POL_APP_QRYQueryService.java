@@ -1,5 +1,4 @@
-package maventest.policyapplication.application.internal.queryservices;
-
+package maventest.policyquery.service;
 
 import lombok.RequiredArgsConstructor;
 import maventest.code.ApiCode;
@@ -31,7 +30,7 @@ public class POL_APP_QRYQueryService {
     private final InsuranceApplicationRepository insuranceApplicationRepository;
     private final InsuranceApplicationConverter insuranceApplicationConverter;
 
-        public PageResult<InsuranceApplicationQueryRespDto> queryApplications(InsuranceApplicationQueryReqDto reqDto) {
+    public PageResult<InsuranceApplicationQueryRespDto> queryApplications(InsuranceApplicationQueryReqDto reqDto) {
         validateQueryCondition(reqDto);
         String sortDirection = normalizeSortDirection(reqDto.getSortDirection());
 

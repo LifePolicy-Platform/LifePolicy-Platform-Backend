@@ -1,4 +1,4 @@
-package maventest.policyapplication.interfaces.rest;
+package maventest.policyquery.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -10,7 +10,7 @@ import maventest.common.EntityUtil;
 import maventest.common.PageResult;
 import maventest.common.ReturnMsg;
 import maventest.common.exception.ApiException;
-import maventest.policyapplication.application.internal.queryservices.POL_APP_QRYQueryService;
+import maventest.policyquery.service.POL_APP_QRYQueryService;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationQueryReqDto;
 import maventest.policyapplication.interfaces.dto.InsuranceApplicationQueryRespDto;
 import maventest.policyapplication.interfaces.dto.MemberProfileRespDto;
