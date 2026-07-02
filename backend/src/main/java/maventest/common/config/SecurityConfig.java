@@ -40,7 +40,8 @@ public class SecurityConfig {
                             "/swagger-ui.html",
                             "/swagger-ui/**",
                             "/v3/api-docs/**",
-                            "/error"
+                            "/error",
+                            "/uploads/**"
                     ).permitAll()
                     .requestMatchers("/api/v1/auth/me").authenticated()
                     // 約訪時間相關 API 需要登入
